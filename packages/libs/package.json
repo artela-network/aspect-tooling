@@ -1,0 +1,24 @@
+{
+  "name": "@artela/aspect-libs",
+  "version": "0.0.1",
+  "description": "AssemblyScript library for writing Artela Aspect",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "postinstall": "sh ./proto-gen.sh",
+    "build": "asc --exportRuntime --runtime stub index.ts --lib aspect-libs -b aspect-libs.wasm",
+    "format": "prettier --write -c **/*.ts",
+    "lint": "prettier -c **/*.ts",
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "assemblyscript": "^0.27.5",
+    "as-proto": "^1.3.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.4.1",
+    "as-proto-gen": "^1.3.0"
+  },
+  "ascMain": "index.ts"
+}

@@ -1,0 +1,15 @@
+{
+  "extends": "assemblyscript/std/assembly",
+  "include": [
+    "index.ts",
+    "abi",
+    "common",
+    "entry",
+    "host",
+    "message",
+    "scheduler",
+    "states",
+    "types",
+    "proto"
+  ]
+}
