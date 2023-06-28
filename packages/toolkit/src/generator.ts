@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 
 export type StorageItem = {
-    astId: number;
-    contract: string;
-    label: string;
-    offset: number;
-    slot: string;
-    type: string;
-}
+  astId: number;
+  contract: string;
+  label: string;
+  offset: number;
+  slot: string;
+  type: string;
+};
 
 export type StorageType = {
   encoding: string;
@@ -16,17 +16,17 @@ export type StorageType = {
   members?: StorageItem[];
   key?: string;
   value?: string;
-}
+};
 
 export type StorageLayout = {
   storage: StorageItem[];
   types: Record<string, StorageType>;
-}
+};
 export default class Generator {
-    private layoutPath: string;
-    private tsPath: string;
+  private layoutPath: string;
+  private tsPath: string;
 
-    public refLib = `import { Protobuf } from 'as-proto/assembly';
+  public refLib = `import { Protobuf } from 'as-proto/assembly';
 import { Abi } from "../lib/host";
 import { State } from "../lib/states";
 import { utils } from "../lib/utils";
@@ -34,83 +34,84 @@ import { BigInt } from "../lib/types";
 import { TraceCtx } from "../lib/context";
 import { ethereum } from "../lib/abi/ethereum/coders";\n`;
 
-    public endBracket  = "}\n";
-    public argsTemplage = `ctx: TraceCtx;
+  public endBracket = '}\n';
+  public argsTemplage = `ctx: TraceCtx;
     addr: string;
     prefix: Uint8Array;\n`;
-    public argsTemplageStruct = `ctx: TraceCtx;
+  public argsTemplageStruct = `ctx: TraceCtx;
     addr: string;
     variable: string;
     prefix: Uint8Array;\n`;
-    public constructorTemplate = 
-    `constructor(ctx: TraceCtx, addr: string, prefix: Uint8Array = new Uint8Array(0)) {
+  public constructorTemplate = `constructor(ctx: TraceCtx, addr: string, prefix: Uint8Array = new Uint8Array(0)) {
       this.ctx = ctx;
       this.addr = addr;
       this.prefix = prefix;
-    }\n`;    
-    public constructorTemplateStruct = 
-    `constructor(ctx: TraceCtx, addr: string, varibale: string, prefix: Uint8Array = new Uint8Array(0)) {
+    }\n`;
+  public constructorTemplateStruct = `constructor(ctx: TraceCtx, addr: string, varibale: string, prefix: Uint8Array = new Uint8Array(0)) {
       this.ctx = ctx;
       this.addr = addr;
       this.variable = varibale;
       this.prefix = prefix;
-    }\n`;    
+    }\n`;
 
-    constructor(layoutPath: string, tsPath: string) {
-        this.layoutPath = layoutPath;
-        this.tsPath = tsPath;
-    }
+  constructor(layoutPath: string, tsPath: string) {
+    this.layoutPath = layoutPath;
+    this.tsPath = tsPath;
+  }
 
-    getStorage(loadJson: string): StorageLayout {
-        const storageLayout = JSON.parse(loadJson) as StorageLayout;
-        return storageLayout;
+  getStorage(loadJson: string): StorageLayout {
+    const storageLayout = JSON.parse(loadJson) as StorageLayout;
+    return storageLayout;
+  }
+  getLayoutJson(): string {
+    if (fs.existsSync(this.layoutPath)) {
+      const loadJson = fs.readFileSync(this.layoutPath, 'utf-8');
+      return loadJson;
     }
-    getLayoutJson(): string {
-      if(fs.existsSync(this.layoutPath))
-      {
-          const loadJson = fs.readFileSync(this.layoutPath, "utf-8");
-          return loadJson;
+    return '';
+  }
+
+  append(str: string, space: number): boolean {
+    if (space > 0) {
+      fs.writeFileSync(this.tsPath, '  '.repeat(space), { flag: 'a' });
+    }
+    fs.writeFileSync(this.tsPath, str, { flag: 'a' });
+    return true;
+  }
+
+  getNameSpace(contract: string): string {
+    const contractName: string = contract;
+    return `export namespace ${contractName} {\n`;
+  }
+
+  getClass(arg: string): string {
+    const argName: string = arg;
+    return `export class ${argName} {\n`;
+  }
+
+  getBeforeFunc(
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isStruct: boolean,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    let param2: string = '"' + paramPrefix + '"';
+    if (isStruct) {
+      param2 = 'this.variable';
+    }
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
       }
-      return "";
-    }
-
-    append(str: string, space: number): boolean {
-        if (space > 0) {
-            fs.writeFileSync(this.tsPath, "  ".repeat(space), {flag:'a'});
-        }
-        fs.writeFileSync(this.tsPath, str, {flag:'a'});
-        return true;
-    }
-
-    getNameSpace(contract: string): string {
-      const contractName: string = contract;
-      return `export namespace ${contractName} {\n`;
-    }
-
-    getClass(arg: string): string {
-      const argName: string = arg;
-      return `export class ${argName} {\n`;
-    }
-
-    getBeforeFunc(typeTag: string, paramPrefix: string, valueFunc: string, 
-      isStruct: boolean, isNumber: boolean): string {
-        const param1 : string = typeTag;
-        let param2 : string = "\""+paramPrefix+"\"";
-        if (isStruct) {
-          param2 = "this.variable";
-        }
-        const param3 : string = valueFunc;
-        let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
-        if (isNumber) {
-          let param5 : string = "";
-          if ("BigInt" != typeTag) {
-            param5 = ".to"+valueFunc+"()";
-          }
-          param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
           let value = BigInt.fromString(valueHex, 16)${param5};`;
-        }
-        let message: string = 
-    `public before(): State<${param1}> | null {
+    }
+    let message: string = `public before(): State<${param1}> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -120,28 +121,32 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
       ${param4}
       return new State(account, value);
     }\n`;
-        return message;
-    }
+    return message;
+  }
 
-    getChangesFunc(typeTag: string, paramPrefix: string, valueFunc: string, 
-      isStruct: boolean, isNumber: boolean): string {
-        const param1 : string = typeTag;
-        let param2 : string = "\""+paramPrefix+"\"";
-        if (isStruct) {
-          param2 = "this.variable";
-        }
-        const param3 : string = valueFunc;
-        let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[i].value);`;
-        if (isNumber) {
-          let param5 : string = "";
-          if ("BigInt" != typeTag) {
-            param5 = ".to"+valueFunc+"()";
-          }
-          param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
+  getChangesFunc(
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isStruct: boolean,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    let param2: string = '"' + paramPrefix + '"';
+    if (isStruct) {
+      param2 = 'this.variable';
+    }
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[i].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
+      }
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
           let value = BigInt.fromString(valueHex, 16)${param5};`;
-        }
-        let message: string = 
-    `public changes(): Array<State<${param1}>> | null {
+    }
+    let message: string = `public changes(): Array<State<${param1}>> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -155,28 +160,32 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
       }
       return res;
     }\n`;
-        return message;
-    }
+    return message;
+  }
 
-    getLatestFunc(typeTag: string, paramPrefix: string, valueFunc: string, 
-      isStruct: boolean, isNumber: boolean): string {
-        const param1 : string = typeTag;
-        let param2 : string = "\""+paramPrefix+"\"";
-        if (isStruct) {
-          param2 = "this.variable";
-        }
-        const param3 : string = valueFunc;
-        let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[index].value);`;
-        if (isNumber) {
-          let param5 : string = "";
-          if ("BigInt" != typeTag) {
-            param5 = ".to"+valueFunc+"()";
-          }
-          param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[index].value);
+  getLatestFunc(
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isStruct: boolean,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    let param2: string = '"' + paramPrefix + '"';
+    if (isStruct) {
+      param2 = 'this.variable';
+    }
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[index].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
+      }
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[index].value);
           let value = BigInt.fromString(valueHex, 16)${param5};`;
-        }
-        let message: string = 
-    `public latest(): State<${param1}> | null {
+    }
+    let message: string = `public latest(): State<${param1}> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -187,35 +196,39 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
       ${param4}
       return new State(account, value);
     }\n`;
-        return message;
-    }
+    return message;
+  }
 
-    getDiffFunc(typeTag: string, paramPrefix: string, valueFunc: string, 
-      isStruct: boolean, isNumber: boolean): string {
-        const param1 : string = typeTag;
-        let param2 : string = "\""+paramPrefix+"\"";
-        let forNumber : string = "after - before";
-        if ("BigInt" == typeTag) {
-          forNumber = "after.sub(before)";
-        }
-        if (isStruct) {
-          param2 = "this.variable";
-        }
-        const param3 : string = valueFunc;
-        let param4 : string = `let before = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
-        let param5 : string = `let after = utils.uint8ArrayTo${param3}(changes.all[changes.all.length - 1].value);`;
-        if (isNumber) {
-          let param6 : string = "";
-          if ("BigInt" != typeTag) {
-            param6 = ".to"+valueFunc+"()";
-          }
-          param4 = `let beforeHex = utils.uint8ArrayToHex(changes.all[0].value);
+  getDiffFunc(
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isStruct: boolean,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    let param2: string = '"' + paramPrefix + '"';
+    let forNumber: string = 'after - before';
+    if ('BigInt' == typeTag) {
+      forNumber = 'after.sub(before)';
+    }
+    if (isStruct) {
+      param2 = 'this.variable';
+    }
+    const param3: string = valueFunc;
+    let param4: string = `let before = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
+    let param5: string = `let after = utils.uint8ArrayTo${param3}(changes.all[changes.all.length - 1].value);`;
+    if (isNumber) {
+      let param6: string = '';
+      if ('BigInt' != typeTag) {
+        param6 = '.to' + valueFunc + '()';
+      }
+      param4 = `let beforeHex = utils.uint8ArrayToHex(changes.all[0].value);
           let before = BigInt.fromString(beforeHex, 16)${param6};`;
-          param5 = `let afterHex = utils.uint8ArrayToHex(changes.all[changes.all.length - 1].value);
+      param5 = `let afterHex = utils.uint8ArrayToHex(changes.all[changes.all.length - 1].value);
           let after = BigInt.fromString(afterHex, 16)${param6};`;
-        }
-        let message: string = 
-    `public diff(): ${param1}  | null {
+    }
+    let message: string = `public diff(): ${param1}  | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length < 2) {
           return null;
@@ -226,25 +239,30 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
       
       return ${forNumber};
     }\n`;
-        return message;
-    }
+    return message;
+  }
 
-    getBeforeFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, valueFunc: string, 
-      isNumber: boolean): string {
-      const param1 : string = typeTag;
-      const param2 : string = paramPrefix;
-      const param3 : string = valueFunc;
-      let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
-      if (isNumber) {
-        let param5 : string = "";
-        if ("BigInt" != typeTag) {
-          param5 = ".to"+valueFunc+"()";
-        }
-        param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
-        let value = BigInt.fromString(valueHex, 16)${param5};`;
+  getBeforeFuncMap(
+    ft: string,
+    ff: string,
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    const param2: string = paramPrefix;
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
       }
-      let message: string = 
-  `public before(key: ${ft}): State<${param1}> | null {
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
+        let value = BigInt.fromString(valueHex, 16)${param5};`;
+    }
+    let message: string = `public before(key: ${ft}): State<${param1}> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -255,25 +273,30 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
     ${param4}
     return new State(account, value);
   }\n`;
-      return message;
+    return message;
   }
 
-  getChangesFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, valueFunc: string, 
-    isNumber: boolean): string {
-      const param1 : string = typeTag;
-      const param2 : string = paramPrefix;
-      const param3 : string = valueFunc;
-      let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[i].value);`;
-      if (isNumber) {
-        let param5 : string = "";
-        if ("BigInt" != typeTag) {
-          param5 = ".to"+valueFunc+"()";
-        }
-        param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
-        let value = BigInt.fromString(valueHex, 16)${param5};`;
+  getChangesFuncMap(
+    ft: string,
+    ff: string,
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    const param2: string = paramPrefix;
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[i].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
       }
-      let message: string = 
-  `public changes(key: ${ft}): Array<State<${param1}>> | null {
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[0].value);
+        let value = BigInt.fromString(valueHex, 16)${param5};`;
+    }
+    let message: string = `public changes(key: ${ft}): Array<State<${param1}>> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -288,25 +311,30 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
     }
     return res;
   }\n`;
-      return message;
+    return message;
   }
 
-  getLatestFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, valueFunc: string, 
-    isNumber: boolean): string {
-      const param1 : string = typeTag;
-      const param2 : string = paramPrefix;
-      const param3 : string = valueFunc;
-      let param4 : string = `let value = utils.uint8ArrayTo${param3}(changes.all[index].value);`;
-      if (isNumber) {
-        let param5 : string = "";
-        if ("BigInt" != typeTag) {
-          param5 = ".to"+valueFunc+"()";
-        }
-        param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[index].value);
-        let value = BigInt.fromString(valueHex, 16)${param5};`;
+  getLatestFuncMap(
+    ft: string,
+    ff: string,
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    const param2: string = paramPrefix;
+    const param3: string = valueFunc;
+    let param4: string = `let value = utils.uint8ArrayTo${param3}(changes.all[index].value);`;
+    if (isNumber) {
+      let param5: string = '';
+      if ('BigInt' != typeTag) {
+        param5 = '.to' + valueFunc + '()';
       }
-      let message: string = 
-  `public latest(key: ${ft}): State<${param1}> | null {
+      param4 = `let valueHex = utils.uint8ArrayToHex(changes.all[index].value);
+        let value = BigInt.fromString(valueHex, 16)${param5};`;
+    }
+    let message: string = `public latest(key: ${ft}): State<${param1}> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -318,32 +346,37 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
     ${param4}
     return new State(account, value);
   }\n`;
-      return message;
+    return message;
   }
 
-  getDiffFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, valueFunc: string, 
-    isNumber: boolean): string {
-      const param1 : string = typeTag;
-      const param2 : string = paramPrefix;
-      const param3 : string = valueFunc;
-      let param4 : string = `let before = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
-      let param5 : string = `let after = utils.uint8ArrayTo${param3}(changes.all[changes.all.length - 1].value);`;
-      let forNumber : string = "after - before";
-      if ("BigInt" == typeTag) {
-        forNumber = "after.sub(before)";
+  getDiffFuncMap(
+    ft: string,
+    ff: string,
+    typeTag: string,
+    paramPrefix: string,
+    valueFunc: string,
+    isNumber: boolean,
+  ): string {
+    const param1: string = typeTag;
+    const param2: string = paramPrefix;
+    const param3: string = valueFunc;
+    let param4: string = `let before = utils.uint8ArrayTo${param3}(changes.all[0].value);`;
+    let param5: string = `let after = utils.uint8ArrayTo${param3}(changes.all[changes.all.length - 1].value);`;
+    let forNumber: string = 'after - before';
+    if ('BigInt' == typeTag) {
+      forNumber = 'after.sub(before)';
+    }
+    if (isNumber) {
+      let param6: string = '';
+      if ('BigInt' != typeTag) {
+        param6 = '.to' + valueFunc + '()';
       }
-      if (isNumber) {
-        let param6 : string = "";
-        if ("BigInt" != typeTag) {
-          param6 = ".to"+valueFunc+"()";
-        }
-        param4 = `let beforeHex = utils.uint8ArrayToHex(changes.all[0].value);
+      param4 = `let beforeHex = utils.uint8ArrayToHex(changes.all[0].value);
         let before = BigInt.fromString(beforeHex, 16)${param6};`;
-        param5 = `let afterHex = utils.uint8ArrayToHex(changes.all[changes.all.length - 1].value);
+      param5 = `let afterHex = utils.uint8ArrayToHex(changes.all[changes.all.length - 1].value);
         let after = BigInt.fromString(afterHex, 16)${param6};`;
-      }
-      let message: string = 
-  `public diff(key: ${ft}): ${param1}  | null {
+    }
+    let message: string = `public diff(key: ${ft}): ${param1}  | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length < 2) {
@@ -355,40 +388,37 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
 
     return ${forNumber};
   }\n`;
-      return message;
+    return message;
   }
 
-    getStructParam(name: string, wrapName: string): string {
-      const param1 : string = name;
-      const param2 : string = wrapName;
-      let message: string =
-      `public ${param1}(): ${param2} {
+  getStructParam(name: string, wrapName: string): string {
+    const param1: string = name;
+    const param2: string = wrapName;
+    let message: string = `public ${param1}(): ${param2} {
         let encoded = Abi.encodeString("${param1}");
         return new ${param2}(this.ctx, this.addr, this.variable, utils.concatUint8Arrays(this.prefix, encoded));
     }\n`;
-      return message;
-    }
+    return message;
+  }
 
-    getMappintSecondParam(name: string, type: string, prefix: string): string {
-      const param1 : string = name;
-      const param2 : string = type;
-      const param3 : string = prefix; //ContractName.ParamNameInContract
-      let message: string =
-      `public ${param1}(key: string): ${param2} {
+  getMappintSecondParam(name: string, type: string, prefix: string): string {
+    const param1: string = name;
+    const param2: string = type;
+    const param3: string = prefix; //ContractName.ParamNameInContract
+    let message: string = `public ${param1}(key: string): ${param2} {
         let encoded = Abi.encodeString(key);
         return new ${param2}(this.ctx, this.addr, "${param3}", utils.concatUint8Arrays(this.prefix, encoded))
     }\n`;
-      return message;
-    }
+    return message;
+  }
 
-    getNestedMappingValue(npStr: string, prefix: string): string {
-      const param2 : string = npStr;
-      const param3 : string = prefix; //ContractName.ParamNameInContract
-      let message: string = 
-      `public value(key: string): ${param2}.Value {
+  getNestedMappingValue(npStr: string, prefix: string): string {
+    const param2: string = npStr;
+    const param3: string = prefix; //ContractName.ParamNameInContract
+    let message: string = `public value(key: string): ${param2}.Value {
         let encoded = Abi.encodeAddress(key);
         return new ${param2}.Value(this.ctx, this.addr, "${param3}", utils.concatUint8Arrays(this.prefix, encoded));
     }\n`;
-      return message;
-    }
+    return message;
+  }
 }
