@@ -1,9 +1,11 @@
 import { AString, AUint8Array } from '../message';
+import { ethereum } from "../abi";
 
 declare namespace __Util__ {
   function fromHexString(input: i32): i32;
   function toHexString(input: i32): i32;
   function revert(input: i32): i32;
+
 }
 
 export namespace utils {
@@ -16,7 +18,7 @@ export namespace utils {
     input.set(message);
     let inPtr = input.store();
     __Util__.revert(inPtr);
-    throw new Error(message);
+    throw new Error(message)
   }
 
   export function stringToUint8Array(s: string): Uint8Array {
@@ -26,6 +28,11 @@ export namespace utils {
     }
 
     return Uint8Array.wrap(buffer, 0, s.length);
+  }
+
+  export function uint8ArrayToAddress(data: Uint8Array): ethereum.Address {
+    let hex = String.UTF8.decode(data.buffer, false);
+    return ethereum.Address.fromHexString(hex);
   }
 
   export function uint8ArrayToString(arr: Uint8Array): string {
@@ -41,7 +48,7 @@ export namespace utils {
 
   export function hexToUint8Array(s: string): Uint8Array {
     if (s.length % 2 !== 0) {
-      throw new Error('Invalid hex string');
+      throw new Error("Invalid hex string");
     }
 
     let outPtr = __Util__.fromHexString(new AString(s).store());
@@ -49,7 +56,7 @@ export namespace utils {
     out.load(outPtr);
     let data = out.get();
     if (data.length == 0 && s.length != 0) {
-      throw new Error('Invalid hex string');
+      throw new Error("Invalid hex string");
     }
     return data;
   }

@@ -1,2 +1,2 @@
-export { Schedule, PeriodicSchedule, AdHocSchedule } from './schedule';
+export { Schedule, PeriodicSchedule, AdHocSchedule,ScheduleTx } from './schedule';
 export { Opts } from './opts';
