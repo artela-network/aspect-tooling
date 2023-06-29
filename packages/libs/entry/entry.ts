@@ -3,6 +3,20 @@ import { AspectInput, AspectOutput } from '../proto';
 
 import { IAspectBlock, IAspectTransaction } from '../types';
 import { Protobuf } from 'as-proto/assembly';
+import {
+  StateCtx,
+  OnTxReceiveCtx,
+  OnBlockInitializeCtx,
+  OnTxVerifyCtx,
+  OnAccountVerifyCtx,
+  OnGasPaymentCtx,
+  PreTxExecuteCtx,
+  PreContractCallCtx,
+  PostContractCallCtx,
+  PostTxExecuteCtx,
+  OnTxCommitCtx,
+  OnBlockFinalizeCtx
+} from "./context";
 
 export class Entry {
   private readonly blockAspect: IAspectBlock;
@@ -62,16 +76,16 @@ export class Entry {
       switch (method) {
         case 'onContractBinding':
           arg = this.loadInputString(argPtr);
-          out = this.transactionAspect.onContractBinding(arg);
+          out = this.transactionAspect.onContractBinding(new StateCtx(), arg);
           return this.storeOutputBool(out);
         case 'isOwner':
           arg = this.loadInputString(argPtr);
           if (this.transactionAspect != null) {
-            out = this.transactionAspect.isOwner(arg);
+            out = this.transactionAspect.isOwner(new StateCtx(), arg);
             return this.storeOutputBool(out);
           }
 
-          out = this.blockAspect.isOwner(arg);
+          out =  this.blockAspect.isOwner(new StateCtx(), arg);
           return this.storeOutputBool(out);
       }
     }
@@ -81,45 +95,57 @@ export class Entry {
     if (this.transactionAspect) {
       switch (method) {
         case 'onTxReceive':
-          out = this.transactionAspect.onTxReceive(arg);
+          const onTxReceiveCtx = new OnTxReceiveCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.onTxReceive(onTxReceiveCtx);
           break;
         case 'onTxVerify':
-          out = this.transactionAspect.onTxVerify(arg);
+          const onTxVerifyCtx = new OnTxVerifyCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.onTxVerify(onTxVerifyCtx);
           break;
         case 'onAccountVerify':
-          out = this.transactionAspect.onAccountVerify(arg);
+          const onAccountVerifyCtx = new OnAccountVerifyCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.onAccountVerify(onAccountVerifyCtx);
           break;
         case 'onGasPayment':
-          out = this.transactionAspect.onGasPayment(arg);
+          const ctx = new OnGasPaymentCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.onGasPayment(ctx);
           break;
         case 'preTxExecute':
-          out = this.transactionAspect.preTxExecute(arg);
+          const ctx = new PreTxExecuteCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.preTxExecute(ctx);
           break;
         case 'preContractCall':
-          out = this.transactionAspect.preContractCall(arg);
+          const ctx = new PreContractCallCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.preContractCall(ctx);
           break;
         case 'postContractCall':
-          out = this.transactionAspect.postContractCall(arg);
+          const ctx = new PostContractCallCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.postContractCall(ctx);
           break;
         case 'postTxExecute':
-          out = this.transactionAspect.postTxExecute(arg);
+          const ctx = new PostTxExecuteCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.postTxExecute(ctx);
           break;
         case 'onTxCommit':
-          out = this.transactionAspect.onTxCommit(arg);
+          const ctx = new OnTxCommitCtx(arg.blockHeight, arg.tx);
+          out = this.transactionAspect.onTxCommit(ctx);
           break;
         default:
-          throw new Error('method ' + method + ' not found');
+          throw new Error("method " + method + " not found or not implemented");
       }
     } else {
       switch (method) {
         case 'onBlockInitialize':
-          out = this.blockAspect.onBlockInitialize(arg);
+          const ctx = new OnBlockInitializeCtx(arg.blockHeight, arg.tx);
+          out = this.blockAspect.onBlockInitialize(ctx);
           break;
         case 'onBlockFinalize':
-          out = this.blockAspect.onBlockFinalize(arg);
+          const ctx = new OnBlockFinalizeCtx(arg.blockHeight, arg.tx);
+          out = this.blockAspect.onBlockFinalize(ctx);
+
           break;
         default:
-          throw new Error('method ' + method + ' not found');
+          throw new Error("method " + method + " not found or not implemented");
       }
     }
 

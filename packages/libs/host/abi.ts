@@ -2,17 +2,17 @@ import { AString, AUint8Array, BigInt } from '../message';
 import { ValueKind, Values, Value } from '../proto';
 import { utils } from '../common';
 import { Protobuf } from 'as-proto/assembly';
+import {ethereum} from "../abi/ethereum/coders";
 
 declare namespace __Abi__ {
   function encodeParams(types: i32, val: i32): i32;
-
   function decodeParams(types: i32, data: i32): i32;
 }
 
 export class Abi {
   // encodeString encode a string and return the hex of encoded
   static encodeString(val: string): Uint8Array {
-    let types = 'string';
+    let types = "string";
     let typeValue = new TypeValue();
     typeValue.fromString(val);
     let values = new Values(new Array<Value>(1));
@@ -21,7 +21,7 @@ export class Abi {
   }
 
   static encodeInt32(val: i32): Uint8Array {
-    let types = 'int32';
+    let types = "int32";
     let typeValue = new TypeValue();
     typeValue.fromInt32(val);
     let values = new Values(new Array<Value>(1));
@@ -30,7 +30,7 @@ export class Abi {
   }
 
   static encodeInt64(val: i32): Uint8Array {
-    let types = 'int64';
+    let types = "int64";
     let typeValue = new TypeValue();
     typeValue.fromInt64(val);
     let values = new Values(new Array<Value>(1));
@@ -39,7 +39,7 @@ export class Abi {
   }
 
   static encodeUInt32(val: u32): Uint8Array {
-    let types = 'uint32';
+    let types = "uint32";
     let typeValue = new TypeValue();
     typeValue.fromUint32(val);
     let values = new Values(new Array<Value>(1));
@@ -48,7 +48,7 @@ export class Abi {
   }
 
   static encodeUInt64(val: i32): Uint8Array {
-    let types = 'uint64';
+    let types = "uint64";
     let typeValue = new TypeValue();
     typeValue.fromUint64(val);
     let values = new Values(new Array<Value>(1));
@@ -57,7 +57,7 @@ export class Abi {
   }
 
   static encodeBool(val: bool): Uint8Array {
-    let types = 'bool';
+    let types = "bool";
     let typeValue = new TypeValue();
     typeValue.fromBool(val);
     let values = new Values(new Array<Value>(1));
@@ -66,7 +66,7 @@ export class Abi {
   }
 
   static encodeBigInit(val: BigInt): Uint8Array {
-    let types = 'uint256';
+    let types = "uint256";
     let typeValue = new TypeValue();
     typeValue.fromBigInt(val);
     let values = new Values(new Array<Value>(1));
@@ -97,43 +97,48 @@ export class Abi {
     const output = Protobuf.decode<Values>(ret.get(), Values.decode);
     return output;
   }
+
+  static encodeAddress(val: ethereum.Address): Uint8Array {
+    let s = ethereum.abiEncode("", [val])
+    return utils.hexToUint8Array(s);
+  }
 }
 
 export class TypeValue {
   fromInt16(input: i16): void {
     let num = BigInt.fromInt16(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.INT16, data);
+    this.value = new Value(ValueKind.INT16, data)
   }
 
   fromInt32(input: i32): void {
     let num = BigInt.fromInt32(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.INT32, data);
+    this.value = new Value(ValueKind.INT32, data)
   }
 
   fromInt64(input: i64): void {
     let num = BigInt.fromInt64(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.INT64, data);
+    this.value = new Value(ValueKind.INT64, data)
   }
 
   fromUint16(input: u16): void {
     let num = BigInt.fromUInt16(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.UINT16, data);
+    this.value = new Value(ValueKind.UINT16, data)
   }
 
   fromUint32(input: u32): void {
     let num = BigInt.fromUInt32(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.UINT32, data);
+    this.value = new Value(ValueKind.UINT32, data)
   }
 
   fromUint64(input: u64): void {
     let num = BigInt.fromUInt64(input).toString(16);
     let data = utils.hexToUint8Array(num);
-    this.value = new Value(ValueKind.UINT64, data);
+    this.value = new Value(ValueKind.UINT64, data)
   }
 
   fromBigInt(input: BigInt): void {
@@ -144,17 +149,17 @@ export class TypeValue {
   fromBool(input: bool): void {
     let data = new Uint8Array(1);
     data[0] = 1;
-    this.value = new Value(ValueKind.BOOL, data);
+    this.value = new Value(ValueKind.BOOL, data)
   }
 
   fromString(input: string): void {
-    this.value = new Value(ValueKind.STRING);
+    this.value = new Value(ValueKind.STRING)
     this.value.data = utils.stringToUint8Array(input);
   }
 
   toString(): string {
     if (this.value.kind != ValueKind.STRING) {
-      return '';
+      return "";
     }
     return utils.uint8ArrayToString(this.value.data);
   }

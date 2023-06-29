@@ -1,29 +1,30 @@
-import { ABool, AI32, AString, AUint8Array, BigInt } from '../message';
-import { BlockOutput, EthBlock, ScheduleMsg, StateChanges } from '../proto';
-import { Protobuf } from 'as-proto/assembly';
+import {  BlockOutput, EthBlock, StateChanges,ScheduleMsg } from "../proto";
+import { Protobuf } from "as-proto/assembly";
+import { BigInt,ABool, AI32, AString, AUint8Array} from "../message";
+
 
 declare namespace __HostApi__ {
-  function lastBlock(): i32;
+  function lastBlock(): i32
 
-  function currentBlock(): i32;
+  function currentBlock(): i32
 
-  function currentBalance(addr: i32): i32;
+  function currentBalance(addr: i32): i32
 
-  function localCall(ptr: i32): i32;
+  function localCall(ptr: i32): i32
 
-  function getProperty(ptr: i32): i32;
+  function getProperty(ptr: i32): i32
 
-  function scheduleTx(ptr: i32): i32;
+  function scheduleTx(ptr: i32): i32
 
-  function setContext(keyPtr: i32, valuePtr: i32): bool;
+  function setContext(keyPtr: i32, valuePtr: i32): bool
 
-  function getContext(ptr: i32): i32;
+  function getContext(ptr: i32): i32
 
-  function setAspectState(keyPtr: i32, valuePtr: i32): bool;
+  function setAspectState(keyPtr: i32, valuePtr: i32): bool
 
-  function getAspectState(ptr: i32): i32;
+  function getAspectState(ptr: i32): i32
 
-  function getStateChanges(addr: i32, variable: i32, key: i32): i32;
+  function getStateChanges(addr: i32, variable: i32, key: i32): i32
 
   function hash(hasher: i32, dataPtr: i32): i32;
 }

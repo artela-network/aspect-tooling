@@ -1,21 +1,37 @@
-import { AspectInput, AspectOutput } from '../proto';
+import {  AspectOutput } from '../proto';
+
+import {
+  StateCtx,
+  OnTxReceiveCtx,
+  OnBlockInitializeCtx,
+  OnTxVerifyCtx,
+  OnAccountVerifyCtx,
+  OnGasPaymentCtx,
+  PreTxExecuteCtx,
+  PreContractCallCtx,
+  PostContractCallCtx,
+  PostTxExecuteCtx,
+  OnTxCommitCtx,
+  OnBlockFinalizeCtx
+} from "../entry/context";
 
 export interface IAspectBlock {
-  isOwner(sender: string): bool;
-  onBlockInitialize(arg: AspectInput): AspectOutput;
-  onBlockFinalize(arg: AspectInput): AspectOutput;
+  isOwner(ctx: StateCtx, sender: string): bool
+  onBlockInitialize(ctx: OnBlockInitializeCtx): AspectOutput
+  onBlockFinalize(ctx: OnBlockFinalizeCtx): AspectOutput
 }
 
 export interface IAspectTransaction {
-  isOwner(sender: string): bool;
-  onContractBinding(contractAddr: string): bool;
-  onTxReceive(arg: AspectInput): AspectOutput;
-  onTxVerify(arg: AspectInput): AspectOutput;
-  onAccountVerify(arg: AspectInput): AspectOutput;
-  onGasPayment(arg: AspectInput): AspectOutput;
-  preTxExecute(arg: AspectInput): AspectOutput;
-  preContractCall(arg: AspectInput): AspectOutput;
-  postContractCall(arg: AspectInput): AspectOutput;
-  postTxExecute(arg: AspectInput): AspectOutput;
-  onTxCommit(arg: AspectInput): AspectOutput;
+  isOwner(ctx: StateCtx, sender: string): bool
+  onContractBinding(ctx: StateCtx, contractAddr: string): bool
+  onTxReceive(ctx: OnTxReceiveCtx): AspectOutput
+  onTxVerify(ctx: OnTxVerifyCtx): AspectOutput
+  onAccountVerify(ctx: OnAccountVerifyCtx): AspectOutput
+  onGasPayment(ctx: OnGasPaymentCtx): AspectOutput
+  preTxExecute(ctx: PreTxExecuteCtx): AspectOutput
+  preContractCall(ctx: PreContractCallCtx): AspectOutput
+  postContractCall(ctx: PostContractCallCtx): AspectOutput
+  postTxExecute(ctx: PostTxExecuteCtx): AspectOutput
+  onTxCommit(ctx: OnTxCommitCtx): AspectOutput
 }
+
