@@ -81,3 +81,6 @@ oclif.manifest.json
 tmp
 
 *.wasm
+.idea
+proto/aspect
+proto/scheduler
