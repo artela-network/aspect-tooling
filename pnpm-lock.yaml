@@ -2786,7 +2786,7 @@ packages:
       grapheme-splitter: 1.0.4
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
-      semver: 7.5.3
+      semver: 7.5.2
       tsutils: 3.21.0(typescript@5.1.3)
       typescript: 5.1.3
     transitivePeerDependencies:
@@ -2928,7 +2928,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.5.3
+      semver: 7.5.2
       tsutils: 3.21.0(typescript@5.1.3)
       typescript: 5.1.3
     transitivePeerDependencies:
@@ -3273,8 +3273,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /aws-sdk@2.1407.0:
-    resolution: {integrity: sha512-J02Cjciw+5p9zR7923rfH+UGDEmbg72YRAZISEahzuWPf/DwMAyIrC5B1cMMq3KrV+KVsRtEY5LujVCFKwB8Yw==}
+  /aws-sdk@2.1408.0:
+    resolution: {integrity: sha512-goz0xgpRVm4pH89CSUvw2S4ed+XTnGF9/2x/nE3Rl6JEHiiz9wz430RhESTo6AbDTXrONUOUcwwG+U0G2ev7ow==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       buffer: 4.9.2
@@ -4772,7 +4772,7 @@ packages:
       is-core-module: 2.12.1
       minimatch: 3.1.2
       resolve: 1.22.2
-      semver: 7.5.3
+      semver: 7.5.2
     dev: true
 
   /eslint-plugin-n@15.7.0(eslint@8.42.0):
@@ -4881,7 +4881,7 @@ packages:
       regexp-tree: 0.1.27
       regjsparser: 0.9.1
       safe-regex: 2.1.1
-      semver: 7.5.3
+      semver: 7.5.2
       strip-indent: 3.0.0
     dev: true
 
@@ -6677,7 +6677,7 @@ packages:
       jest-util: 29.5.0
       natural-compare: 1.4.0
       pretty-format: 29.5.0
-      semver: 7.5.3
+      semver: 7.5.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6843,7 +6843,7 @@ packages:
       acorn: 8.9.0
       eslint-visitor-keys: 3.4.1
       espree: 9.5.2
-      semver: 7.5.3
+      semver: 7.5.2
     dev: true
 
   /jsonfile@4.0.0:
@@ -8173,7 +8173,7 @@ packages:
       '@oclif/plugin-help': 5.2.10(@types/node@20.3.1)(typescript@5.1.3)
       '@oclif/plugin-not-found': 2.3.26(@types/node@20.3.1)(typescript@5.1.3)
       '@oclif/plugin-warn-if-update-available': 2.0.40(@types/node@20.3.1)(typescript@5.1.3)
-      aws-sdk: 2.1407.0
+      aws-sdk: 2.1408.0
       concurrently: 7.6.0
       debug: 4.3.4(supports-color@8.1.1)
       find-yarn-workspace-root: 2.0.0
@@ -8807,8 +8807,8 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /readable-stream@4.4.0:
-    resolution: {integrity: sha512-kDMOq0qLtxV9f/SQv522h8cxZBqNZXuXNyjyezmfAAuribMyVXziljpQ/uQhfE1XLg2/TLTW2DsnoE4VAi/krg==}
+  /readable-stream@4.4.1:
+    resolution: {integrity: sha512-llAHX9QC25bz5RPIoTeJxPaA/hgryaldValRhVZ2fK9bzbmFiscpz8fw6iBTvJfAk1w4FC1KXQme/nO7fbKyKg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       abort-controller: 3.0.0
@@ -10464,7 +10464,7 @@ packages:
       pacote: 12.0.3
       preferred-pm: 3.0.3
       pretty-bytes: 5.6.0
-      readable-stream: 4.4.0
+      readable-stream: 4.4.1
       semver: 7.5.3
       slash: 3.0.0
       strip-ansi: 6.0.1
