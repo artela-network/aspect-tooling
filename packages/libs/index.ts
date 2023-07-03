@@ -10,6 +10,7 @@ export * from "./entry";
 export * from "./host";
 export * from "./scheduler";
 export * from "./proto";
+export * from "./message";
 
 export function allocate(size: i32): i32 {
   return utils.alloc(size);
