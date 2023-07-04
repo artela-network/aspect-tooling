@@ -12,11 +12,10 @@ import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
 import {HoneyPotStoreTmpl} from "../tmpl/assembly/aspect/honeypot";
 import {DeployTmpl} from "../tmpl/scripts/deploy";
-
+import {ReadMeTmpl} from "../tmpl/readme";
 
 
 export default class Init extends Command {
-
 
     static description = 'init aspect project in a directory.'
     static flags = {
@@ -33,12 +32,17 @@ export default class Init extends Command {
         this.ensureContractDirectory(flags.dir);
         this.ensureTestsDirectory(flags.dir);
         this.ensureAsconfigJson(flags.dir)
-
         //package.json
         this.ensurePackageJson(flags.dir);
-
+        //readme.md
+        this.ensureReadme(flags.dir)
     }
-
+    ensureReadme(dir: string) {
+        const readmePath = path.join(dir, "README.md");
+        if (!fs.existsSync(readmePath)) {
+            fs.writeFileSync(readmePath, ReadMeTmpl)
+        }
+    }
 
     ensureTestsDirectory(dir: string) {
         const projectDir = path.resolve(dir);
