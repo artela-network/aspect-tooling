@@ -82,5 +82,5 @@ tmp
 
 *.wasm
 .idea
-proto/aspect
-proto/scheduler
+proto/aspect/*
+proto/scheduler/*
