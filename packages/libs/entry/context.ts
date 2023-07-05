@@ -1,4 +1,4 @@
-import { AspTransaction, EthBlock ,StateChanges,ScheduleMsg} from "../proto";
+import {AspTransaction, EthBlock, StateChanges, ScheduleMsg, InnerTransaction} from "../proto";
 import { Context } from "../host";
 import { utils } from "../common";
 import { BigInt } from "../message";
@@ -361,11 +361,13 @@ export class PreContractCallCtx implements TraceCtx {
     }
 
     blockHeight: i64;
-    tx: AspTransaction | null;
+    originalTx: AspTransaction | null;
+    currInnerTx:InnerTransaction | null ;
 
-    constructor(blockHeight: i64, tx: AspTransaction | null) {
+    constructor(blockHeight: i64, tx: AspTransaction | null,innerTx :InnerTransaction | null) {
         this.blockHeight = blockHeight;
-        this.tx = tx;
+        this.originalTx = tx;
+        this.currInnerTx=innerTx;
     };
 }
 
@@ -411,11 +413,13 @@ export class PostContractCallCtx implements TraceCtx {
     }
 
     blockHeight: i64;
-    tx: AspTransaction | null;
+    originalTx: AspTransaction | null;
+    currInnerTx:InnerTransaction | null ;
 
-    constructor(blockHeight: i64, tx: AspTransaction | null) {
+    constructor(blockHeight: i64, tx: AspTransaction | null,currInnerTx:InnerTransaction | null) {
         this.blockHeight = blockHeight;
-        this.tx = tx;
+        this.originalTx = tx;
+        this.currInnerTx=currInnerTx;
     };
 }
 
