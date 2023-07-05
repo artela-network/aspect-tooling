@@ -24,7 +24,8 @@ class ContextValue {
     asU32(): u32 {return BigInt.fromString(this.val).toUInt32();}
     asI64(): i64 {return BigInt.fromString(this.val).toInt64();}
     asU64(): u64 {return BigInt.fromString(this.val).toUInt64();}
-
+    asString(): string {return this.val;}
+    asBool(): bool {return (this.val.toLowerCase() === 'true');}
 }
 
 export class StateCtx {
