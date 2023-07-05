@@ -268,13 +268,13 @@ export default class Init extends Command {
                 updated = true;
             }
             if (!devDependencies["@artela/aspect-tool"]) {
-                devDependencies["@artela/aspect-tool"] = "^0.0.7";
+                devDependencies["@artela/aspect-tool"] = "^0.0.8";
                 pkg["devDependencies"] = devDependencies;
                 updated = true;
             }
             const dependencies = pkg["dependencies"] || {};
             if (!dependencies["@artela/aspect-libs"]) {
-                dependencies["@artela/aspect-libs"] = "^0.0.7";
+                dependencies["@artela/aspect-libs"] = "^0.0.8";
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
