@@ -25,14 +25,7 @@ export type StorageLayout = {
 export default class Generator {
     private layoutPath: string;
     private tsPath: string;
-
-    public refLib = `import { Protobuf } from 'as-proto/assembly';
-import { Abi } from "../lib/host";
-import { State } from "../lib/states";
-import { utils } from "../lib/utils";
-import { BigInt } from "../lib/types";
-import { TraceCtx } from "../lib/context";
-import { ethereum } from "../lib/abi/ethereum/coders";\n`;
+    public refLib = `import { Abi ,State,utils,BigInt,TraceCtx,ethereum} from "@artela/aspect-libs";\n`;
 
     public endBracket  = "}\n";
     public argsTemplage = `ctx: TraceCtx;
@@ -458,6 +451,6 @@ import { ethereum } from "../lib/abi/ethereum/coders";\n`;
     
           return after.sub(before);
         }
-    }`;
+    }\n`;
     }
 }
