@@ -19,6 +19,7 @@
   ],
   "scripts": {
     "build": "tsc -b tsconfig.build.json && oclif manifest && oclif readme",
+    "pub": "npm run build && npm publish",
     "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz && node scripts/rename-tarballs.mjs",
     "format": "prettier --write -c **/*.ts",
     "type-check": "tsc --noEmit"

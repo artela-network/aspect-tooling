@@ -19,8 +19,8 @@ const attackOptions = {
     gas: 4000000
 };
 
-const HoneyPotBin = fs.readFileSync('./build/contract/HoneyPot.bin', "utf-8");
-const HoneyPotTarget = fs.readFileSync('./build/contract/HoneyPot.abi', "utf-8")
+const HoneyPotBin = fs.readFileSync('./build/contract/contracts_HoneyPot_sol_HoneyPot.bin', "utf-8");
+const HoneyPotTarget = fs.readFileSync('./build/contract/contracts_HoneyPot_sol_HoneyPot.abi', "utf-8")
 const HoneyPotAbi = JSON.parse(HoneyPotTarget);
 const honeypotOptions = {
     data: HoneyPotBin,
