@@ -36,7 +36,7 @@ export default class Generate extends Command {
                 tracer.append(tracer.refLib, 0);
                 // 2.1 append namespace start
                 tracer.append(tracer.getNameSpace(util.getStrAfterLastColon(items[0].contract)), 0);
-
+                tracer.append(tracer.getSysBalanceClass(), 1);
 
                 // ----- 3.1 Loop to handle multi params start ------
                 items.forEach(function (item) {
