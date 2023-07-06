@@ -1,6 +1,6 @@
 {
   "name": "@artela/aspect-libs",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "AssemblyScript library for writing Artela Aspect",
   "main": "index.ts",
   "module": "index.ts",
