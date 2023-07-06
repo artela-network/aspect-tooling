@@ -205,6 +205,10 @@ export default class Init extends Command {
 
     ensurePackageJson(dir: string) {
 
+        const toolVersion="^0.0.9";
+        const libVersion="^0.0.8";
+
+
         const packageFile = path.join(dir, "package.json");
 
         if (fs.existsSync(packageFile)) {
@@ -268,13 +272,13 @@ export default class Init extends Command {
                 updated = true;
             }
             if (!devDependencies["@artela/aspect-tool"]) {
-                devDependencies["@artela/aspect-tool"] = "^0.0.8";
+                devDependencies["@artela/aspect-tool"] = toolVersion;
                 pkg["devDependencies"] = devDependencies;
                 updated = true;
             }
             const dependencies = pkg["dependencies"] || {};
             if (!dependencies["@artela/aspect-libs"]) {
-                dependencies["@artela/aspect-libs"] = "^0.0.8";
+                dependencies["@artela/aspect-libs"] = libVersion;
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
@@ -337,7 +341,7 @@ export default class Init extends Command {
                 "author": "",
                 "license": "ISC",
                 "dependencies": {
-                    "@artela/aspect-libs": "^0.0.7",
+                    "@artela/aspect-libs": libVersion,
                     "@artela/web3": "^1.9.2",
                     "@artela/web3-atl-aspect": "^1.9.2",
                     "@artela/web3-eth-contract": "^1.9.2",
@@ -347,7 +351,7 @@ export default class Init extends Command {
                     "as-proto": "^1.3.0"
                 },
                 "devDependencies": {
-                    "@artela/aspect-tool": "^0.0.7",
+                    "@artela/aspect-tool": toolVersion,
                     "as-proto-gen": "^1.3.0",
                     "assemblyscript": "^0.27.5"
                 },
