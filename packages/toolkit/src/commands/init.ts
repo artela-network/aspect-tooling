@@ -1,8 +1,6 @@
 #!/usr/bin/env ts-node --dir ./
 
-
 import {Command, Flags} from "@oclif/core";
-
 import * as fs from "fs";
 import path from "path";
 import {AttackSolTmpl} from "../tmpl/contracts/attack";
@@ -14,6 +12,8 @@ import {HoneyPotStoreTmpl} from "../tmpl/assembly/aspect/honeypot";
 import {DeployTmpl} from "../tmpl/scripts/deploy";
 import {ReadMeTmpl} from "../tmpl/readme";
 
+const toolVersion="^0.0.19";
+const libVersion="^0.0.10";
 
 export default class Init extends Command {
 
@@ -205,8 +205,6 @@ export default class Init extends Command {
 
     ensurePackageJson(dir: string) {
 
-        const toolVersion="^0.0.17";
-        const libVersion="^0.0.10";
 
 
         const packageFile = path.join(dir, "package.json");

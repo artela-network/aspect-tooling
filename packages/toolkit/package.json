@@ -1,6 +1,6 @@
 {
   "name": "@artela/aspect-tool",
-  "version": "0.0.17",
+  "version": "0.0.19",
   "description": "Dev tool for aspect to generate libs from solidity storage layout.",
   "engines": {
     "node": ">=14"
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsc -b tsconfig.build.json && oclif manifest && oclif readme",
-    "pub": "npm run build && npm publish",
+    "publish": "npm run build && npm publish",
     "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz && node scripts/rename-tarballs.mjs",
     "format": "prettier --write -c **/*.ts",
     "type-check": "tsc --noEmit"
