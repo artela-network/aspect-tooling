@@ -8,11 +8,10 @@ import {HoneyPotSolTmpl} from "../tmpl/contracts/honeypot";
 import {HoneyPotStorageTmpl} from "../tmpl/contracts/honeypot_layout";
 import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
-import {HoneyPotStoreTmpl} from "../tmpl/assembly/aspect/honeypot";
 import {DeployTmpl} from "../tmpl/scripts/deploy";
 import {ReadMeTmpl} from "../tmpl/readme";
 
-const toolVersion="^0.0.19";
+const toolVersion="^0.0.21";
 const libVersion="^0.0.10";
 
 export default class Init extends Command {
@@ -180,10 +179,7 @@ export default class Init extends Command {
         if (!fs.existsSync(aspectPath)) {
             fs.writeFileSync(aspectPath, AspectTmpl)
         }
-        const honeypotPath = path.join(aspectDir, "honeypot.ts");
-        if (!fs.existsSync(honeypotPath)) {
-            fs.writeFileSync(honeypotPath, HoneyPotStoreTmpl)
-        }
+
     }
 
     ensureScriptDirectory(dir: string) {
@@ -254,7 +250,12 @@ export default class Init extends Command {
                 updated = true;
             }
             if (!scripts["build-all"]) {
-                scripts["build-all"] = "npm install && npm run build-contract && npm run asbuild:release";
+                scripts["build-all"] =  "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
+            if (!scripts["gen-aspect"]) {
+                scripts["gen-aspect"] =  "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -333,7 +334,8 @@ export default class Init extends Command {
                     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
                     "start": "npx serve .",
                     "build-contract": "solc -o ./build/contract/ --via-ir --abi --bin ./contracts/*.sol  --overwrite",
-                    "build-all": "npm install && npm run build-contract && npm run asbuild:release"
+                    "build-all": "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release",
+                    "gen-aspect": "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts"
                 },
                 "keywords": [],
                 "author": "",
