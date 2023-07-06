@@ -205,7 +205,7 @@ export default class Init extends Command {
 
     ensurePackageJson(dir: string) {
 
-        const toolVersion="^0.0.9";
+        const toolVersion="^0.0.10";
         const libVersion="^0.0.9";
 
 
