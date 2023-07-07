@@ -1,5 +1,4 @@
-import Generator from './generator';
-import {StorageItem, StorageLayout} from './generator';
+import Generator, {StorageItem, StorageLayout} from './generator';
 
 export function isStringEmpty(str: string): boolean {
     return !str.trim();
@@ -94,7 +93,7 @@ export function getTypeTag(itemType: string): string {
 }
 
 export function getParamPrefix(item: StorageItem): string {
-    let contractName = getStrAfterLastColon(item.contract);
+    const contractName = getStrAfterLastColon(item.contract);
     if (isStringEmpty(contractName))
       return "";
     return contractName + "." + item.label;
@@ -106,8 +105,7 @@ export function getStructName(typeStr: string): string {
     }
     const paramType = getStrBetLastCommaAndParen(typeStr);
     if (paramType.startsWith("t_struct")) {
-        const structName = getStrBetweenColon(paramType);
-        return structName;
+        return getStrBetweenColon(paramType);
     }
     return "";
 }
@@ -164,9 +162,9 @@ export function handleBasic(className: string, item: StorageItem,
     tracer.append(tracer.getClass(className), 1+n);
     // 2 append addr and prefix
     if (isStruct) {
-        tracer.append(tracer.argsTemplageStruct ,2+n);
+        tracer.append(tracer.argsTemplateStruct ,2+n);
     } else {
-        tracer.append(tracer.argsTemplage ,2+n);
+        tracer.append(tracer.argsTemplate ,2+n);
     }
     // 3 append constructor
     if (isStruct) {
@@ -198,21 +196,21 @@ export function handleStruct(item: StorageItem, tracer: Generator,
     // 1 append class start
     tracer.append(tracer.getClass(structName), 1);
     // 2 append addr and variable and prefix
-    tracer.append(tracer.argsTemplageStruct ,2);
+    tracer.append(tracer.argsTemplateStruct ,2);
     // 3 append constructor
     tracer.append(tracer.constructorTemplateStruct ,2);
     // 4 handle params
-    members.forEach(function (item) {
+    for (const item of members) {
         tracer.append(tracer.getStructParam(item.label, structName+"."+item.label) ,2)
-    });
+    }
     // 1' append class end
     tracer.append(tracer.endBracket, 1);
 
     // 5 handle struct params to class
     tracer.append(`export namespace ${structName} {\n`, 1);
-    members.forEach(function (item) {
+    for (const item of members) {
         handleBasic(item.label, item, tracer, true, 1);
-    });
+    }
     tracer.append(tracer.endBracket, 1);
 }
 
@@ -228,16 +226,16 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         ft = getTypeTag(firstParamType);
         ff = getValueFunc(firstParamType);
         
-        let prefix = getStrAfterLastColon(item.contract) + "." + item.label;
+        const prefix = getStrAfterLastColon(item.contract) + "." + item.label;
         tracer.append(tracer.getClass(item.label), 1);
-        tracer.append(tracer.argsTemplage ,2);
+        tracer.append(tracer.argsTemplate ,2);
         tracer.append(tracer.constructorTemplate ,2);
         tracer.append(tracer.getNestedMappingValue(ft, ff, item.label, prefix), 2);
         tracer.append(tracer.endBracket, 1);
 
         tracer.append(`export namespace ${item.label} {\n`, 1);
         tracer.append(`export class Value {\n`, 2);
-        tracer.append(tracer.argsTemplageStruct ,2);
+        tracer.append(tracer.argsTemplateStruct ,2);
         tracer.append(tracer.constructorTemplateStruct ,2);
 
         tracer.append(tracer.getBeforeFuncMap(ft, ff, getTypeTag(secondParamType), 
@@ -260,7 +258,7 @@ export function handleMapping(item: StorageItem, tracer: Generator,
     // 1 append class start
     tracer.append(tracer.getClass(item.label), 1);
     // 2 append addr and prefix
-    tracer.append(tracer.argsTemplage ,2);
+    tracer.append(tracer.argsTemplate ,2);
     // 3 append constructor
     tracer.append(tracer.constructorTemplate ,2);
     // 4 handle map second param
@@ -269,13 +267,13 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         secondParamIsStruct = true;
     }
     if (secondParamIsStruct) {
-        let structName = getStructName(secondParamType);
-        let prefix = getStrAfterLastColon(item.contract) + "." + item.label;
-        tracer.append(tracer.getMappintSecondParam(structName.toLowerCase(), structName, prefix), 2);
+        const structName = getStructName(secondParamType);
+        const prefix = getStrAfterLastColon(item.contract) + "." + item.label;
+        tracer.append(tracer.getMappingSecondParam(structName.toLowerCase(), structName, prefix), 2);
         tracer.append(tracer.endBracket, 1);
         // if struct has not been hadle
         if (!structNameSet.has(structName)) {
-            let members = obj.types[getStrBetLastCommaAndParen(item.type)].members as StorageItem[];
+            const members = obj.types[getStrBetLastCommaAndParen(item.type)].members as StorageItem[];
             structNameSet.add(structName);
             handleStruct(item, tracer, structName, members);
         }

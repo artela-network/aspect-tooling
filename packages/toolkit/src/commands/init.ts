@@ -3,16 +3,14 @@
 import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import path from "path";
-import {AttackSolTmpl} from "../tmpl/contracts/attack";
-import {HoneyPotSolTmpl} from "../tmpl/contracts/honeypot";
-import {HoneyPotStorageTmpl} from "../tmpl/contracts/honeypot_layout";
+import {CounterSolTmpl} from "../tmpl/contracts/counter";
 import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
-import {DeployTmpl} from "../tmpl/scripts/deploy";
+import {RunTmpl} from "../tmpl/scripts/run";
 import {ReadMeTmpl} from "../tmpl/readme";
 
-const toolVersion="^0.0.24";
-const libVersion="^0.0.11";
+const toolVersion = "^0.0.25";
+const libVersion = "^0.0.12";
 
 export default class Init extends Command {
 
@@ -36,6 +34,7 @@ export default class Init extends Command {
         //readme.md
         this.ensureReadme(flags.dir)
     }
+
     ensureReadme(dir: string) {
         const readmePath = path.join(dir, "README.md");
         if (!fs.existsSync(readmePath)) {
@@ -130,17 +129,9 @@ export default class Init extends Command {
             fs.mkdirSync(contractsDir);
             this.log("  Created: " + contractsDir);
         }
-        const attackPath = path.join(contractsDir, "attack.sol");
-        if (!fs.existsSync(attackPath)) {
-            fs.writeFileSync(attackPath, AttackSolTmpl)
-        }
-        const honeypotPath = path.join(contractsDir, "honeypot.sol");
-        if (!fs.existsSync(honeypotPath)) {
-            fs.writeFileSync(honeypotPath, HoneyPotSolTmpl)
-        }
-        const honeypotJsonPath = path.join(contractsDir, "honeypot_layout.json");
-        if (!fs.existsSync(honeypotJsonPath)) {
-            fs.writeFileSync(honeypotJsonPath, HoneyPotStorageTmpl)
+        const counterPath = path.join(contractsDir, "counter.sol");
+        if (!fs.existsSync(counterPath)) {
+            fs.writeFileSync(counterPath, CounterSolTmpl)
         }
     }
 
@@ -163,7 +154,8 @@ export default class Init extends Command {
         }
 
     }
-    ensureAspectDirectory(dir: string){
+
+    ensureAspectDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const aspectDir = path.join(projectDir, "aspect");
 
@@ -193,16 +185,13 @@ export default class Init extends Command {
             this.log("  Created: " + scriptDir);
         }
 
-        const deployPath = path.join(scriptDir, "deploy.cjs");
-        if (!fs.existsSync(deployPath)) {
-            fs.writeFileSync(deployPath, DeployTmpl)
+        const runPath = path.join(scriptDir, "run.cjs");
+        if (!fs.existsSync(runPath)) {
+            fs.writeFileSync(runPath, RunTmpl)
         }
     }
 
     ensurePackageJson(dir: string) {
-
-
-
         const packageFile = path.join(dir, "package.json");
 
         if (fs.existsSync(packageFile)) {
@@ -221,10 +210,10 @@ export default class Init extends Command {
                     "types": "./build/release.d.ts"
                 }
             };
-            if (!scripts["asbuild"]) {
+            if (!scripts["aspect:build"]) {
                 scripts["asbuild:debug"] = "asc assembly/index.ts --target debug";
                 scripts["asbuild:release"] = "asc assembly/index.ts --target release";
-                scripts["asbuild"] = "npm run asbuild:debug && npm run asbuild:release";
+                scripts["aspect:build"] = "npm run asbuild:debug && npm run asbuild:release";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -234,28 +223,23 @@ export default class Init extends Command {
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["start"]) {
-                scripts["start"] = "npx serve .";
+            if (!scripts["aspect:run"]) {
+                scripts["aspect:run"] = "npm run build-all && node scripts/run.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["deploy"]) {
-                scripts["deploy"] = "npm run build-all && node scripts/deploy.cjs";
+            if (!scripts["build:contract"]) {
+                scripts["build:contract"] = "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build-contract"]) {
-                scripts["build-contract"] = "solc -o ./build/contract/ --via-ir --abi --bin ./contracts/*.sol  --overwrite";
+            if (!scripts["build:all"]) {
+                scripts["build:all"] = "npm install && npm run aspect:gen && npm run build:contract && npm run aspect:build";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build-all"]) {
-                scripts["build-all"] =  "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release";
-                pkg["scripts"] = scripts;
-                updated = true;
-            }
-            if (!scripts["gen-aspect"]) {
-                scripts["gen-aspect"] =  "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts";
+            if (!scripts["aspect:gen"]) {
+                scripts["aspect:gen"] = "aspect-tool generate -i ./build/contract -o ./assembly/aspect";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -306,11 +290,6 @@ export default class Init extends Command {
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
-            if (!dependencies["@openzeppelin/contracts"]) {
-                dependencies["@openzeppelin/contracts"] = "^4.9.2";
-                pkg["dependencies"] = dependencies;
-                updated = true;
-            }
             if (!dependencies["as-proto"]) {
                 dependencies["as-proto"] = "^1.3.0";
                 pkg["dependencies"] = dependencies;
@@ -327,15 +306,13 @@ export default class Init extends Command {
                 "version": "1.0.0",
                 "main": "index.js",
                 "scripts": {
-                    "deploy": "npm run build-all && node scripts/deploy.cjs",
-                    "test": "node tests",
+                    "aspect:run": "npm run build-all && node scripts/run.cjs",
+                    "aspect:build": "npm run asbuild:debug && npm run asbuild:release",
+                    "aspect:gen": "aspect-tool generate -i ./build/contract -o ./assembly/aspect",
                     "asbuild:debug": "asc assembly/index.ts --target debug",
                     "asbuild:release": "asc assembly/index.ts --target release",
-                    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-                    "start": "npx serve .",
-                    "build-contract": "solc -o ./build/contract/ --via-ir --abi --bin ./contracts/*.sol  --overwrite",
-                    "build-all": "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release",
-                    "gen-aspect": "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts"
+                    "build:contract": "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite",
+                    "build:all": "npm install && npm run aspect:gen && npm run build:contract && npm run aspect:build"
                 },
                 "keywords": [],
                 "author": "",
@@ -347,7 +324,6 @@ export default class Init extends Command {
                     "@artela/web3-eth-contract": "^1.9.2",
                     "@artela/web3-utils": "^1.9.1",
                     "@assemblyscript/loader": "^0.27.5",
-                    "@openzeppelin/contracts": "^4.9.2",
                     "as-proto": "^1.3.0"
                 },
                 "devDependencies": {
