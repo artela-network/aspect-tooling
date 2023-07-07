@@ -184,10 +184,10 @@ export function handleBasic(className: string, item: StorageItem,
     tracer.append(tracer.getLatestFunc(getTypeTag(item.type), 
         getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
     // 7 append diff func (only for number type)
-    if (isNumber(item.type)) {
-        tracer.append(tracer.getDiffFunc(getTypeTag(item.type), 
-        getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
-    }
+    // if (isNumber(item.type)) {
+    //     tracer.append(tracer.getDiffFunc(getTypeTag(item.type), 
+    //     getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
+    // }
     
     // 1' append class end
     tracer.append(tracer.endBracket, 1+n);
@@ -235,7 +235,7 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         tracer.append(tracer.getNestedMappingValue(ft, ff, item.label, prefix), 2);
         tracer.append(tracer.endBracket, 1);
 
-        tracer.append(`export namespace ${item.label} {\n`, 1);
+        tracer.append(`export namespace ${item.label}State {\n`, 1);
         tracer.append(`export class Value {\n`, 2);
         tracer.append(tracer.argsTemplageStruct ,2);
         tracer.append(tracer.constructorTemplateStruct ,2);
@@ -246,10 +246,12 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
         tracer.append(tracer.getLatestFuncMap(ft, ff, getTypeTag(secondParamType), 
         "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        if (isNumber(secondParamType)) {
-            tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
-            "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        }
+        tracer.append(tracer.getIsExistFuncMap(ft, ff, "this.variable") ,2);
+    
+        // if (isNumber(secondParamType)) {
+        //     tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
+        //     "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
+        // }
 
         tracer.append(tracer.endBracket, 2);
         tracer.append(tracer.endBracket, 1);
@@ -287,11 +289,12 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         // 4.3 append lastest func
         tracer.append(tracer.getLatestFuncMap(ft, ff, getTypeTag(secondParamType), 
         "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
+        tracer.append(tracer.getIsExistFuncMap(ft, ff, "\""+getParamPrefix(item)+"\"") ,2);
         // 4.4 append diff func (only for number type)
-        if (isNumber(secondParamType)) {
-            tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
-            "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        }
+        // if (isNumber(secondParamType)) {
+        //     tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
+        //     "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
+        // }
         // 1' append class end
         tracer.append(tracer.endBracket, 1);
     }      

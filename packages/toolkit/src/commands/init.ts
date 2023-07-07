@@ -11,8 +11,8 @@ import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
 import {DeployTmpl} from "../tmpl/scripts/deploy";
 import {ReadMeTmpl} from "../tmpl/readme";
 
-const toolVersion="^0.0.21";
-const libVersion="^0.0.10";
+const toolVersion="^0.0.24";
+const libVersion="^0.0.11";
 
 export default class Init extends Command {
 

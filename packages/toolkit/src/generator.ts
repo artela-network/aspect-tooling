@@ -103,7 +103,7 @@ export default class Generator {
           let value = BigInt.fromString(valueHex, 16)${param5};`;
         }
         let message: string = 
-    `public before(): State<${param1}> | null {
+    `public first(): State<${param1}> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -134,7 +134,7 @@ export default class Generator {
           let value = BigInt.fromString(valueHex, 16)${param5};`;
         }
         let message: string = 
-    `public changes(): Array<State<${param1}>> | null {
+    `public all(): Array<State<${param1}>> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -169,7 +169,7 @@ export default class Generator {
           let value = BigInt.fromString(valueHex, 16)${param5};`;
         }
         let message: string = 
-    `public latest(): State<${param1}> | null {
+    `public last(): State<${param1}> | null {
       let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
       if (changes.all.length == 0) {
           return null;
@@ -237,7 +237,7 @@ export default class Generator {
         let value = BigInt.fromString(valueHex, 16)${param5};`;
       }
       let message: string = 
-  `public before(key: ${ft}): State<${param1}> | null {
+  `public first(key: ${ft}): State<${param1}> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -266,7 +266,7 @@ export default class Generator {
         let value = BigInt.fromString(valueHex, 16)${param5};`;
       }
       let message: string = 
-  `public changes(key: ${ft}): Array<State<${param1}>> | null {
+  `public all(key: ${ft}): Array<State<${param1}>> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -299,7 +299,7 @@ export default class Generator {
         let value = BigInt.fromString(valueHex, 16)${param5};`;
       }
       let message: string = 
-  `public latest(key: ${ft}): State<${param1}> | null {
+  `public last(key: ${ft}): State<${param1}> | null {
     let encoded = Abi.encode${ff}(key);
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
     if (changes.all.length == 0) {
@@ -310,6 +310,19 @@ export default class Generator {
     let account = changes.all[index].account;
     ${param4}
     return new State(account, value);
+  }\n`;
+      return message;
+  }
+
+  getIsExistFuncMap(ft: string, ff: string, paramPrefix: string): string {
+      let message: string = 
+  `public isExist(key: ${ft}): boolean {
+    let encoded = Abi.encode${ff}(key);
+    let changes = this.ctx.getStateChanges(this.addr, ${paramPrefix}, utils.concatUint8Arrays(this.prefix, encoded));
+    if (changes.all.length == 0) {
+        return false;
+    }
+    return true;
   }\n`;
       return message;
   }
@@ -396,7 +409,7 @@ export default class Generator {
           this.addr = addr;
           this.prefix = prefix;
         }
-        public before(): State<BigInt> | null {
+        public first(): State<BigInt> | null {
           let changes = this.ctx.getStateChanges(this.addr, ".balance", this.prefix);
           if (changes.all.length == 0) {
             return null;
@@ -408,7 +421,7 @@ export default class Generator {
           return new State(account, value);
         }
     
-        public changes(): Array<State<BigInt>> | null {
+        public all(): Array<State<BigInt>> | null {
           let changes = this.ctx.getStateChanges(this.addr, ".balance", this.prefix);
           if (changes.all.length == 0) {
             return null;
@@ -424,7 +437,7 @@ export default class Generator {
           return res;
         }
     
-        public latest(): State<BigInt> | null {
+        public last(): State<BigInt> | null {
           let changes = this.ctx.getStateChanges(this.addr, ".balance", this.prefix);
           if (changes.all.length == 0) {
             return null;
