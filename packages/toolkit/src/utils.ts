@@ -235,7 +235,7 @@ export function handleMapping(item: StorageItem, tracer: Generator,
         tracer.append(tracer.getNestedMappingValue(ft, ff, item.label, prefix), 2);
         tracer.append(tracer.endBracket, 1);
 
-        tracer.append(`export namespace ${item.label}State {\n`, 1);
+        tracer.append(`export namespace ${item.label} {\n`, 1);
         tracer.append(`export class Value {\n`, 2);
         tracer.append(tracer.argsTemplageStruct ,2);
         tracer.append(tracer.constructorTemplateStruct ,2);

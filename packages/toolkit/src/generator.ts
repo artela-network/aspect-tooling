@@ -77,7 +77,7 @@ export default class Generator {
 
     getNameSpace(contract: string): string {
       const contractName: string = contract;
-      return `export namespace ${contractName} {\n`;
+      return `export namespace ${contractName}State {\n`;
     }
 
     getClass(arg: string): string {
