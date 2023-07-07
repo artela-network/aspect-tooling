@@ -449,21 +449,6 @@ export default class Generator {
           let value = BigInt.fromString(valueHex, 16);
           return new State(account, value);
         }
-    
-        public diff(): BigInt {
-          let changes = this.ctx.getStateChanges(this.addr, ".balance", this.prefix);
-          if (changes.all.length < 2) {
-            return BigInt.ZERO;
-          }
-    
-          let beforeHex = utils.uint8ArrayToHex(changes.all[0].value);
-          let before = BigInt.fromString(beforeHex, 16);
-    
-          let afterHex = utils.uint8ArrayToHex(changes.all[changes.all.length - 1].value);
-          let after = BigInt.fromString(afterHex, 16);
-    
-          return after.sub(before);
-        }
     }\n`;
     }
 }
