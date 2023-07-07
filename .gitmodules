@@ -1,4 +1,4 @@
 [submodule "aspect-sdk"]
 	path = aspect-sdk
 	url = https://github.com/artela-network/artelasdk.git
-	branch = 23003-alpha3
+	tag = v0.3.1-alpha
