@@ -169,7 +169,7 @@ export default class Generator {
         let value = BigInt.fromString(valueHex, 16)${param5};`;
       }
       let message: string = 
-  `public now(): State<${param1}> | null {
+  `public current(): State<${param1}> | null {
     let changes = this.ctx.getStateChanges(this.addr, ${param2}, this.prefix);
     if (changes.all.length == 0) {
         return null;
@@ -299,7 +299,7 @@ getLatestFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, v
       let value = BigInt.fromString(valueHex, 16)${param5};`;
     }
     let message: string = 
-`public now(key: ${ft}): State<${param1}> | null {
+`public current(key: ${ft}): State<${param1}> | null {
   let encoded = Abi.encode${ff}(key);
   let changes = this.ctx.getStateChanges(this.addr, ${param2}, utils.concatUint8Arrays(this.prefix, encoded));
   if (changes.all.length == 0) {
@@ -437,7 +437,7 @@ getDiffFuncMap(ft: string, ff: string, typeTag: string, paramPrefix: string, val
         return res;
       }
   
-      public now(): State<BigInt> | null {
+      public current(): State<BigInt> | null {
         let changes = this.ctx.getStateChanges(this.addr, ".balance", this.prefix);
         if (changes.all.length == 0) {
           return null;
