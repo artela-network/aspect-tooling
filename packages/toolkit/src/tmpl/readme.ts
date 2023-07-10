@@ -23,17 +23,21 @@ If you are not familiar with these environments, please refer to external resour
 ## build
 1. deploy aspect
     \`\`\`shell
-   npm run aspect:deploy -- --aspectAccount {account address}  --args {"gasPrice":"10000000","gas":"400000"}
+   npm run aspect:deploy -- --aspectAccount {account address}  --args '{"gasPrice":1000000010,"gas":4000000}'
     \`\`\`
-   
+    --args is optional
+      
 2. deploy contract(Optional)
     \`\`\`shell
-   npm run contract:deploy -- --account {account address}   --args {"gasPrice":"10000000","gas":"400000"}  --abi ./build/contract/xxx.abi --bytecode ./build/contract/xxx.bin
+    # build contract by asolc
+   npm run contract:build
+   npm run contract:deploy -- --account {account address}  --abi ./build/contract/xxx.abi --bytecode ./build/contract/xxx.bin  --args '{"gasPrice":1000000010,"gas":4000000}'
     \`\`\`
+   --args is optional
 
 3. bind aspect
     \`\`\`shell
    npm run contract:bind -- --contractAccount {account address}  --contractAddress {account address} --aspectId {aspect address} 
     \`\`\`
-    
+ 
 `
