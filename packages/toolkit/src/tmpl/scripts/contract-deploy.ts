@@ -9,7 +9,7 @@ const yargs = require('yargs/yargs');
 // parse args
 const argv = yargs(process.argv.slice(2)).string('account').string('gasPrice').argv;
 const bytecode = fs.readFileSync(argv.bytecode, "utf-8").toString();
-const abi = fs.readFileSync(argv.abi, "utf-8").toString();
+const abi = JSON.parse(fs.readFileSync(argv.abi, "utf-8").toString());
 const args = JSON.parse(fs.readFileSync(argv.args, "utf-8").toString());
 let account = fs.readFileSync(argv.account, "utf-8").toString();
 const contractOptions = {
