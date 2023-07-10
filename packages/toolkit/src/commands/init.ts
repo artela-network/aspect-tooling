@@ -7,6 +7,7 @@ import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
 import {RunTmpl} from "../tmpl/scripts/run";
 import {ReadMeTmpl} from "../tmpl/readme";
+import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
 
 const toolVersion = "^0.0.25";
 const libVersion = "^0.0.12";
@@ -191,14 +192,19 @@ export default class Init extends Command {
             this.log("  Created: " + scriptDir);
         }
 
-        const deployPath = path.join(scriptDir, "deploy.cjs");
-        if (!fs.existsSync(deployPath)) {
-            fs.writeFileSync(deployPath, RunTmpl)
+        const aspectDeploy = path.join(scriptDir, "aspect-deploy.cjs");
+        if (!fs.existsSync(aspectDeploy)) {
+            fs.writeFileSync(aspectDeploy, RunTmpl);
+        }
+
+        const contractDeploy = path.join(scriptDir, "contract-deploy.cjs");
+        if (!fs.existsSync(contractDeploy)) {
+            fs.writeFileSync(contractDeploy, ContractDeployTmpl);
         }
 
         const bindPath = path.join(scriptDir, "bind.cjs");
         if (!fs.existsSync(bindPath)) {
-            fs.writeFileSync(bindPath, RunTmpl)
+            fs.writeFileSync(bindPath, RunTmpl);
         }
     }
 
@@ -239,8 +245,13 @@ export default class Init extends Command {
                 pkg["scripts"] = scripts;
                 updated = true;
             }
+            if (!scripts["contract:deploy"]) {
+                scripts["contract:deploy"] = "node scripts/contract-deploy.cjs";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
             if (!scripts["aspect:deploy"]) {
-                scripts["aspect:deploy"] = "npm run aspect:build && node scripts/deploy.cjs";
+                scripts["aspect:deploy"] = "npm run aspect:build && node scripts/aspect-deploy.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -322,12 +333,13 @@ export default class Init extends Command {
                 "version": "1.0.0",
                 "main": "index.js",
                 "scripts": {
-                    "aspect:deploy": "npm run aspect:build && node scripts/deploy.cjs",
+                    "aspect:deploy": "npm run aspect:build && node scripts/aspect-deploy.cjs",
                     "aspect:build": "npm run asbuild:debug && npm run asbuild:release",
                     "aspect:gen": "aspect-tool generate -i ./build/contract -o ./assembly/aspect",
                     "asbuild:debug": "asc assembly/index.ts --target debug",
                     "asbuild:release": "asc assembly/index.ts --target release",
                     "contract:bind": "node scripts/bind.cjs",
+                    "contract:deploy": "node scripts/contract-deploy.cjs",
                     "contract:build": "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
                     "build": "npm run contract:build && npm run aspect:gen && npm run aspect:build"
                 },
