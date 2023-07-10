@@ -24,6 +24,7 @@ export default class Init extends Command {
     async run() {
         const {flags} = await this.parse(Init)
         this.ensureAssemblyDirectory(flags.dir);
+        this.ensureProjectConfigJson(flags.dir);
         this.ensureTsconfigJson(flags.dir);
         this.ensureScriptDirectory(flags.dir);
         this.ensureContractDirectory(flags.dir);
@@ -88,6 +89,23 @@ export default class Init extends Command {
                 }
             }, null, 2));
             this.log("  Created: " + asconfigFile);
+        }
+    }
+
+    ensureProjectConfigJson(dir: string) {
+        this.log("- Making sure that 'aspect.config.json' is set up...");
+        const projectDir = path.resolve(dir);
+        const projectConfig = path.join(projectDir, "project.config.json");
+
+        if (fs.existsSync(projectConfig)) {
+            this.log("  Exists: " + projectConfig);
+        } else {
+            fs.writeFileSync(projectConfig, JSON.stringify({
+                node: 'http://127.0.0.1:8545',
+                accounts: [],
+                aspectId: ''
+            }, null, 2));
+            this.log("  Created: " + projectConfig);
         }
     }
 
