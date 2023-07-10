@@ -1,8 +1,8 @@
 export class State<T> {
-  constructor(account: string, change: T) {
+  constructor(account: string, value: T) {
     this.account = account;
-    this.change = change;
+    this.value = value;
   }
   account: string;
-  change: T;
+  value: T;
 }
