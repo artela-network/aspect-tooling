@@ -3,7 +3,6 @@
 import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import path from "path";
-import {CounterSolTmpl} from "../tmpl/contracts/counter";
 import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
 import {RunTmpl} from "../tmpl/scripts/run";
@@ -25,6 +24,7 @@ export default class Init extends Command {
     async run() {
         const {flags} = await this.parse(Init)
         this.ensureAssemblyDirectory(flags.dir);
+        this.ensureTsconfigJson(flags.dir);
         this.ensureScriptDirectory(flags.dir);
         this.ensureContractDirectory(flags.dir);
         this.ensureTestsDirectory(flags.dir);
@@ -91,28 +91,21 @@ export default class Init extends Command {
         }
     }
 
-    ensureTsconfigJson(dir: string, assemblyDir: string) {
-        const projectDir = path.resolve(assemblyDir);
-        const tsconfigFile = path.join(projectDir, "assembly.json");
-        let tsconfigBase = path.relative(projectDir, path.join(dir, "std", "assembly.json"));
-        if (/^(\.\.[/\\])*node_modules[/\\]assemblyscript[/\\]/.test(tsconfigBase)) {
-            // Use node resolution if the compiler is a normal dependency
-            tsconfigBase = "assemblyscript/std/assembly.json";
-        }
+    ensureTsconfigJson(rootDir: string) {
+        const tsconfigFile = path.join(rootDir, "tsconfig.json");
+        const tsconfigBase = 'assemblyscript/std/assembly';
 
-        const base = tsconfigBase.replace(/\\/g, "/");
-
-        this.log("- Making sure that 'assembly/tsconfig.json' is set up...");
+        this.log("- Making sure that 'tsconfig.json' is set up...");
         if (fs.existsSync(tsconfigFile)) {
             const tsconfig = JSON.parse(fs.readFileSync(tsconfigFile, "utf8"));
-            tsconfig["extends"] = base;
+            tsconfig["extends"] = tsconfigBase;
             fs.writeFileSync(tsconfigFile, JSON.stringify(tsconfig, null, 2));
             this.log("  Updated: " + tsconfigFile);
         } else {
             fs.writeFileSync(tsconfigFile, JSON.stringify({
-                "extends": base,
+                "extends": tsconfigBase,
                 "include": [
-                    "./**/*.ts"
+                    "./assembly/**/*.ts"
                 ]
             }, null, 2));
             this.log("  Created: " + tsconfigFile);
@@ -129,10 +122,6 @@ export default class Init extends Command {
             fs.mkdirSync(contractsDir);
             this.log("  Created: " + contractsDir);
         }
-        const counterPath = path.join(contractsDir, "counter.sol");
-        if (!fs.existsSync(counterPath)) {
-            fs.writeFileSync(counterPath, CounterSolTmpl)
-        }
     }
 
     ensureAssemblyDirectory(dir: string) {
@@ -146,7 +135,6 @@ export default class Init extends Command {
             this.log("  Created: " + assemblyDir);
         }
 
-        this.ensureTsconfigJson(dir, assemblyDir);
         this.ensureAspectDirectory(assemblyDir);
         const aspectIndexPath = path.join(assemblyDir, "index.ts");
         if (!fs.existsSync(aspectIndexPath)) {
@@ -223,18 +211,23 @@ export default class Init extends Command {
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["aspect:run"]) {
-                scripts["aspect:run"] = "npm run build-all && node scripts/run.cjs";
+            if (!scripts["contract:bind"]) {
+                scripts["contract:bind"] = "node scripts/bind.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build:contract"]) {
-                scripts["build:contract"] = "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
+            if (!scripts["aspect:deploy"]) {
+                scripts["aspect:deploy"] = "npm run aspect:build && node scripts/deploy.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build:all"]) {
-                scripts["build:all"] = "npm install && npm run aspect:gen && npm run build:contract && npm run aspect:build";
+            if (!scripts["contract:build"]) {
+                scripts["contract:build"] = "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
+            if (!scripts["build"]) {
+                scripts["build"] = "npm run contract:build && npm run aspect:gen && npm run aspect:build";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -306,13 +299,14 @@ export default class Init extends Command {
                 "version": "1.0.0",
                 "main": "index.js",
                 "scripts": {
-                    "aspect:run": "npm run build-all && node scripts/run.cjs",
+                    "aspect:deploy": "npm run aspect:build && node scripts/deploy.cjs",
                     "aspect:build": "npm run asbuild:debug && npm run asbuild:release",
                     "aspect:gen": "aspect-tool generate -i ./build/contract -o ./assembly/aspect",
                     "asbuild:debug": "asc assembly/index.ts --target debug",
                     "asbuild:release": "asc assembly/index.ts --target release",
-                    "build:contract": "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite",
-                    "build:all": "npm install && npm run aspect:gen && npm run build:contract && npm run aspect:build"
+                    "contract:bind": "node scripts/bind.cjs",
+                    "contract:build": "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
+                    "build": "npm run contract:build && npm run aspect:gen && npm run aspect:build"
                 },
                 "keywords": [],
                 "author": "",
@@ -329,7 +323,8 @@ export default class Init extends Command {
                 "devDependencies": {
                     "@artela/aspect-tool": toolVersion,
                     "as-proto-gen": "^1.3.0",
-                    "assemblyscript": "^0.27.5"
+                    "assemblyscript": "^0.27.5",
+                    "yargs": "^17.7.2"
                 },
                 "type": "module",
                 "exports": {

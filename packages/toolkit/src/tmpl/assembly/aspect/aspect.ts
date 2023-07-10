@@ -1,33 +1,33 @@
 // The entry file of your WebAssembly module.
 export const  AspectTmpl=`
-import { AspectOutput } from "@artela/aspect-libs";
-import { IAspectBlock, IAspectTransaction } from "@artela/aspect-libs";
-import { debug } from "@artela/aspect-libs";
-import { BigInt } from "@artela/aspect-libs";
-
-import { HoneyPot } from "./honeypot"
 import {
-    StateCtx,
-    OnTxReceiveCtx,
-    OnBlockInitializeCtx,
-    OnTxVerifyCtx,
+    AspectOutput,
+    IAspectBlock,
+    IAspectTransaction,
     OnAccountVerifyCtx,
+    OnBlockFinalizeCtx,
+    OnBlockInitializeCtx,
     OnGasPaymentCtx,
-    PreTxExecuteCtx,
-    PreContractCallCtx,
+    OnTxCommitCtx,
+    OnTxReceiveCtx,
+    OnTxVerifyCtx,
     PostContractCallCtx,
     PostTxExecuteCtx,
-    OnTxCommitCtx,
-    OnBlockFinalizeCtx
+    PreContractCallCtx,
+    PreTxExecuteCtx,
+    StateCtx
 } from "@artela/aspect-libs";
-import { ethereum } from "@artela/aspect-libs";
-
-import { Counter } from "./counter-storage"
 
 /**
- * A simple Aspect that only allows even number in the Counter contract
+ * There are two types of Aspect: Transaction-Level Aspect and Block-Level Aspect.
+ * Transaction-Level Aspect will be triggered whenever there is a transaction calling the bound smart contract.
+ * Block-Level Aspect will be triggered whenever there is a new block generated.
+ * 
+ * An Aspect can be Transaction-Level, Block-Level or both.
+ * You can implement corresponding interfaces: IAspectTransaction, IAspectBlock or both to tell Artela which
+ * type of Aspect you are implementing.
  */
-class EvenNumbersOnly implements IAspectTransaction, IAspectBlock {
+class Aspect implements IAspectTransaction, IAspectBlock {
     /**
      * onTxReceive is a join-point which will be invoked when the mem pool first
      * received the transaction. Since it is a join-point outside the consensus stage,
@@ -113,16 +113,6 @@ class EvenNumbersOnly implements IAspectTransaction, IAspectBlock {
      * @return result of Aspect execution
      */
     postTxExecute(ctx: PostTxExecuteCtx): AspectOutput {
-        // Retrieve the state change of count after transaction execution finished
-        const counter = new Counter.counter(ctx, ctx.tx!.to);
-        
-        // Check whether the counter is an even number, if not, revert the transaction
-        const lastCount = counter.latest();
-        if (lastCount != null && lastCount.change.modInt(2) != 0) {
-            return new AspectOutput(false, "count is not even number!");
-        }
-        
-        // Otherwise, pass the check
         return new AspectOutput(true);
     }
 
@@ -181,9 +171,9 @@ class EvenNumbersOnly implements IAspectTransaction, IAspectBlock {
      * @return true if binding succeed, otherwise false 
      */
     onContractBinding(ctx: StateCtx, contractAddr: string): bool {
-        return true
+        return true;
     }
 }
 
-export default EvenNumbersOnly;
+export default Aspect;
 `
