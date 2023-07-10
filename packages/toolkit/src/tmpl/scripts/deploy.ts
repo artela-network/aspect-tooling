@@ -40,7 +40,7 @@ async function f() {
     let argsJson =String(argv.args)
     let gasPrice=null
     let gas=null
-    if(argsJson){
+    if(argsJson && argsJson!=='undefined') {
         let parseJson = JSON.parse(argsJson);
         if(parseJson){
             gasPrice=parseJson.gasPrice

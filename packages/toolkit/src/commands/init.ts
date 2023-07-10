@@ -38,6 +38,7 @@ export default class Init extends Command {
         this.ensurePackageJson(flags.dir);
         //readme.md
         this.ensureReadme(flags.dir)
+        this.log("=====Success=====" );
     }
 
     ensureReadme(dir: string) {
@@ -50,7 +51,7 @@ export default class Init extends Command {
     ensureTestsDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const testDir = path.join(projectDir, "tests");
-        this.log("- Making sure that the 'tests' directory exists...");
+       // this.log("- Making sure that the 'tests' directory exists...");
         if (fs.existsSync(testDir)) {
             this.log("  Exists: " + testDir);
         } else {
@@ -61,7 +62,7 @@ export default class Init extends Command {
     }
 
     ensureAsconfigJson(dir: string) {
-        this.log("- Making sure that 'asconfig.json' is set up...");
+       // this.log("- Making sure that 'asconfig.json' is set up...");
         const projectDir = path.resolve(dir);
         const asconfigFile = path.join(projectDir, "asconfig.json");
 
@@ -97,7 +98,7 @@ export default class Init extends Command {
     }
 
     ensureProjectConfigJson(dir: string) {
-        this.log("- Making sure that 'aspect.config.json' is set up...");
+      //  this.log("- Making sure that 'aspect.config.json' is set up...");
         const projectDir = path.resolve(dir);
         const projectConfig = path.join(projectDir, "project.config.json");
 
@@ -115,7 +116,7 @@ export default class Init extends Command {
         const tsconfigFile = path.join(rootDir, "tsconfig.json");
         const tsconfigBase = 'assemblyscript/std/assembly';
 
-        this.log("- Making sure that 'tsconfig.json' is set up...");
+      //  this.log("- Making sure that 'tsconfig.json' is set up...");
         if (fs.existsSync(tsconfigFile)) {
             const tsconfig = JSON.parse(fs.readFileSync(tsconfigFile, "utf8"));
             tsconfig["extends"] = tsconfigBase;
@@ -135,7 +136,7 @@ export default class Init extends Command {
     ensureContractDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const contractsDir = path.join(projectDir, "contracts");
-        this.log("- Making sure that the 'contracts' directory exists...");
+       // this.log("- Making sure that the 'contracts' directory exists...");
         if (fs.existsSync(contractsDir)) {
             this.log("  Exists: " + contractsDir);
         } else {
@@ -147,7 +148,7 @@ export default class Init extends Command {
     ensureAssemblyDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const assemblyDir = path.join(projectDir, "assembly");
-        this.log("- Making sure that the 'assembly' directory exists...");
+      //  this.log("- Making sure that the 'assembly' directory exists...");
         if (fs.existsSync(assemblyDir)) {
             this.log("  Exists: " + assemblyDir);
         } else {
@@ -167,7 +168,7 @@ export default class Init extends Command {
         const projectDir = path.resolve(dir);
         const aspectDir = path.join(projectDir, "aspect");
 
-        this.log("- Making sure that the 'aspect' directory exists...");
+      //  this.log("- Making sure that the 'aspect' directory exists...");
         if (fs.existsSync(aspectDir)) {
             this.log("  Exists: " + aspectDir);
         } else {
@@ -185,7 +186,7 @@ export default class Init extends Command {
     ensureScriptDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const scriptDir = path.join(projectDir, "scripts");
-        this.log("- Making sure that the 'scripts' directory exists...");
+      //  this.log("- Making sure that the 'scripts' directory exists...");
         if (fs.existsSync(scriptDir)) {
             this.log("  Exists: " + scriptDir);
         } else {

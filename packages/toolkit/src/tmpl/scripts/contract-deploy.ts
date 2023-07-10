@@ -1,5 +1,6 @@
 export const ContractDeployTmpl = `
 
+
 "use strict"
 
 // import required libs
@@ -57,15 +58,15 @@ async function deploy() {
         process.exit(0)
     }
 
-    // --args {"gasPrice":"10000000","gas":"400000"}
+    // --args '{"gasPrice":1000000010,"gas":4000000}'
     let argsJson =String(argv.args)
     let gasPrice=null
     let gas=null
-    if(argsJson){
+    if(argsJson && argsJson!=='undefined') {
         let parseJson = JSON.parse(argsJson);
-        if(parseJson){
-            gasPrice=parseJson.gasPrice
-            gas=parseJson.gas
+        if (parseJson) {
+            gasPrice = parseJson.gasPrice
+            gas = parseJson.gas
         }
     }
     const contractAbi = JSON.parse(abiTxt);
@@ -82,7 +83,7 @@ async function deploy() {
     let contractObj = new web3.atl.Contract(contractAbi,null, contractOptions);
 
     // deploy demo contract
-    let schedule_instance = contractObj.deploy().send({from: account, nonce: nonceVal});
+    let schedule_instance = contractObj.deploy(contractOptions).send({from: account, nonce: nonceVal});
     let contractAddress="";
     contractObj = await schedule_instance.on('receipt', function (receipt) {
         console.log("=============== deployed contract ===============");
@@ -95,5 +96,4 @@ async function deploy() {
 }
 
 deploy().then();
-
 `
