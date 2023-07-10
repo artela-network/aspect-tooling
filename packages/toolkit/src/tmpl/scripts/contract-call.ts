@@ -40,7 +40,7 @@ async function call() {
     // instantiate an instance of contract
     let contract = new web3.atl.Contract(abi, contract);
     
-    // deploy contract
+    // invoke contract method
     let instance = contract.methods[method](...args).send({ from: account, nonce: nonceVal, ...contractOptions });
     contract = await instance.on('receipt', function (receipt) {
         console.log("receipt: ", receipt);
