@@ -3,48 +3,83 @@ export const ContractDeployTmpl = `
 
 // import required libs
 const fs = require('fs');
-const Web3 = require('web3');
-const yargs = require('yargs/yargs');
+const Web3 = require("@artela/web3");
+var argv = require('yargs')
+    .string('node')
+    .string('account')
+    .string('bytecode')
+    .string('abi')
+    .argv;
 
-// parse args
-const argv = yargs(process.argv.slice(2)).string('account').string('gasPrice').argv;
-const bytecode = fs.readFileSync(argv.bytecode, "utf-8").toString();
-const abi = JSON.parse(fs.readFileSync(argv.abi, "utf-8").toString());
-const args = JSON.parse(fs.readFileSync(argv.args, "utf-8").toString());
-let account = fs.readFileSync(argv.account, "utf-8").toString();
-const contractOptions = {
-    gasPrice: argv.gasPrice || '1000000000',
-    gas: parseInt(argv.gas) || 4000000
-};
-const projectConfig = JSON.parse(fs.readFileSync('../project.config.json', "utf-8").toString());
 
 async function deploy() {
-    // init connection to Artela node
-    const web3 = new Web3(projectConfig.node);
 
-    if (!account) {
-        // try retrieve account from config
-        account = projectConfig.accounts && projectConfig.accounts.length > 0 ? projectConfig.accounts[0] : undefined;
-        if (!account) {
-            // try retrieve accounts from node
-            let accounts = await web3.eth.getAccounts();
-            account = accounts[0];
+    const configJson = JSON.parse(fs.readFileSync('./project.config.json', "utf-8").toString());
+    // init connection to Artela node
+    let node = (argv.node)?String(argv.node):configJson.node;
+    if(!node){
+        console.log("'node' cannot be empty, please set by the parameter or artela.config.json")
+        process.exit(0)
+    }
+    const web3 = new Web3(node);
+
+    // get bytecode by path
+    let bytecodePath =String(argv.bytecode)
+    let byteTxt=""
+    if(!bytecodePath){
+        console.log("'bytecode' cannot be empty, please set by the parameter ' --bytecode ./build/contract/xxx.bin'")
+        process.exit(0)
+    }else {
+        byteTxt = fs.readFileSync(bytecodePath,"utf-8");
+        if(!byteTxt){
+            console.log("bytecode cannot be empty")
+            process.exit(0)
         }
     }
 
-    // retrieve current nonce
-    let nonceVal = await web3.eth.getTransactionCount(account);
+    let abiPath =String(argv.abi)
+    let abiTxt=""
+    if(!abiPath){
+        console.log("'abi' cannot be empty, please set by the parameter ' --abi ./build/contract/xxx.abi'")
+        process.exit(0)
+    }else {
+         abiTxt = fs.readFileSync(abiPath,"utf-8");
+        if(!abiTxt){
+            console.log("'abi' json cannot be empty")
+            process.exit(0)
+        }
+    }
 
-    // instantiate an instance of contract
-    let contract = new web3.atl.Contract(abi);
-    
-    // deploy contract
-    let instance = contract.deploy(bytecode, args).send({ from: account, nonce: nonceVal, ...contractOptions });
-    contract = await instance.on('receipt', function (receipt) {
-        console.log("contract address: " + receipt.contractAddress);
+    let account =String(argv.account)
+
+    if(!account){
+        console.log("'account' cannot be empty, please set by the parameter ' --account 0x9999999999999999999999999999999999999999'")
+        process.exit(0)
+    }
+
+    const contractAbi = JSON.parse(abiTxt);
+    const contractOptions = {
+        data: byteTxt,
+        gasPrice: 1000000010,
+        gas: 4000000
+    };
+    // retrieve current nonce
+    let nonceVal = await web3.atl.getTransactionCount(account);
+
+    // instantiate an instance of demo contract
+    let contractObj = new web3.atl.Contract(contractAbi,null, contractOptions);
+
+    // deploy demo contract
+    let schedule_instance = contractObj.deploy().send({from: account, nonce: nonceVal});
+    let contractAddress="";
+    contractObj = await schedule_instance.on('receipt', function (receipt) {
+        console.log("=============== deployed contract ===============");
+        console.log(receipt);
+        contractAddress= receipt.contractAddress
     }).on('transactionHash', (txHash) => {
-        console.log("tx hash: ", txHash);
+        console.log("deploy contract tx hash: ", txHash);
     });
+    console.log(\`contract account: \${account} ,contract address: \${contractAddress}\`);
 }
 
 deploy().then();

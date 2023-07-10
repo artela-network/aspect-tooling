@@ -5,7 +5,9 @@ import * as fs from "fs";
 import path from "path";
 import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
-import {RunTmpl} from "../tmpl/scripts/run";
+import {DeployTmpl} from "../tmpl/scripts/deploy";
+import {BindTmpl} from "../tmpl/scripts/bind";
+
 import {ReadMeTmpl} from "../tmpl/readme";
 import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
 
@@ -102,9 +104,7 @@ export default class Init extends Command {
             this.log("  Exists: " + projectConfig);
         } else {
             fs.writeFileSync(projectConfig, JSON.stringify({
-                node: 'http://127.0.0.1:8545',
-                accounts: [],
-                aspectId: ''
+                node: 'https://artela-devnet-rpc2.artela.network',
             }, null, 2));
             this.log("  Created: " + projectConfig);
         }
@@ -194,7 +194,7 @@ export default class Init extends Command {
 
         const aspectDeploy = path.join(scriptDir, "aspect-deploy.cjs");
         if (!fs.existsSync(aspectDeploy)) {
-            fs.writeFileSync(aspectDeploy, RunTmpl);
+            fs.writeFileSync(aspectDeploy, DeployTmpl);
         }
 
         const contractDeploy = path.join(scriptDir, "contract-deploy.cjs");
@@ -204,7 +204,7 @@ export default class Init extends Command {
 
         const bindPath = path.join(scriptDir, "bind.cjs");
         if (!fs.existsSync(bindPath)) {
-            fs.writeFileSync(bindPath, RunTmpl);
+            fs.writeFileSync(bindPath, BindTmpl);
         }
     }
 

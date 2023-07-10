@@ -21,14 +21,18 @@ This guide assumes that you have the necessary environments for Node development
 If you are not familiar with these environments, please refer to external resources such as Google for more information and instructions on how to set them up.
 
 ## build
-1. build smart contract and aspect
-  \`\`\`shell
-   cd .     
-   npm run build-all
-   \`\`\`
-2.  deploy
-   \`\`\`shell
-   cd app
-   npm run deploy
-   \`\`\`
+1. deploy aspect
+    \`\`\`shell
+   npm run aspect:deploy -- --aspectAccount 0x9b79576f6ac97830f314c9d7a0edcb063832e816
+    \`\`\`
+   
+2. deploy contract(Optional)
+    \`\`\`shell
+   npm run contract:deploy -- --account 0x9d7707cc7726b5b41cabb63c873dc5a9e4b8bfc0 --abi ./build/contract/Storage.abi --bytecode ./build/contract/Storage.bin
+    \`\`\`
+
+3. bind aspect
+    \`\`\`shell
+   npm run contract:bind -- --contractAccount 0x9d7707cc7726b5b41cabb63c873dc5a9e4b8bfc0  --contractAddress 0xeDC384B1486C06Ec941d0630a7CA125C9b90d639 --aspectId 0xa7E32493AFab141936540a48889e53c0e27D3d42 
+    \`\`\`
 `
