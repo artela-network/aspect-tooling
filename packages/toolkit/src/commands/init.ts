@@ -10,6 +10,7 @@ import {BindTmpl} from "../tmpl/scripts/bind";
 
 import {ReadMeTmpl} from "../tmpl/readme";
 import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
+import {ContractCallTmpl} from "../tmpl/scripts/contract-call";
 
 const toolVersion = "^0.0.25";
 const libVersion = "^0.0.12";
@@ -206,6 +207,11 @@ export default class Init extends Command {
         if (!fs.existsSync(bindPath)) {
             fs.writeFileSync(bindPath, BindTmpl);
         }
+
+        const callPath = path.join(scriptDir, "contract-call.cjs");
+        if (!fs.existsSync(callPath)) {
+            fs.writeFileSync(callPath, ContractCallTmpl);
+        }
     }
 
     ensurePackageJson(dir: string) {
@@ -247,6 +253,11 @@ export default class Init extends Command {
             }
             if (!scripts["contract:deploy"]) {
                 scripts["contract:deploy"] = "node scripts/contract-deploy.cjs";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
+            if (!scripts["contract:call"]) {
+                scripts["contract:call"] = "node scripts/contract-call.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -340,6 +351,7 @@ export default class Init extends Command {
                     "asbuild:release": "asc assembly/index.ts --target release",
                     "contract:bind": "node scripts/bind.cjs",
                     "contract:deploy": "node scripts/contract-deploy.cjs",
+                    "contract:call": "node scripts/contract-call.cjs",
                     "contract:build": "asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
                     "build": "npm run contract:build && npm run aspect:gen && npm run aspect:build"
                 },
