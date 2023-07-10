@@ -256,7 +256,7 @@ export default class Init extends Command {
                 updated = true;
             }
             if (!scripts["contract:build"]) {
-                scripts["contract:build"] = "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
+                scripts["contract:build"] = "asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -340,7 +340,7 @@ export default class Init extends Command {
                     "asbuild:release": "asc assembly/index.ts --target release",
                     "contract:bind": "node scripts/bind.cjs",
                     "contract:deploy": "node scripts/contract-deploy.cjs",
-                    "contract:build": "solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
+                    "contract:build": "asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
                     "build": "npm run contract:build && npm run aspect:gen && npm run aspect:build"
                 },
                 "keywords": [],
