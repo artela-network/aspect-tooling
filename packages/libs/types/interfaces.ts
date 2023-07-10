@@ -1,7 +1,7 @@
 import {  AspectOutput } from '../proto';
 
 import {
-  StateCtx,
+
   OnTxReceiveCtx,
   OnBlockInitializeCtx,
   OnTxVerifyCtx,
@@ -14,6 +14,8 @@ import {
   OnTxCommitCtx,
   OnBlockFinalizeCtx
 } from "../entry/context";
+
+import {  StateCtx} from "../entry/context_parent"
 
 export interface IAspectBlock {
   isOwner(ctx: StateCtx, sender: string): bool

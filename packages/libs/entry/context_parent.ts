@@ -21,30 +21,24 @@ class ContextValue {
     asBool(): bool {return (this.val.toLowerCase() === 'true');}
 }
 
+
 export class StateCtx {
     public getProperty(key: string): string {
         return Context.getProperty(key);
     }
 
-    public getAspectState(key: string): string {
-        return Context.getAspectState(key);
-    }
-
-    constructor() { };
-}
-
-export class  DefaultApi {
-    public lastBlock(): EthBlock | null {
-        return Context.lastBlock();
-    }
-    public getProperty(key: string): string {
-        return Context.getProperty(key);
-    }
 
     public getAspectState(key: string): ContextValue {
         return new ContextValue(Context.getAspectState(key));
     }
 
+}
+
+
+export class  DefaultApi extends  StateCtx{
+    public lastBlock(): EthBlock | null {
+        return Context.lastBlock();
+    }
     public currentBalance(acct: string): BigInt | null {
         return Context.currentBalance(acct);
     }
