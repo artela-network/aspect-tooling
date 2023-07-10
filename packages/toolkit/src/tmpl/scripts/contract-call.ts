@@ -8,8 +8,9 @@ const Web3 = require('web3');
 const yargs = require('yargs/yargs');
 
 // parse args
-const argv = yargs(process.argv.slice(2)).string('account').string('gasPrice').string('args').argv;
+const argv = yargs(process.argv.slice(2)).string('account').string('gasPrice').string('args').string('contract').argv;
 const method = argv.method;
+const contract = argv.contract;
 const abi = JSON.parse(fs.readFileSync(argv.abi, "utf-8").toString());
 const args = JSON.parse(argv.args);
 let account = fs.readFileSync(argv.account, "utf-8").toString();
@@ -37,7 +38,7 @@ async function call() {
     const nonceVal = await web3.eth.getTransactionCount(account);
 
     // instantiate an instance of contract
-    let contract = new web3.atl.Contract(abi);
+    let contract = new web3.atl.Contract(abi, contract);
     
     // deploy contract
     let instance = contract.methods[method](...args).send({ from: account, nonce: nonceVal, ...contractOptions });
