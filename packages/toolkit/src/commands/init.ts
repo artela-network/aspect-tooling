@@ -191,9 +191,14 @@ export default class Init extends Command {
             this.log("  Created: " + scriptDir);
         }
 
-        const runPath = path.join(scriptDir, "run.cjs");
-        if (!fs.existsSync(runPath)) {
-            fs.writeFileSync(runPath, RunTmpl)
+        const deployPath = path.join(scriptDir, "deploy.cjs");
+        if (!fs.existsSync(deployPath)) {
+            fs.writeFileSync(deployPath, RunTmpl)
+        }
+
+        const bindPath = path.join(scriptDir, "bind.cjs");
+        if (!fs.existsSync(bindPath)) {
+            fs.writeFileSync(bindPath, RunTmpl)
         }
     }
 
