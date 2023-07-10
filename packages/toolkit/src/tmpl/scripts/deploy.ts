@@ -1,10 +1,12 @@
 export const  DeployTmpl=`
+
 "use strict"
 const Web3 = require("@artela/web3");
 const fs = require("fs");
 const argv = require('yargs')
     .string('node')
     .string('aspectAccount')
+    .string('args')
     .argv;
 
 async function f() {
@@ -33,12 +35,27 @@ async function f() {
         encoding: "hex"
     });
 
+
+    // --args {"gasPrice":"10000000","gas":"400000"}
+    let argsJson =String(argv.args)
+    let gasPrice=null
+    let gas=null
+    if(argsJson){
+        let parseJson = JSON.parse(argsJson);
+        if(parseJson){
+            gasPrice=parseJson.gasPrice
+            gas=parseJson.gas
+        }
+    }
+    const contractOptions = {
+        gasPrice: gasPrice || '1000000010',
+        gas: parseInt(gas) || 4000000
+    };
+
+
     // to deploy aspect
     let aspect = new web3.atl.Aspect(
-        web3.utils.aspectCoreAddr, {
-            gasPrice: 1000000010, // Default gasPrice set by Geth
-            gas: 4000000
-        });
+        web3.utils.aspectCoreAddr, contractOptions);
 
     let instance = aspect.deploy({
         data: '0x' + aspectCode,
@@ -53,7 +70,8 @@ async function f() {
         console.log("deploy aspect tx hash: ", txHash);
     });
     // print aspect info
-    console.log(\`Aspect Account: \${aspectDeployer},Aspect Id: \${aspectRt.options.address}\`);
+    console.log(\`--aspectAccount \${aspectDeployer}  --aspectId \${aspectRt.options.address}\`);
 }
 f().then();
+
 `

@@ -1,4 +1,5 @@
 export const ContractDeployTmpl = `
+
 "use strict"
 
 // import required libs
@@ -51,18 +52,29 @@ async function deploy() {
     }
 
     let account =String(argv.account)
-
     if(!account){
         console.log("'account' cannot be empty, please set by the parameter ' --account 0x9999999999999999999999999999999999999999'")
         process.exit(0)
     }
 
+    // --args {"gasPrice":"10000000","gas":"400000"}
+    let argsJson =String(argv.args)
+    let gasPrice=null
+    let gas=null
+    if(argsJson){
+        let parseJson = JSON.parse(argsJson);
+        if(parseJson){
+            gasPrice=parseJson.gasPrice
+            gas=parseJson.gas
+        }
+    }
     const contractAbi = JSON.parse(abiTxt);
     const contractOptions = {
         data: byteTxt,
-        gasPrice: 1000000010,
-        gas: 4000000
+        gasPrice: gasPrice || '1000000000',
+        gas: parseInt(gas) || 4000000
     };
+
     // retrieve current nonce
     let nonceVal = await web3.atl.getTransactionCount(account);
 
@@ -79,8 +91,9 @@ async function deploy() {
     }).on('transactionHash', (txHash) => {
         console.log("deploy contract tx hash: ", txHash);
     });
-    console.log(\`contract account: \${account} ,contract address: \${contractAddress}\`);
+    console.log(\`--contractAccount \${account} --contractAddress \${contractAddress}\`);
 }
 
 deploy().then();
+
 `
