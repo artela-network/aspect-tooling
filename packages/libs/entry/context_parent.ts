@@ -48,33 +48,18 @@ export class  UniversalApi extends DefaultApi {
     public getContext(key: string): ContextValue {
         return new ContextValue(Context.getContext(key));
     }
-    public setContext<T>(key: string, value: T): bool {
+    public setContext<T>(key: string, value: T): Boolean {
         let valueStr: string;
-        switch (typeof value) {
-            case 'bool':
-            case 'string':
-                valueStr = String(value);
-                break;
-            default:
-                valueStr = '';
-                break;
-        }
+        if (value instanceof Boolean) valueStr = String(value);
+        if (value instanceof String) valueStr = String(value);                
         if (value instanceof BigInt) valueStr = value.toString();
-        // @ts-ignore
         if (value instanceof i8) valueStr = BigInt.fromInt16(<i16>value).toString();
-        // @ts-ignore
         if (value instanceof u8) valueStr = BigInt.fromUInt16(<u16>value).toString();
-        // @ts-ignore
         if (value instanceof i16) valueStr = BigInt.fromInt16(value).toString();
-        // @ts-ignore
         if (value instanceof u16) valueStr = BigInt.fromUInt16(value).toString();
-        // @ts-ignore
         if (value instanceof i32) valueStr = BigInt.fromInt32(value).toString();
-        // @ts-ignore
         if (value instanceof u32) valueStr = BigInt.fromUInt32(value).toString();
-        // @ts-ignore
         if (value instanceof i64) valueStr = BigInt.fromInt64(value).toString();
-        // @ts-ignore
         if (value instanceof u64) valueStr = BigInt.fromUInt64(value).toString();
 
         return Context.setContext(key, valueStr);
@@ -86,33 +71,18 @@ export class  UniversalApi extends DefaultApi {
     }
 
 
-    public setAspectState<T>(key: string, value: T): bool {
+    public setAspectState<T>(key: string, value: T): Boolean {
         let valueStr: string;
-        switch (typeof value) {
-            case 'bool':
-            case 'string':
-                valueStr = String(value);
-                break;
-            default:
-                valueStr = '';
-                break;
-        }
+        if (value instanceof Boolean) valueStr = String(value);
+        if (value instanceof String) valueStr = String(value);                
         if (value instanceof BigInt) valueStr = value.toString();
-        // @ts-ignore
         if (value instanceof i8) valueStr = BigInt.fromInt16(<i16>value).toString();
-        // @ts-ignore
         if (value instanceof u8) valueStr = BigInt.fromUInt16(<u16>value).toString();
-        // @ts-ignore
         if (value instanceof i16) valueStr = BigInt.fromInt16(value).toString();
-        // @ts-ignore
         if (value instanceof u16) valueStr = BigInt.fromUInt16(value).toString();
-        // @ts-ignore
         if (value instanceof i32) valueStr = BigInt.fromInt32(value).toString();
-        // @ts-ignore
         if (value instanceof u32) valueStr = BigInt.fromUInt32(value).toString();
-        // @ts-ignore
         if (value instanceof i64) valueStr = BigInt.fromInt64(value).toString();
-        // @ts-ignore
         if (value instanceof u64) valueStr = BigInt.fromUInt64(value).toString();
 
         return Context.setAspectState(key, valueStr);
