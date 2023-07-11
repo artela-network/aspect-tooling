@@ -49,5 +49,14 @@ This is a sample project of Artela Aspect.
     \`\`\`shell
    npm run contract:bind -- --sender {account address}  --contractAddress {account address} --aspectId {aspect address} 
     \`\`\`
+
+5. Call contract
+    \`\`\`shell
+   npm run contract:call -- --sender {account address}  \\
+                            --contract {contract address} \\
+                            --method {method name} \\
+                            --abi {path/to/abi} \\
+                            --inputs '["a", 1, true]' 
+    \`\`\`
  
 `

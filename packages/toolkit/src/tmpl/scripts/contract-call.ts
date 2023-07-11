@@ -8,7 +8,7 @@ const fs = require('fs');
 const Web3 = require('@artela/web3');
 var argv = require('yargs')
     .string('node')
-    .string('account')
+    .string('sender')
     .string('args')
     .string('contract')
     .string('inputs')
@@ -23,15 +23,15 @@ async function call() {
     // init connection to Artela node
     let node = (argv.node)?String(argv.node):configJson.node;
     if(!node){
-        console.log("'node' cannot be empty, please set by the parameter or artela.config.json")
+        console.log("'node' cannot be empty, please set by the parameter or project.config.json")
         process.exit(0)
     }
     const web3 = new Web3(node);
 
 
-    const account =String(argv.account)
+    const account = String(argv.sender)
     if(!account || account==='undefined') {
-        console.log("'account' cannot be empty, please set by the parameter ' --account 0x9999999999999999999999999999999999999999'")
+        console.log("'sender' cannot be empty, please set by the parameter ' --sender 0x9999999999999999999999999999999999999999'")
         process.exit(0)
     }
 
