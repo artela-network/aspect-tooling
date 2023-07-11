@@ -55,8 +55,8 @@ export class  UniversalApi extends DefaultApi {
     }
     public setContext<T>(key: string, value: T): Boolean {
         let valueStr: string;
-        if (value instanceof Boolean) valueStr = String(value);
-        if (value instanceof String) valueStr = String(value);                
+        if (value instanceof string) valueStr = value.toString();
+        if (value instanceof bool) valueStr = String(value);
         if (value instanceof BigInt) valueStr = value.toString();
         if (value instanceof i8) valueStr = BigInt.fromInt16(<i16>value).toString();
         if (value instanceof u8) valueStr = BigInt.fromUInt16(<u16>value).toString();
@@ -78,8 +78,8 @@ export class  UniversalApi extends DefaultApi {
 
     public setAspectState<T>(key: string, value: T): Boolean {
         let valueStr: string;
-        if (value instanceof Boolean) valueStr = String(value);
-        if (value instanceof String) valueStr = String(value);                
+        if (value instanceof string) valueStr = value.toString();
+        if (value instanceof bool) valueStr = String(value);
         if (value instanceof BigInt) valueStr = value.toString();
         if (value instanceof i8) valueStr = BigInt.fromInt16(<i16>value).toString();
         if (value instanceof u8) valueStr = BigInt.fromUInt16(<u16>value).toString();
