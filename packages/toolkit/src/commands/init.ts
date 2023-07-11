@@ -12,8 +12,8 @@ import {ReadMeTmpl} from "../tmpl/readme";
 import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
 import {ContractCallTmpl} from "../tmpl/scripts/contract-call";
 
-const toolVersion = "^0.0.25";
-const libVersion = "^0.0.12";
+const toolVersion = "^0.0.26";
+const libVersion = "^0.0.13";
 
 export default class Init extends Command {
 
@@ -298,6 +298,11 @@ export default class Init extends Command {
                 pkg["devDependencies"] = devDependencies;
                 updated = true;
             }
+            if (!devDependencies["yargs"]) {
+                devDependencies["yargs"] = "^17.7.2";
+                pkg["devDependencies"] = devDependencies;
+                updated = true;
+            }
             const dependencies = pkg["dependencies"] || {};
             if (!dependencies["@artela/aspect-libs"]) {
                 dependencies["@artela/aspect-libs"] = libVersion;
@@ -334,6 +339,8 @@ export default class Init extends Command {
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
+
+
             if (updated) {
                 fs.writeFileSync(packageFile, JSON.stringify(pkg, null, 2));
                 this.log("  Updated: " + packageFile);
