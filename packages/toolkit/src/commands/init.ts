@@ -13,7 +13,7 @@ import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
 import {ContractCallTmpl} from "../tmpl/scripts/contract-call";
 
 const toolVersion = "^0.0.28";
-const libVersion = "^0.0.14";
+const libVersion = "^0.0.15";
 
 export default class Init extends Command {
 

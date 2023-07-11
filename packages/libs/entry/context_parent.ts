@@ -53,7 +53,7 @@ export class  UniversalApi extends DefaultApi {
     public getContext(key: string): ContextValue {
         return new ContextValue(Context.getContext(key));
     }
-    public setContext<T>(key: string, value: T): Boolean {
+    public setContext<T>(key: string, value: T): bool {
         let valueStr: string;
         if (value instanceof string) valueStr = value.toString();
         if (value instanceof bool) valueStr = String(value);
@@ -76,7 +76,7 @@ export class  UniversalApi extends DefaultApi {
     }
 
 
-    public setAspectState<T>(key: string, value: T): Boolean {
+    public setAspectState<T>(key: string, value: T): bool {
         let valueStr: string;
         if (value instanceof string) valueStr = value.toString();
         if (value instanceof bool) valueStr = String(value);
