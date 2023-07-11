@@ -7,6 +7,8 @@ var argv = require('yargs')
     .string('sender')
     .string('contract')
     .string('aspectId')
+    .string('gasPrice')
+    .string('gas')
     .argv;
 
 async function f() {
