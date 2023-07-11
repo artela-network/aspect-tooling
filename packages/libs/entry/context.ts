@@ -1,14 +1,8 @@
 import {AspTransaction, StateChanges, ScheduleMsg, InnerTransaction} from "../proto";
 import { Context } from "../host";
 import { utils } from "../common";
-import { UniversalApi,DefaultApi } from "./context_parent";
-export interface ScheduleCtx {
-    scheduleTx(sch: ScheduleMsg): bool;
-}
+import { UniversalApi,DefaultApi,ScheduleCtx,TraceCtx } from "./context_parent";
 
-export interface TraceCtx {
-    getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges;
-}
 export class OnTxReceiveCtx extends DefaultApi{
 
     public localCall(input: string): string {

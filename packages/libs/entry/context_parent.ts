@@ -1,8 +1,13 @@
-import {EthBlock, StateChanges, ScheduleMsg, } from "../proto";
+import {EthBlock, ScheduleMsg, StateChanges} from "../proto";
 import { Context } from "../host";
 import { BigInt } from "../message";
 
-
+export interface ScheduleCtx {
+    scheduleTx(sch: ScheduleMsg): bool;
+}
+export interface TraceCtx {
+    getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges;
+}
 
 class ContextValue {
     val : string;
@@ -86,15 +91,5 @@ export class  UniversalApi extends DefaultApi {
         if (value instanceof u64) valueStr = BigInt.fromUInt64(value).toString();
 
         return Context.setAspectState(key, valueStr);
-    }
-}
-export class ScheduleCtx {
-    public scheduleTx(sch: ScheduleMsg): bool {
-        return Context.scheduleTx(sch);
-    }
-}
-export class TraceCtx {
-    public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
-        return Context.getStateChanges(addr, variable, key);
     }
 }

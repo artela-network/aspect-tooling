@@ -50,7 +50,7 @@ export default class Generate extends Command {
         }
 
         if (util.isStringEmpty(sourceFilePath) || util.isStringEmpty(targetFilePath)) {
-            console.log('Illegal input!');
+            this.log('Illegal input!');
             process.exit(0);
         }
 
@@ -67,13 +67,13 @@ export default class Generate extends Command {
             }
         } else if (fs.statSync(sourceFilePath).isFile() && fs.statSync(targetFilePath).isFile()) {
             if (!sourceFilePath.endsWith(".json") || !targetFilePath.endsWith(".ts")) {
-                console.log('Illegal input!');
+                this.log('Illegal input!');
                 process.exit(0);
             } else {
                 inputAndOutputs.push([sourceFilePath, targetFilePath]);
             }
         } else {
-            console.log('Illegal input!');
+            this.log('Illegal input!');
             process.exit(0);
         }
 

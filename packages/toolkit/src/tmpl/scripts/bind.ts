@@ -1,12 +1,15 @@
 export const  BindTmpl=`
+
 "use strict"
 const Web3 = require("@artela/web3");
 const fs = require("fs");
 var argv = require('yargs')
     .string('node')
-    .string('contractAccount')
-    .string('contractAddress')
+    .string('sender')
+    .string('contract')
     .string('aspectId')
+    .string('gasPrice')
+    .string('gas')
     .argv;
 
 async function f() {
@@ -21,37 +24,45 @@ async function f() {
     const web3 = new Web3(node);
 
 
-    // init connection to Artela node
-
-    let contractAccount =String(argv.contractAccount)
-    if(!contractAccount){
-        console.log("'contractAccount' cannot be empty, please set by the parameter ' --contractAccount 0xxxx'")
+    let contractAccount =String(argv.sender)
+    if(!contractAccount || contractAccount==='undefined'){
+        console.log("'sender' cannot be empty, please set by the parameter ' --sender 0xxxx'")
         process.exit(0)
     }
 
-    let contractAddress =String(argv.contractAddress)
-    if(!contractAddress){
-        console.log("'contractAddress' cannot be empty, please set by the parameter ' --contractAddress 0xxxx'")
+    let contractAddress =String(argv.contract)
+    if(!contractAddress || contractAddress==='undefined'){
+        console.log("'contractAddress' cannot be empty, please set by the parameter ' --contract 0xxxx'")
         process.exit(0)
     }
 
     let aspectId =String(argv.aspectId)
-    if(!aspectId){
+    if(!aspectId || aspectId==='undefined'){
         console.log("'aspectId' cannot be empty, please set by the parameter' --aspectId 0xxxx'")
         process.exit(0)
     }
+    const contractOptions = {
+        gasPrice:  '1000000010',
+        gas:  4000000
+    };
+    // --gasPrice 2000000000
+    if(argv.gasPrice && argv.gasPrice!=='undefined') {
+        contractOptions.gasPrice=argv.gasPrice;
+    }
+    // --gas 2000000
+    if(argv.gas && argv.gas!=='undefined') {
+        contractOptions.gas=parseInt(argv.gas);
+    }
+
     let contract = new web3.atl.Contract([],
-        contractAddress, {
-            gasPrice: 1000000010, // Default gasPrice set by Geth
-            gas: 4000000
-        });
+        contractAddress, contractOptions);
     let nonceVal = await web3.atl.getTransactionCount(contractAccount);
 
     await contract.bind({
         priority: 1,
         aspectId: aspectId,
         aspectVersion: 1,
-    }).send({ from: contractAccount, nonce: nonceVal  })
+    }).send({ from: contractAccount, nonce: nonceVal  , ...contractOptions})
         .on('receipt', function (receipt) {
             console.log("=============== bind aspect ===============")
             console.log(receipt)

@@ -1,12 +1,13 @@
 export const  DeployTmpl=`
-
 "use strict"
 const Web3 = require("@artela/web3");
 const fs = require("fs");
 const argv = require('yargs')
     .string('node')
-    .string('aspectAccount')
-    .string('args')
+    .string('sender')
+    .string('gasPrice')
+    .string('gas')
+    .string('wasm')
     .argv;
 
 async function f() {
@@ -21,37 +22,39 @@ async function f() {
     }
     const web3 = new Web3(node);
 
-    let aspectDeployer =String(argv.aspectAccount)
-    if(!aspectDeployer){
-        console.log("'aspectAccount' cannot be empty, please set by the parameter' --aspectAccount 0xxxx' ")
+    //--sender 0x9999999999999999999999999999999999999999
+    let aspectDeployer =String(argv.sender)
+    if(!aspectDeployer || aspectDeployer==='undefined') {
+        console.log("'sender' cannot be empty, please set by the parameter ' --sender 0x9999999999999999999999999999999999999999'")
         process.exit(0)
     }
 
     // set nonce value
     let nonceValAspectDeployer = await web3.atl.getTransactionCount(aspectDeployer);
 
+    //
     //read wasm code
-    let aspectCode = fs.readFileSync('./build/release.wasm', {
-        encoding: "hex"
-    });
-
-
-    // --args {"gasPrice":"10000000","gas":"400000"}
-    let argsJson =String(argv.args)
-    let gasPrice=null
-    let gas=null
-    if(argsJson && argsJson!=='undefined') {
-        let parseJson = JSON.parse(argsJson);
-        if(parseJson){
-            gasPrice=parseJson.gasPrice
-            gas=parseJson.gas
-        }
+    let aspectCode="";
+    //  --wasm  ./build/release.wasm
+    let wasmPath =String(argv.wasm)
+    if(!wasmPath || wasmPath==='undefined'){
+        aspectCode = fs.readFileSync('./build/release.wasm', {
+            encoding: "hex"
+        });
+    }else {
+        aspectCode = fs.readFileSync(wasmPath,"utf-8");
     }
-    const contractOptions = {
-        gasPrice: gasPrice || '1000000010',
-        gas: parseInt(gas) || 4000000
-    };
+    if(!aspectCode || aspectCode==="" ||aspectCode==='undefined'){
+        console.log("aspectCode cannot be empty")
+        process.exit(0)
+    }
 
+    const contractOptions = {
+        from: aspectDeployer,
+        nonce: nonceValAspectDeployer,
+        gasPrice: argv.gasPrice || '1000000010',
+        gas: parseInt(argv.gas) || 4000000
+    };
 
     // to deploy aspect
     let aspect = new web3.atl.Aspect(
@@ -60,7 +63,7 @@ async function f() {
     let instance = aspect.deploy({
         data: '0x' + aspectCode,
         properties: [ { 'key': 'owner', 'value': aspectDeployer }]
-    }).send({ from: aspectDeployer, nonce: nonceValAspectDeployer });
+    }).send(contractOptions);
 
     // print receipt
     let aspectRt = await instance.on('receipt', (receipt) => {
@@ -73,5 +76,4 @@ async function f() {
     console.log(\`--aspectAccount \${aspectDeployer}  --aspectId \${aspectRt.options.address}\`);
 }
 f().then();
-
 `
