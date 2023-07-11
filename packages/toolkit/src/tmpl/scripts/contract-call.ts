@@ -1,6 +1,4 @@
 export const ContractCallTmpl = `
-
-
 "use strict"
 
 // import required libs
@@ -94,5 +92,4 @@ async function call() {
 }
 
 call().then();
-
 `

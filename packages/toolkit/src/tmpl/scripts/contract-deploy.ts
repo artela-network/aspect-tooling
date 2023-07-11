@@ -1,5 +1,4 @@
 export const ContractDeployTmpl = `
-    
 "use strict"
 
 // import required libs
@@ -109,5 +108,4 @@ async function deploy() {
 }
 
 deploy().then();
-
 `

@@ -1,6 +1,4 @@
 export const  DeployTmpl=`
-
-
 "use strict"
 const Web3 = require("@artela/web3");
 const fs = require("fs");
@@ -38,13 +36,13 @@ async function f() {
     //read wasm code
     let aspectCode="";
     //  --wasm  ./build/release.wasm
-    let bytecodePath =String(argv.wasm)
-    if(!bytecodePath){
+    let wasmPath =String(argv.wasm)
+    if(!wasmPath || wasmPath==='undefined'){
         aspectCode = fs.readFileSync('./build/release.wasm', {
             encoding: "hex"
         });
     }else {
-        aspectCode = fs.readFileSync(bytecodePath,"utf-8");
+        aspectCode = fs.readFileSync(wasmPath,"utf-8");
     }
     if(!aspectCode || aspectCode==="" ||aspectCode==='undefined'){
         console.log("aspectCode cannot be empty")
