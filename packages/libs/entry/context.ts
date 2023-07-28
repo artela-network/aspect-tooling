@@ -1,7 +1,7 @@
 import {AspTransaction, StateChanges, ScheduleMsg, InnerTransaction} from "../proto";
 import { Context } from "../host";
 import { utils } from "../common";
-import { UniversalApi,DefaultApi } from "./context_parent";
+import { UniversalApi,DefaultApi,ScheduleCtx,TraceCtx } from "./context_parent";
 
 export class OnTxReceiveCtx extends DefaultApi{
 
@@ -19,7 +19,7 @@ export class OnTxReceiveCtx extends DefaultApi{
     };
 }
 
-export class OnBlockInitializeCtx extends UniversalApi{
+export class OnBlockInitializeCtx extends UniversalApi implements ScheduleCtx{
 
     public scheduleTx(sch: ScheduleMsg): bool {
         return Context.scheduleTx(sch);
@@ -120,7 +120,7 @@ export class PreTxExecuteCtx extends UniversalApi{
     };
 }
 
-export class PreContractCallCtx  extends UniversalApi{
+export class PreContractCallCtx  extends UniversalApi implements TraceCtx{
 
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
@@ -143,7 +143,7 @@ export class PreContractCallCtx  extends UniversalApi{
     };
 }
 
-export class PostContractCallCtx extends UniversalApi{
+export class PostContractCallCtx extends UniversalApi implements TraceCtx{
 
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
@@ -167,7 +167,7 @@ export class PostContractCallCtx extends UniversalApi{
     };
 }
 
-export class PostTxExecuteCtx  extends UniversalApi{
+export class PostTxExecuteCtx  extends UniversalApi implements TraceCtx{
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
         return Context.getStateChanges(addr, variable, key);
@@ -187,7 +187,7 @@ export class PostTxExecuteCtx  extends UniversalApi{
     };
 }
 
-export class OnTxCommitCtx extends UniversalApi{
+export class OnTxCommitCtx extends UniversalApi implements TraceCtx,ScheduleCtx{
 
     public localCall(input: string): string {
         return Context.localCall(input);
@@ -213,7 +213,7 @@ export class OnTxCommitCtx extends UniversalApi{
     };
 }
 
-export class OnBlockFinalizeCtx extends UniversalApi{
+export class OnBlockFinalizeCtx extends UniversalApi implements ScheduleCtx{
 
     public localCall(input: string): string {
         return Context.localCall(input);

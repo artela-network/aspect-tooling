@@ -4,7 +4,6 @@ import { AspectInput, AspectOutput } from '../proto';
 import { IAspectBlock, IAspectTransaction } from '../types';
 import { Protobuf } from 'as-proto/assembly';
 import {
-  StateCtx,
   OnTxReceiveCtx,
   OnBlockInitializeCtx,
   OnTxVerifyCtx,
@@ -17,6 +16,10 @@ import {
   OnTxCommitCtx,
   OnBlockFinalizeCtx
 } from "./context";
+import {
+  StateCtx,
+} from "./context_parent";
+
 export class Entry {
   private readonly blockAspect: IAspectBlock;
   private readonly transactionAspect: IAspectTransaction;

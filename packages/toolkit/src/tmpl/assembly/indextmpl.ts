@@ -3,8 +3,8 @@ export const  WasmIndexTmpl=`
 import { Entry,utils } from "@artela/aspect-libs";
 import Aspect from "./aspect/aspect";
 
-const firstAspect = new Aspect();
-const entry = new Entry(firstAspect, firstAspect);
+const aspect = new Aspect();
+const entry = new Entry(aspect, aspect);
 
 export function execute(methodPtr: i32, argPtr: i32): i32 {
   return entry.execute(methodPtr, argPtr);

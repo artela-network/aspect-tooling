@@ -3,16 +3,17 @@
 import {Command, Flags} from "@oclif/core";
 import * as fs from "fs";
 import path from "path";
-import {AttackSolTmpl} from "../tmpl/contracts/attack";
-import {HoneyPotSolTmpl} from "../tmpl/contracts/honeypot";
-import {HoneyPotStorageTmpl} from "../tmpl/contracts/honeypot_layout";
 import {WasmIndexTmpl} from "../tmpl/assembly/indextmpl";
 import {AspectTmpl} from "../tmpl/assembly/aspect/aspect";
 import {DeployTmpl} from "../tmpl/scripts/deploy";
-import {ReadMeTmpl} from "../tmpl/readme";
+import {BindTmpl} from "../tmpl/scripts/bind";
 
-const toolVersion="^0.0.24";
-const libVersion="^0.0.11";
+import {ReadMeTmpl} from "../tmpl/readme";
+import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
+import {ContractCallTmpl} from "../tmpl/scripts/contract-call";
+
+const toolVersion = "^0.0.28";
+const libVersion = "^0.0.15";
 
 export default class Init extends Command {
 
@@ -27,6 +28,8 @@ export default class Init extends Command {
     async run() {
         const {flags} = await this.parse(Init)
         this.ensureAssemblyDirectory(flags.dir);
+        this.ensureProjectConfigJson(flags.dir);
+        this.ensureTsconfigJson(flags.dir);
         this.ensureScriptDirectory(flags.dir);
         this.ensureContractDirectory(flags.dir);
         this.ensureTestsDirectory(flags.dir);
@@ -35,7 +38,9 @@ export default class Init extends Command {
         this.ensurePackageJson(flags.dir);
         //readme.md
         this.ensureReadme(flags.dir)
+        this.log("=====Success=====" );
     }
+
     ensureReadme(dir: string) {
         const readmePath = path.join(dir, "README.md");
         if (!fs.existsSync(readmePath)) {
@@ -46,7 +51,7 @@ export default class Init extends Command {
     ensureTestsDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const testDir = path.join(projectDir, "tests");
-        this.log("- Making sure that the 'tests' directory exists...");
+       // this.log("- Making sure that the 'tests' directory exists...");
         if (fs.existsSync(testDir)) {
             this.log("  Exists: " + testDir);
         } else {
@@ -57,7 +62,7 @@ export default class Init extends Command {
     }
 
     ensureAsconfigJson(dir: string) {
-        this.log("- Making sure that 'asconfig.json' is set up...");
+       // this.log("- Making sure that 'asconfig.json' is set up...");
         const projectDir = path.resolve(dir);
         const asconfigFile = path.join(projectDir, "asconfig.json");
 
@@ -92,28 +97,36 @@ export default class Init extends Command {
         }
     }
 
-    ensureTsconfigJson(dir: string, assemblyDir: string) {
-        const projectDir = path.resolve(assemblyDir);
-        const tsconfigFile = path.join(projectDir, "assembly.json");
-        let tsconfigBase = path.relative(projectDir, path.join(dir, "std", "assembly.json"));
-        if (/^(\.\.[/\\])*node_modules[/\\]assemblyscript[/\\]/.test(tsconfigBase)) {
-            // Use node resolution if the compiler is a normal dependency
-            tsconfigBase = "assemblyscript/std/assembly.json";
+    ensureProjectConfigJson(dir: string) {
+      //  this.log("- Making sure that 'aspect.config.json' is set up...");
+        const projectDir = path.resolve(dir);
+        const projectConfig = path.join(projectDir, "project.config.json");
+
+        if (fs.existsSync(projectConfig)) {
+            this.log("  Exists: " + projectConfig);
+        } else {
+            fs.writeFileSync(projectConfig, JSON.stringify({
+                node: 'https://artela-devnet-rpc2.artela.network',
+            }, null, 2));
+            this.log("  Created: " + projectConfig);
         }
+    }
 
-        const base = tsconfigBase.replace(/\\/g, "/");
+    ensureTsconfigJson(rootDir: string) {
+        const tsconfigFile = path.join(rootDir, "tsconfig.json");
+        const tsconfigBase = 'assemblyscript/std/assembly';
 
-        this.log("- Making sure that 'assembly/tsconfig.json' is set up...");
+      //  this.log("- Making sure that 'tsconfig.json' is set up...");
         if (fs.existsSync(tsconfigFile)) {
             const tsconfig = JSON.parse(fs.readFileSync(tsconfigFile, "utf8"));
-            tsconfig["extends"] = base;
+            tsconfig["extends"] = tsconfigBase;
             fs.writeFileSync(tsconfigFile, JSON.stringify(tsconfig, null, 2));
             this.log("  Updated: " + tsconfigFile);
         } else {
             fs.writeFileSync(tsconfigFile, JSON.stringify({
-                "extends": base,
+                "extends": tsconfigBase,
                 "include": [
-                    "./**/*.ts"
+                    "./assembly/**/*.ts"
                 ]
             }, null, 2));
             this.log("  Created: " + tsconfigFile);
@@ -123,31 +136,19 @@ export default class Init extends Command {
     ensureContractDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const contractsDir = path.join(projectDir, "contracts");
-        this.log("- Making sure that the 'contracts' directory exists...");
+       // this.log("- Making sure that the 'contracts' directory exists...");
         if (fs.existsSync(contractsDir)) {
             this.log("  Exists: " + contractsDir);
         } else {
             fs.mkdirSync(contractsDir);
             this.log("  Created: " + contractsDir);
         }
-        const attackPath = path.join(contractsDir, "attack.sol");
-        if (!fs.existsSync(attackPath)) {
-            fs.writeFileSync(attackPath, AttackSolTmpl)
-        }
-        const honeypotPath = path.join(contractsDir, "honeypot.sol");
-        if (!fs.existsSync(honeypotPath)) {
-            fs.writeFileSync(honeypotPath, HoneyPotSolTmpl)
-        }
-        const honeypotJsonPath = path.join(contractsDir, "honeypot_layout.json");
-        if (!fs.existsSync(honeypotJsonPath)) {
-            fs.writeFileSync(honeypotJsonPath, HoneyPotStorageTmpl)
-        }
     }
 
     ensureAssemblyDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const assemblyDir = path.join(projectDir, "assembly");
-        this.log("- Making sure that the 'assembly' directory exists...");
+      //  this.log("- Making sure that the 'assembly' directory exists...");
         if (fs.existsSync(assemblyDir)) {
             this.log("  Exists: " + assemblyDir);
         } else {
@@ -155,7 +156,6 @@ export default class Init extends Command {
             this.log("  Created: " + assemblyDir);
         }
 
-        this.ensureTsconfigJson(dir, assemblyDir);
         this.ensureAspectDirectory(assemblyDir);
         const aspectIndexPath = path.join(assemblyDir, "index.ts");
         if (!fs.existsSync(aspectIndexPath)) {
@@ -163,11 +163,12 @@ export default class Init extends Command {
         }
 
     }
-    ensureAspectDirectory(dir: string){
+
+    ensureAspectDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const aspectDir = path.join(projectDir, "aspect");
 
-        this.log("- Making sure that the 'aspect' directory exists...");
+      //  this.log("- Making sure that the 'aspect' directory exists...");
         if (fs.existsSync(aspectDir)) {
             this.log("  Exists: " + aspectDir);
         } else {
@@ -185,7 +186,7 @@ export default class Init extends Command {
     ensureScriptDirectory(dir: string) {
         const projectDir = path.resolve(dir);
         const scriptDir = path.join(projectDir, "scripts");
-        this.log("- Making sure that the 'scripts' directory exists...");
+      //  this.log("- Making sure that the 'scripts' directory exists...");
         if (fs.existsSync(scriptDir)) {
             this.log("  Exists: " + scriptDir);
         } else {
@@ -193,16 +194,28 @@ export default class Init extends Command {
             this.log("  Created: " + scriptDir);
         }
 
-        const deployPath = path.join(scriptDir, "deploy.cjs");
-        if (!fs.existsSync(deployPath)) {
-            fs.writeFileSync(deployPath, DeployTmpl)
+        const aspectDeploy = path.join(scriptDir, "aspect-deploy.cjs");
+        if (!fs.existsSync(aspectDeploy)) {
+            fs.writeFileSync(aspectDeploy, DeployTmpl);
+        }
+
+        const contractDeploy = path.join(scriptDir, "contract-deploy.cjs");
+        if (!fs.existsSync(contractDeploy)) {
+            fs.writeFileSync(contractDeploy, ContractDeployTmpl);
+        }
+
+        const bindPath = path.join(scriptDir, "bind.cjs");
+        if (!fs.existsSync(bindPath)) {
+            fs.writeFileSync(bindPath, BindTmpl);
+        }
+
+        const callPath = path.join(scriptDir, "contract-call.cjs");
+        if (!fs.existsSync(callPath)) {
+            fs.writeFileSync(callPath, ContractCallTmpl);
         }
     }
 
     ensurePackageJson(dir: string) {
-
-
-
         const packageFile = path.join(dir, "package.json");
 
         if (fs.existsSync(packageFile)) {
@@ -221,10 +234,10 @@ export default class Init extends Command {
                     "types": "./build/release.d.ts"
                 }
             };
-            if (!scripts["asbuild"]) {
+            if (!scripts["aspect:build"]) {
                 scripts["asbuild:debug"] = "asc assembly/index.ts --target debug";
                 scripts["asbuild:release"] = "asc assembly/index.ts --target release";
-                scripts["asbuild"] = "npm run asbuild:debug && npm run asbuild:release";
+                scripts["aspect:build"] = "npm run asbuild:debug && npm run asbuild:release";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -234,28 +247,38 @@ export default class Init extends Command {
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["start"]) {
-                scripts["start"] = "npx serve .";
+            if (!scripts["contract:bind"]) {
+                scripts["contract:bind"] = "node scripts/bind.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["deploy"]) {
-                scripts["deploy"] = "npm run build-all && node scripts/deploy.cjs";
+            if (!scripts["contract:deploy"]) {
+                scripts["contract:deploy"] = "node scripts/contract-deploy.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build-contract"]) {
-                scripts["build-contract"] = "solc -o ./build/contract/ --via-ir --abi --bin ./contracts/*.sol  --overwrite";
+            if (!scripts["contract:call"]) {
+                scripts["contract:call"] = "node scripts/contract-call.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["build-all"]) {
-                scripts["build-all"] =  "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release";
+            if (!scripts["aspect:deploy"]) {
+                scripts["aspect:deploy"] = "npm run aspect:build && node scripts/aspect-deploy.cjs";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
-            if (!scripts["gen-aspect"]) {
-                scripts["gen-aspect"] =  "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts";
+            if (!scripts["contract:build"]) {
+                scripts["contract:build"] = "asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
+            if (!scripts["build"]) {
+                scripts["build"] = "npm run contract:build && npm run aspect:gen && npm run aspect:build";
+                pkg["scripts"] = scripts;
+                updated = true;
+            }
+            if (!scripts["aspect:gen"]) {
+                scripts["aspect:gen"] = "aspect-tool generate -i ./build/contract -o ./assembly/aspect";
                 pkg["scripts"] = scripts;
                 updated = true;
             }
@@ -272,6 +295,11 @@ export default class Init extends Command {
             }
             if (!devDependencies["@artela/aspect-tool"]) {
                 devDependencies["@artela/aspect-tool"] = toolVersion;
+                pkg["devDependencies"] = devDependencies;
+                updated = true;
+            }
+            if (!devDependencies["yargs"]) {
+                devDependencies["yargs"] = "^17.7.2";
                 pkg["devDependencies"] = devDependencies;
                 updated = true;
             }
@@ -306,16 +334,13 @@ export default class Init extends Command {
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
-            if (!dependencies["@openzeppelin/contracts"]) {
-                dependencies["@openzeppelin/contracts"] = "^4.9.2";
-                pkg["dependencies"] = dependencies;
-                updated = true;
-            }
             if (!dependencies["as-proto"]) {
                 dependencies["as-proto"] = "^1.3.0";
                 pkg["dependencies"] = dependencies;
                 updated = true;
             }
+
+
             if (updated) {
                 fs.writeFileSync(packageFile, JSON.stringify(pkg, null, 2));
                 this.log("  Updated: " + packageFile);
@@ -327,15 +352,16 @@ export default class Init extends Command {
                 "version": "1.0.0",
                 "main": "index.js",
                 "scripts": {
-                    "deploy": "npm run build-all && node scripts/deploy.cjs",
-                    "test": "node tests",
+                    "aspect:deploy": "npm run aspect:build && node scripts/aspect-deploy.cjs",
+                    "aspect:build": "npm run asbuild:debug && npm run asbuild:release",
+                    "aspect:gen": "aspect-tool generate -i ./build/contract -o ./assembly/aspect",
                     "asbuild:debug": "asc assembly/index.ts --target debug",
                     "asbuild:release": "asc assembly/index.ts --target release",
-                    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-                    "start": "npx serve .",
-                    "build-contract": "solc -o ./build/contract/ --via-ir --abi --bin ./contracts/*.sol  --overwrite",
-                    "build-all": "npm install  && npm run gen-aspect && npm run build-contract && npm run asbuild:release",
-                    "gen-aspect": "./node_modules/@artela/aspect-tool/bin/run generate -i ./contracts/honeypot_layout.json -o ./assembly/aspect/honeypot.ts"
+                    "contract:bind": "node scripts/bind.cjs",
+                    "contract:deploy": "node scripts/contract-deploy.cjs",
+                    "contract:call": "node scripts/contract-call.cjs",
+                    "contract:build": "asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite",
+                    "build": "npm run contract:build && npm run aspect:gen && npm run aspect:build"
                 },
                 "keywords": [],
                 "author": "",
@@ -347,13 +373,13 @@ export default class Init extends Command {
                     "@artela/web3-eth-contract": "^1.9.2",
                     "@artela/web3-utils": "^1.9.1",
                     "@assemblyscript/loader": "^0.27.5",
-                    "@openzeppelin/contracts": "^4.9.2",
                     "as-proto": "^1.3.0"
                 },
                 "devDependencies": {
                     "@artela/aspect-tool": toolVersion,
                     "as-proto-gen": "^1.3.0",
-                    "assemblyscript": "^0.27.5"
+                    "assemblyscript": "^0.27.5",
+                    "yargs": "^17.7.2"
                 },
                 "type": "module",
                 "exports": {
