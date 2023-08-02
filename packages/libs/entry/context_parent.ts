@@ -1,29 +1,31 @@
-import {EthBlock, ScheduleMsg, StateChanges} from "../proto";
+import { EthBlock, ScheduleMsg, StateChanges } from "../proto";
 import { Context } from "../host";
 import { BigInt } from "../message";
+import { InnerTransactions } from "@artela/aspect-libs/proto/aspect/v1/inner-transactions";
 
 export interface ScheduleCtx {
     scheduleTx(sch: ScheduleMsg): bool;
 }
 export interface TraceCtx {
     getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges;
+    getCallStack(): InnerTransactions;
 }
 
 class ContextValue {
-    val : string;
+    val: string;
     constructor(val: string) {
         this.val = val;
     }
-    asI8(): i8 {return BigInt.fromString(this.val).toInt32() as i8;}
-    asU8(): u8 {return BigInt.fromString(this.val).toInt32() as u8;}
-    asI16(): i16 {return BigInt.fromString(this.val).toInt32() as i16;}
-    asU16(): u16 {return BigInt.fromString(this.val).toInt32() as u16;}
-    asI32(): i32 {return BigInt.fromString(this.val).toInt32();}
-    asU32(): u32 {return BigInt.fromString(this.val).toUInt32();}
-    asI64(): i64 {return BigInt.fromString(this.val).toInt64();}
-    asU64(): u64 {return BigInt.fromString(this.val).toUInt64();}
-    asString(): string {return this.val;}
-    asBool(): bool {return (this.val.toLowerCase() === 'true');}
+    asI8(): i8 { return BigInt.fromString(this.val).toInt32() as i8; }
+    asU8(): u8 { return BigInt.fromString(this.val).toInt32() as u8; }
+    asI16(): i16 { return BigInt.fromString(this.val).toInt32() as i16; }
+    asU16(): u16 { return BigInt.fromString(this.val).toInt32() as u16; }
+    asI32(): i32 { return BigInt.fromString(this.val).toInt32(); }
+    asU32(): u32 { return BigInt.fromString(this.val).toUInt32(); }
+    asI64(): i64 { return BigInt.fromString(this.val).toInt64(); }
+    asU64(): u64 { return BigInt.fromString(this.val).toUInt64(); }
+    asString(): string { return this.val; }
+    asBool(): bool { return (this.val.toLowerCase() === '1'); }
 }
 
 
@@ -40,7 +42,7 @@ export class StateCtx {
 }
 
 
-export class  DefaultApi extends  StateCtx{
+export class DefaultApi extends StateCtx {
     public lastBlock(): EthBlock | null {
         return Context.lastBlock();
     }
@@ -49,14 +51,14 @@ export class  DefaultApi extends  StateCtx{
     }
 }
 
-export class  UniversalApi extends DefaultApi {
+export class UniversalApi extends DefaultApi {
     public getContext(key: string): ContextValue {
         return new ContextValue(Context.getContext(key));
     }
     public setContext<T>(key: string, value: T): bool {
         let valueStr: string;
         if (value instanceof string) valueStr = value.toString();
-        if (value instanceof bool) valueStr = String(value);
+        if (value instanceof bool) valueStr = value ? "1" : "0";
         if (value instanceof BigInt) valueStr = value.toString();
         if (value instanceof i8) valueStr = BigInt.fromInt16(<i16>value).toString();
         if (value instanceof u8) valueStr = BigInt.fromUInt16(<u16>value).toString();

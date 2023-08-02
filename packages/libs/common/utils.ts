@@ -1,5 +1,6 @@
 import { AString, AUint8Array } from '../message';
 import { ethereum } from "../abi";
+import { crypto, debug } from "../host";
 import { InnerTransaction, InnerTransactions } from '@artela/aspect-libs/proto';
 
 declare namespace __Util__ {
