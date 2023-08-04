@@ -1,9 +1,9 @@
-import {AspTransaction, StateChanges, ScheduleMsg, InnerTransaction} from "../proto";
+import { AspTransaction, StateChanges, ScheduleMsg, InnerTransaction, InnerTransactions } from "../proto";
 import { Context } from "../host";
 import { utils } from "../common";
-import { UniversalApi,DefaultApi,ScheduleCtx,TraceCtx } from "./context_parent";
+import { UniversalApi, DefaultApi, ScheduleCtx, TraceCtx } from "./context_parent";
 
-export class OnTxReceiveCtx extends DefaultApi{
+export class OnTxReceiveCtx extends DefaultApi {
 
     public localCall(input: string): string {
         return Context.localCall(input);
@@ -19,7 +19,7 @@ export class OnTxReceiveCtx extends DefaultApi{
     };
 }
 
-export class OnBlockInitializeCtx extends UniversalApi implements ScheduleCtx{
+export class OnBlockInitializeCtx extends UniversalApi implements ScheduleCtx {
 
     public scheduleTx(sch: ScheduleMsg): bool {
         return Context.scheduleTx(sch);
@@ -42,7 +42,7 @@ export class OnBlockInitializeCtx extends UniversalApi implements ScheduleCtx{
     };
 }
 
-export class OnTxVerifyCtx  extends UniversalApi{
+export class OnTxVerifyCtx extends UniversalApi {
 
 
     public revert(message: string): void {
@@ -61,27 +61,7 @@ export class OnTxVerifyCtx  extends UniversalApi{
     };
 }
 
-export class OnAccountVerifyCtx  extends UniversalApi{
-
-
-    public revert(message: string): void {
-        return utils.revert(message);
-    }
-    public localCall(input: string): string {
-        return Context.localCall(input);
-    }
-
-    blockHeight: i64;
-    tx: AspTransaction | null;
-
-    constructor(blockHeight: i64, tx: AspTransaction | null) {
-        super();
-        this.blockHeight = blockHeight;
-        this.tx = tx;
-    };
-}
-
-export class OnGasPaymentCtx extends UniversalApi{
+export class OnAccountVerifyCtx extends UniversalApi {
 
 
     public revert(message: string): void {
@@ -101,7 +81,27 @@ export class OnGasPaymentCtx extends UniversalApi{
     };
 }
 
-export class PreTxExecuteCtx extends UniversalApi{
+export class OnGasPaymentCtx extends UniversalApi {
+
+
+    public revert(message: string): void {
+        return utils.revert(message);
+    }
+    public localCall(input: string): string {
+        return Context.localCall(input);
+    }
+
+    blockHeight: i64;
+    tx: AspTransaction | null;
+
+    constructor(blockHeight: i64, tx: AspTransaction | null) {
+        super();
+        this.blockHeight = blockHeight;
+        this.tx = tx;
+    };
+}
+
+export class PreTxExecuteCtx extends UniversalApi {
 
     public revert(message: string): void {
         return utils.revert(message);
@@ -120,11 +120,15 @@ export class PreTxExecuteCtx extends UniversalApi{
     };
 }
 
-export class PreContractCallCtx  extends UniversalApi implements TraceCtx{
+export class PreContractCallCtx extends UniversalApi implements TraceCtx {
 
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
         return Context.getStateChanges(addr, variable, key);
+    }
+
+    public getCallStack(): InnerTransactions {
+        return Context.getCallStack();
     }
 
     public revert(message: string): void {
@@ -133,21 +137,25 @@ export class PreContractCallCtx  extends UniversalApi implements TraceCtx{
 
     blockHeight: i64;
     originalTx: AspTransaction | null;
-    currInnerTx:InnerTransaction | null ;
+    currInnerTx: InnerTransaction | null;
 
-    constructor(blockHeight: i64, tx: AspTransaction | null,innerTx :InnerTransaction | null) {
+    constructor(blockHeight: i64, tx: AspTransaction | null, innerTx: InnerTransaction | null) {
         super();
         this.blockHeight = blockHeight;
         this.originalTx = tx;
-        this.currInnerTx=innerTx;
+        this.currInnerTx = innerTx;
     };
 }
 
-export class PostContractCallCtx extends UniversalApi implements TraceCtx{
+export class PostContractCallCtx extends UniversalApi implements TraceCtx {
 
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
         return Context.getStateChanges(addr, variable, key);
+    }
+
+    public getCallStack(): InnerTransactions {
+        return Context.getCallStack();
     }
 
     public revert(message: string): void {
@@ -157,20 +165,24 @@ export class PostContractCallCtx extends UniversalApi implements TraceCtx{
 
     blockHeight: i64;
     originalTx: AspTransaction | null;
-    currInnerTx:InnerTransaction | null ;
+    currInnerTx: InnerTransaction | null;
 
-    constructor(blockHeight: i64, tx: AspTransaction | null,currInnerTx:InnerTransaction | null) {
+    constructor(blockHeight: i64, tx: AspTransaction | null, currInnerTx: InnerTransaction | null) {
         super();
         this.blockHeight = blockHeight;
         this.originalTx = tx;
-        this.currInnerTx=currInnerTx;
+        this.currInnerTx = currInnerTx;
     };
 }
 
-export class PostTxExecuteCtx  extends UniversalApi implements TraceCtx{
+export class PostTxExecuteCtx extends UniversalApi implements TraceCtx {
 
     public getStateChanges(addr: string, variable: string, key: Uint8Array): StateChanges {
         return Context.getStateChanges(addr, variable, key);
+    }
+
+    public getCallStack(): InnerTransactions {
+        return Context.getCallStack();
     }
 
     public revert(message: string): void {
@@ -187,7 +199,7 @@ export class PostTxExecuteCtx  extends UniversalApi implements TraceCtx{
     };
 }
 
-export class OnTxCommitCtx extends UniversalApi implements TraceCtx,ScheduleCtx{
+export class OnTxCommitCtx extends UniversalApi implements TraceCtx, ScheduleCtx {
 
     public localCall(input: string): string {
         return Context.localCall(input);
@@ -201,7 +213,9 @@ export class OnTxCommitCtx extends UniversalApi implements TraceCtx,ScheduleCtx{
         return Context.getStateChanges(addr, variable, key);
     }
 
-
+    public getCallStack(): InnerTransactions {
+        return Context.getCallStack();
+    }
 
     blockHeight: i64;
     tx: AspTransaction | null;
@@ -213,7 +227,7 @@ export class OnTxCommitCtx extends UniversalApi implements TraceCtx,ScheduleCtx{
     };
 }
 
-export class OnBlockFinalizeCtx extends UniversalApi implements ScheduleCtx{
+export class OnBlockFinalizeCtx extends UniversalApi implements ScheduleCtx {
 
     public localCall(input: string): string {
         return Context.localCall(input);
