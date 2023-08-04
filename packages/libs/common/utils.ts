@@ -1,11 +1,11 @@
 import { AString, AUint8Array } from '../message';
 import { ethereum } from "../abi";
+import { InnerTransaction, InnerTransactions } from '../proto';
 
 declare namespace __Util__ {
   function fromHexString(input: i32): i32;
   function toHexString(input: i32): i32;
-  function revert(input: i32): i32;
-
+  function revert(input: i32): void;
 }
 
 export namespace utils {
@@ -93,5 +93,23 @@ export namespace utils {
 
   export function encodeStringUTF8(str: string): ArrayBuffer {
     return String.UTF8.encode(str);
+  }
+
+  export function praseCallMethod(data: Uint8Array): string {
+    let s = utils.uint8ArrayToHex(data);
+    if (s.startsWith('0x')) {
+      return s.substring(0, 10);
+    }
+    return '0x' + s.substring(0, 8);
+  }
+
+  export function wrapCallStack(raw: InnerTransactions): InnerTransaction | null {
+    let current: InnerTransaction | null = null;
+    for (let i = 0; i < raw.txs.length; i++) {
+      let parent = current;
+      current = raw.txs[i];
+      current.parent = parent;
+    }
+    return current;
   }
 }

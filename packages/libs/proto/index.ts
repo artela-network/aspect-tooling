@@ -9,6 +9,7 @@ export { ValueKind } from './aspect/v1/value-kind';
 export { StateChange } from './aspect/v1/state-change';
 export { StateChanges } from './aspect/v1/state-changes';
 export { InnerTransaction } from './aspect/v1/inner-transaction';
+export { InnerTransactions } from './aspect/v1/inner-transactions'
 
 export { Schedule as ScheduleMsg } from './scheduler/v1/schedule';
 export { ScheduleId as ScheduleMsgId } from './scheduler/v1/schedule-id';
