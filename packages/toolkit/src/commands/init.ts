@@ -12,8 +12,8 @@ import {ReadMeTmpl} from "../tmpl/readme";
 import {ContractDeployTmpl} from "../tmpl/scripts/contract-deploy";
 import {ContractCallTmpl} from "../tmpl/scripts/contract-call";
 
-const toolVersion = "^0.0.30";
-const libVersion = "^0.0.16";
+const toolVersion = "^0.0.31";
+const libVersion = "^0.0.17";
 
 export default class Init extends Command {
 
