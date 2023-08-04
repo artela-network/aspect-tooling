@@ -1,6 +1,7 @@
-import {  BlockOutput, EthBlock, StateChanges,ScheduleMsg } from "../proto";
+import { BlockOutput, EthBlock, StateChanges, ScheduleMsg } from "../proto";
 import { Protobuf } from "as-proto/assembly";
-import { BigInt,ABool, AI32, AString, AUint8Array} from "../message";
+import { BigInt, ABool, AI32, AString, AUint8Array } from "../message";
+import { InnerTransactions } from "../proto";
 
 
 declare namespace __HostApi__ {
@@ -27,6 +28,8 @@ declare namespace __HostApi__ {
   function getStateChanges(addr: i32, variable: i32, key: i32): i32
 
   function hash(hasher: i32, dataPtr: i32): i32;
+
+  function getCallStack(): i32
 }
 
 export namespace crypto {
@@ -142,6 +145,13 @@ export class Context {
     data.load(dataPtr);
 
     return Protobuf.decode<StateChanges>(data.get(), StateChanges.decode);
+  }
+
+  static getCallStack(): InnerTransactions {
+    let txsPtr = __HostApi__.getCallStack();
+    let data = new AUint8Array();
+    data.load(txsPtr);
+    return Protobuf.decode<InnerTransactions>(data.get(), InnerTransactions.decode);
   }
 
   static currentBalance(acct: string): BigInt | null {
