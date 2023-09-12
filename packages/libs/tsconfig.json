@@ -2,13 +2,13 @@
   "extends": "assemblyscript/std/assembly",
   "include": [
     "index.ts",
-    "abi",
-    "common",
+    "common/abi",
+    "warp/common",
     "entry",
     "host",
-    "message",
-    "scheduler",
-    "states",
+    "types/message",
+    "warp/scheduler",
+    "common/states",
     "types",
     "proto"
   ]
