@@ -18,7 +18,7 @@ function AssertTrue(cond: bool, msg: string): void {
 
 class AspectTest implements IAspectOperation {
     operation(ctx: OperationCtx): AspectResponse {
-        AssertTrue(ctx.tx != null, 'operation tx is empty')
+        AssertTrue(ctx.input != null, 'operation input is empty')
         AssertTrue(ctx.context != null, "operation context is empty")
         AssertTrue(ctx.staticCaller != null, "operation context is empty")
         return DefAspectResponse();

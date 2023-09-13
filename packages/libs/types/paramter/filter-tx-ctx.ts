@@ -21,7 +21,7 @@ export class FilterTxCtx {
     }
 
     get tx(): EthTransaction {
-        return this._tx;
+        return this._tx!;
     }
 
     get context(): AspectContext {
