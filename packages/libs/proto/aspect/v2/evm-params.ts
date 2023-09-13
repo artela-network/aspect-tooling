@@ -20,7 +20,7 @@ export class EvmParams {
     if (extraEips.length !== 0) {
       for (let i: i32 = 0; i < extraEips.length; ++i) {
         writer.uint32(32);
-        writer.uint32(extraEips[i]);
+        writer.int64(extraEips[i]);
       }
     }
 
@@ -48,7 +48,7 @@ export class EvmParams {
           break;
 
         case 4:
-          message.extraEips.push(reader.uint32());
+          message.extraEips.push(reader.int64());
           break;
 
         case 5:
@@ -67,14 +67,14 @@ export class EvmParams {
   evmDenom: string;
   enableCreate: bool;
   enableCall: bool;
-  extraEips: Array<u32>;
+  extraEips: Array<i64>;
   allowUnprotectedTxs: bool;
 
   constructor(
     evmDenom: string = "",
     enableCreate: bool = false,
     enableCall: bool = false,
-    extraEips: Array<u32> = [],
+    extraEips: Array<i64> = [],
     allowUnprotectedTxs: bool = false
   ) {
     this.evmDenom = evmDenom;

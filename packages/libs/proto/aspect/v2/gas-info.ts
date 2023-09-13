@@ -12,6 +12,9 @@ export class GasInfo {
 
     writer.uint32(16);
     writer.uint64(message.gasUsed);
+
+    writer.uint32(24);
+    writer.uint64(message.gas);
   }
 
   static decode(reader: Reader, length: i32): GasInfo {
@@ -29,6 +32,10 @@ export class GasInfo {
           message.gasUsed = reader.uint64();
           break;
 
+        case 3:
+          message.gas = reader.uint64();
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -40,9 +47,11 @@ export class GasInfo {
 
   gasWanted: u64;
   gasUsed: u64;
+  gas: u64;
 
-  constructor(gasWanted: u64 = 0, gasUsed: u64 = 0) {
+  constructor(gasWanted: u64 = 0, gasUsed: u64 = 0, gas: u64 = 0) {
     this.gasWanted = gasWanted;
     this.gasUsed = gasUsed;
+    this.gas = gas;
   }
 }

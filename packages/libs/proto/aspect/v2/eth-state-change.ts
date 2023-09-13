@@ -12,6 +12,9 @@ export class EthStateChange {
 
     writer.uint32(18);
     writer.bytes(message.value);
+
+    writer.uint32(24);
+    writer.uint64(message.callIndex);
   }
 
   static decode(reader: Reader, length: i32): EthStateChange {
@@ -29,6 +32,10 @@ export class EthStateChange {
           message.value = reader.bytes();
           break;
 
+        case 3:
+          message.callIndex = reader.uint64();
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -40,9 +47,15 @@ export class EthStateChange {
 
   account: string;
   value: Uint8Array;
+  callIndex: u64;
 
-  constructor(account: string = "", value: Uint8Array = new Uint8Array(0)) {
+  constructor(
+    account: string = "",
+    value: Uint8Array = new Uint8Array(0),
+    callIndex: u64 = 0
+  ) {
     this.account = account;
     this.value = value;
+    this.callIndex = callIndex;
   }
 }

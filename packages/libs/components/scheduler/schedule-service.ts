@@ -134,7 +134,7 @@ export class ScheduleTx {
         tx.gas = 0;
         tx.gasPrice = "0";
         tx.to = this._address;
-        tx.value = msg.value;
+        tx.value = msg.value.toString();
         tx.input = inputBytes;
         tx.accessList = [];
         tx.blockHash = new Uint8Array(0);

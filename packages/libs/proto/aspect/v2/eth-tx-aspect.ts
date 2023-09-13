@@ -6,6 +6,7 @@
 import { Writer, Reader } from "as-proto/assembly";
 import { EthTransaction } from "./eth-transaction";
 import { EthStackTransaction } from "./eth-stack-transaction";
+import { GasInfo } from "./gas-info";
 
 export class EthTxAspect {
   static encode(message: EthTxAspect, writer: Writer): void {
@@ -22,6 +23,14 @@ export class EthTxAspect {
       writer.uint32(18);
       writer.fork();
       EthStackTransaction.encode(currInnerTx, writer);
+      writer.ldelim();
+    }
+
+    const gasInfo = message.gasInfo;
+    if (gasInfo !== null) {
+      writer.uint32(26);
+      writer.fork();
+      GasInfo.encode(gasInfo, writer);
       writer.ldelim();
     }
   }
@@ -44,6 +53,10 @@ export class EthTxAspect {
           );
           break;
 
+        case 3:
+          message.gasInfo = GasInfo.decode(reader, reader.uint32());
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -55,12 +68,15 @@ export class EthTxAspect {
 
   tx: EthTransaction | null;
   currInnerTx: EthStackTransaction | null;
+  gasInfo: GasInfo | null;
 
   constructor(
     tx: EthTransaction | null = null,
-    currInnerTx: EthStackTransaction | null = null
+    currInnerTx: EthStackTransaction | null = null,
+    gasInfo: GasInfo | null = null
   ) {
     this.tx = tx;
     this.currInnerTx = currInnerTx;
+    this.gasInfo = gasInfo;
   }
 }

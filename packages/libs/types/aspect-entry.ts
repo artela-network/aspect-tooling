@@ -4,9 +4,7 @@ import {IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx} from '
 import {
     FilterTxCtx,
     OnBlockInitializeCtx,
-    VerifyTxCtx,
-    VerifyAccountCtx,
-    GetPayMasterCtx,
+
     PreTxExecuteCtx,
     PreContractCallCtx,
     PostContractCallCtx,
@@ -23,7 +21,7 @@ import {
     StoreAspectResponse,
     StoreOutputBool
 } from "./message-helper";
-import {AspectResponse, BoolData, EthInnerTransaction, StringData} from "../proto";
+import {AspectResponse, BoolData, EthInnerTransaction, } from "../proto";
 import {UtilityProvider} from "../system";
 
 export class Entry {

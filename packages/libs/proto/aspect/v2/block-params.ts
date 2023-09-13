@@ -8,10 +8,10 @@ import { Writer, Reader } from "as-proto/assembly";
 export class BlockParams {
   static encode(message: BlockParams, writer: Writer): void {
     writer.uint32(8);
-    writer.uint32(message.maxBytes);
+    writer.int64(message.maxBytes);
 
     writer.uint32(16);
-    writer.int32(message.maxGas);
+    writer.int64(message.maxGas);
   }
 
   static decode(reader: Reader, length: i32): BlockParams {
@@ -22,11 +22,11 @@ export class BlockParams {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.maxBytes = reader.uint32();
+          message.maxBytes = reader.int64();
           break;
 
         case 2:
-          message.maxGas = reader.int32();
+          message.maxGas = reader.int64();
           break;
 
         default:
@@ -38,10 +38,10 @@ export class BlockParams {
     return message;
   }
 
-  maxBytes: u32;
-  maxGas: i32;
+  maxBytes: i64;
+  maxGas: i64;
 
-  constructor(maxBytes: u32 = 0, maxGas: i32 = 0) {
+  constructor(maxBytes: i64 = 0, maxGas: i64 = 0) {
     this.maxBytes = maxBytes;
     this.maxGas = maxGas;
   }

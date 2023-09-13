@@ -8,10 +8,10 @@ import { Writer, Reader } from "as-proto/assembly";
 export class Clique {
   static encode(message: Clique, writer: Writer): void {
     writer.uint32(8);
-    writer.uint32(message.period);
+    writer.uint64(message.period);
 
     writer.uint32(16);
-    writer.uint32(message.epoch);
+    writer.uint64(message.epoch);
   }
 
   static decode(reader: Reader, length: i32): Clique {
@@ -22,11 +22,11 @@ export class Clique {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.period = reader.uint32();
+          message.period = reader.uint64();
           break;
 
         case 2:
-          message.epoch = reader.uint32();
+          message.epoch = reader.uint64();
           break;
 
         default:
@@ -38,10 +38,10 @@ export class Clique {
     return message;
   }
 
-  period: u32;
-  epoch: u32;
+  period: u64;
+  epoch: u64;
 
-  constructor(period: u32 = 0, epoch: u32 = 0) {
+  constructor(period: u64 = 0, epoch: u64 = 0) {
     this.period = period;
     this.epoch = epoch;
   }

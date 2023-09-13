@@ -4,7 +4,6 @@
 //   protoc        v4.23.2
 
 import { Writer, Reader } from "as-proto/assembly";
-import { Ethash } from "./ethash";
 import { Clique } from "./clique";
 
 export class ChainConfig {
@@ -75,17 +74,9 @@ export class ChainConfig {
     writer.uint32(176);
     writer.bool(message.terminalTotalDifficultyPassed);
 
-    const ethash = message.ethash;
-    if (ethash !== null) {
-      writer.uint32(186);
-      writer.fork();
-      Ethash.encode(ethash, writer);
-      writer.ldelim();
-    }
-
     const clique = message.clique;
     if (clique !== null) {
-      writer.uint32(194);
+      writer.uint32(186);
       writer.fork();
       Clique.encode(clique, writer);
       writer.ldelim();
@@ -188,10 +179,6 @@ export class ChainConfig {
           break;
 
         case 23:
-          message.ethash = Ethash.decode(reader, reader.uint32());
-          break;
-
-        case 24:
           message.clique = Clique.decode(reader, reader.uint32());
           break;
 
@@ -226,7 +213,6 @@ export class ChainConfig {
   cancunBlock: string;
   terminalTotalDifficulty: string;
   terminalTotalDifficultyPassed: bool;
-  ethash: Ethash | null;
   clique: Clique | null;
 
   constructor(
@@ -252,7 +238,6 @@ export class ChainConfig {
     cancunBlock: string = "",
     terminalTotalDifficulty: string = "",
     terminalTotalDifficultyPassed: bool = false,
-    ethash: Ethash | null = null,
     clique: Clique | null = null
   ) {
     this.chainId = chainId;
@@ -277,7 +262,6 @@ export class ChainConfig {
     this.cancunBlock = cancunBlock;
     this.terminalTotalDifficulty = terminalTotalDifficulty;
     this.terminalTotalDifficultyPassed = terminalTotalDifficultyPassed;
-    this.ethash = ethash;
     this.clique = clique;
   }
 }

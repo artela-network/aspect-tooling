@@ -37,10 +37,8 @@ export class AspectContext {
         const array = new Array<string>(1);
         array.push(key);
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_ASPECT_CONTEXT, array);
-        if (!response.data.value) {
-            return null
-        }
-        const stringData = Protobuf.decode<StringData>(response.data.value, StringData.decode);
+
+        const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
         return new ContextValue(stringData.data)
     }
 

@@ -5,21 +5,21 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 
-export class EnvContent {
-  static encode(message: EnvContent, writer: Writer): void {
+export class VersionParams {
+  static encode(message: VersionParams, writer: Writer): void {
     writer.uint32(8);
-    writer.uint64(message.baseFee);
+    writer.uint64(message.appVersion);
   }
 
-  static decode(reader: Reader, length: i32): EnvContent {
+  static decode(reader: Reader, length: i32): VersionParams {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new EnvContent();
+    const message = new VersionParams();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.baseFee = reader.uint64();
+          message.appVersion = reader.uint64();
           break;
 
         default:
@@ -31,9 +31,9 @@ export class EnvContent {
     return message;
   }
 
-  baseFee: u64;
+  appVersion: u64;
 
-  constructor(baseFee: u64 = 0) {
-    this.baseFee = baseFee;
+  constructor(appVersion: u64 = 0) {
+    this.appVersion = appVersion;
   }
 }

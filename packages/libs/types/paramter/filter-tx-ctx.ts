@@ -20,11 +20,11 @@ export class FilterTxCtx {
         return this._staticCaller;
     }
 
-    get tx(): EthTransaction | null {
+    get tx(): EthTransaction {
         return this._tx;
     }
 
-    get context(): AspectContext | null {
+    get context(): AspectContext {
         return this._context;
     }
 }

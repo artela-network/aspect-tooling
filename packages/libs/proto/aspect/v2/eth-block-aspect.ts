@@ -5,6 +5,7 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 import { EthBlockHeader } from "./eth-block-header";
+import { GasInfo } from "./gas-info";
 
 export class EthBlockAspect {
   static encode(message: EthBlockAspect, writer: Writer): void {
@@ -13,6 +14,14 @@ export class EthBlockAspect {
       writer.uint32(10);
       writer.fork();
       EthBlockHeader.encode(header, writer);
+      writer.ldelim();
+    }
+
+    const gasInfo = message.gasInfo;
+    if (gasInfo !== null) {
+      writer.uint32(18);
+      writer.fork();
+      GasInfo.encode(gasInfo, writer);
       writer.ldelim();
     }
   }
@@ -28,6 +37,10 @@ export class EthBlockAspect {
           message.header = EthBlockHeader.decode(reader, reader.uint32());
           break;
 
+        case 2:
+          message.gasInfo = GasInfo.decode(reader, reader.uint32());
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -38,8 +51,13 @@ export class EthBlockAspect {
   }
 
   header: EthBlockHeader | null;
+  gasInfo: GasInfo | null;
 
-  constructor(header: EthBlockHeader | null = null) {
+  constructor(
+    header: EthBlockHeader | null = null,
+    gasInfo: GasInfo | null = null
+  ) {
     this.header = header;
+    this.gasInfo = gasInfo;
   }
 }

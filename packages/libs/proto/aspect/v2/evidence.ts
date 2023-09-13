@@ -5,7 +5,6 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 import { Validator } from "./validator";
-import { Timestamp } from "../../google/protobuf/timestamp";
 import { EvidenceType } from "./evidence-type";
 
 export class Evidence {
@@ -24,13 +23,8 @@ export class Evidence {
     writer.uint32(24);
     writer.int64(message.height);
 
-    const time = message.time;
-    if (time !== null) {
-      writer.uint32(34);
-      writer.fork();
-      Timestamp.encode(time, writer);
-      writer.ldelim();
-    }
+    writer.uint32(32);
+    writer.int64(message.time);
 
     writer.uint32(40);
     writer.int64(message.totalVotingPower);
@@ -56,7 +50,7 @@ export class Evidence {
           break;
 
         case 4:
-          message.time = Timestamp.decode(reader, reader.uint32());
+          message.time = reader.int64();
           break;
 
         case 5:
@@ -75,14 +69,14 @@ export class Evidence {
   type: EvidenceType;
   validator: Validator | null;
   height: i64;
-  time: Timestamp | null;
+  time: i64;
   totalVotingPower: i64;
 
   constructor(
     type: EvidenceType = 0,
     validator: Validator | null = null,
     height: i64 = 0,
-    time: Timestamp | null = null,
+    time: i64 = 0,
     totalVotingPower: i64 = 0
   ) {
     this.type = type;

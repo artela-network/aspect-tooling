@@ -8,16 +8,16 @@ import { Writer, Reader } from "as-proto/assembly";
 export class GasMeter {
   static encode(message: GasMeter, writer: Writer): void {
     writer.uint32(8);
-    writer.uint32(message.gasConsumed);
+    writer.uint64(message.gasConsumed);
 
     writer.uint32(16);
-    writer.uint32(message.gasConsumedToLimit);
+    writer.uint64(message.gasConsumedToLimit);
 
     writer.uint32(24);
-    writer.uint32(message.gasRemaining);
+    writer.uint64(message.gasRemaining);
 
     writer.uint32(32);
-    writer.uint32(message.limit);
+    writer.uint64(message.limit);
   }
 
   static decode(reader: Reader, length: i32): GasMeter {
@@ -28,19 +28,19 @@ export class GasMeter {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.gasConsumed = reader.uint32();
+          message.gasConsumed = reader.uint64();
           break;
 
         case 2:
-          message.gasConsumedToLimit = reader.uint32();
+          message.gasConsumedToLimit = reader.uint64();
           break;
 
         case 3:
-          message.gasRemaining = reader.uint32();
+          message.gasRemaining = reader.uint64();
           break;
 
         case 4:
-          message.limit = reader.uint32();
+          message.limit = reader.uint64();
           break;
 
         default:
@@ -52,16 +52,16 @@ export class GasMeter {
     return message;
   }
 
-  gasConsumed: u32;
-  gasConsumedToLimit: u32;
-  gasRemaining: u32;
-  limit: u32;
+  gasConsumed: u64;
+  gasConsumedToLimit: u64;
+  gasRemaining: u64;
+  limit: u64;
 
   constructor(
-    gasConsumed: u32 = 0,
-    gasConsumedToLimit: u32 = 0,
-    gasRemaining: u32 = 0,
-    limit: u32 = 0
+    gasConsumed: u64 = 0,
+    gasConsumedToLimit: u64 = 0,
+    gasRemaining: u64 = 0,
+    limit: u64 = 0
   ) {
     this.gasConsumed = gasConsumed;
     this.gasConsumedToLimit = gasConsumedToLimit;

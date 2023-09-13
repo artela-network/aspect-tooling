@@ -3,13 +3,13 @@ import {AspectContext, StaticCaller} from "../../system";
 
 
 export class OperationCtx {
-    private input: uint8Array
+    private _input: Uint8Array
     private _context: AspectContext | null;
     private _staticCaller: StaticCaller;
 
 
     constructor(tx: EthTransaction | null) {
-        this.input = tx?.input;
+        this._input = tx!.input;
         this._context = new AspectContext();
         this._staticCaller=new StaticCaller();
     };
@@ -19,8 +19,9 @@ export class OperationCtx {
         return this._staticCaller;
     }
 
-    get tx(): EthTransaction | null {
-        return this._tx;
+
+    get input(): Uint8Array {
+        return this._input;
     }
 
     get context(): AspectContext | null {

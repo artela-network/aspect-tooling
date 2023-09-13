@@ -12,3 +12,4 @@ export {VerifyAccountCtx, VerifyTxCtx} from './paramter/verify-tx-ctx';
 
 export {AString, AUint8Array, ABool, AI32, AI64} from './common/basic-types';
 export {BigInt} from './common/bigint';
+export {Entry} from './aspect-entry'

@@ -5,9 +5,9 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 import { BlockParams } from "./block-params";
-import { Evidence } from "./evidence";
-import { Validator } from "./validator";
-import { Version } from "./version";
+import { EvidenceParams } from "./evidence-params";
+import { ValidatorParams } from "./validator-params";
+import { VersionParams } from "./version-params";
 
 export class ConsParams {
   static encode(message: ConsParams, writer: Writer): void {
@@ -23,7 +23,7 @@ export class ConsParams {
     if (evidence !== null) {
       writer.uint32(18);
       writer.fork();
-      Evidence.encode(evidence, writer);
+      EvidenceParams.encode(evidence, writer);
       writer.ldelim();
     }
 
@@ -31,7 +31,7 @@ export class ConsParams {
     if (validator !== null) {
       writer.uint32(26);
       writer.fork();
-      Validator.encode(validator, writer);
+      ValidatorParams.encode(validator, writer);
       writer.ldelim();
     }
 
@@ -39,7 +39,7 @@ export class ConsParams {
     if (version !== null) {
       writer.uint32(34);
       writer.fork();
-      Version.encode(version, writer);
+      VersionParams.encode(version, writer);
       writer.ldelim();
     }
   }
@@ -56,15 +56,15 @@ export class ConsParams {
           break;
 
         case 2:
-          message.evidence = Evidence.decode(reader, reader.uint32());
+          message.evidence = EvidenceParams.decode(reader, reader.uint32());
           break;
 
         case 3:
-          message.validator = Validator.decode(reader, reader.uint32());
+          message.validator = ValidatorParams.decode(reader, reader.uint32());
           break;
 
         case 4:
-          message.version = Version.decode(reader, reader.uint32());
+          message.version = VersionParams.decode(reader, reader.uint32());
           break;
 
         default:
@@ -77,15 +77,15 @@ export class ConsParams {
   }
 
   block: BlockParams | null;
-  evidence: Evidence | null;
-  validator: Validator | null;
-  version: Version | null;
+  evidence: EvidenceParams | null;
+  validator: ValidatorParams | null;
+  version: VersionParams | null;
 
   constructor(
     block: BlockParams | null = null,
-    evidence: Evidence | null = null,
-    validator: Validator | null = null,
-    version: Version | null = null
+    evidence: EvidenceParams | null = null,
+    validator: ValidatorParams | null = null,
+    version: VersionParams | null = null
   ) {
     this.block = block;
     this.evidence = evidence;
