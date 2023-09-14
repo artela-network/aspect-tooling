@@ -4,10 +4,9 @@ import {
     DataSpaceType,
     StringData
 } from "../proto";
-import {Protobuf} from "as-proto/assembly";
 import {ABool, AString, AUint8Array} from "../types";
 import {ContextValue, ToString} from "./common";
-
+import {Protobuf} from 'as-proto/assembly';
 
 declare namespace __RuntimeContextApi__ {
     function get(query: i32): i32
@@ -17,9 +16,7 @@ declare namespace __RuntimeContextApi__ {
 
 class RuntimeContext {
     public get(dataSpace: DataSpaceType, keys: Array<string>): ContextQueryResponse | null {
-        const contextQueryRequest = new ContextQueryRequest();
-        contextQueryRequest.dataSpace = dataSpace;
-        contextQueryRequest.conditions = keys
+        const contextQueryRequest = new ContextQueryRequest(dataSpace,keys);
         const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
         const input = new AUint8Array();
         input.set(encoded);
@@ -35,9 +32,8 @@ class RuntimeContext {
 export class AspectContext {
     public get(key: string): ContextValue | null {
         const array = new Array<string>(1);
-        array.push(key);
+        array[0]=key;
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_ASPECT_CONTEXT, array);
-
         const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
         return new ContextValue(stringData.data)
     }

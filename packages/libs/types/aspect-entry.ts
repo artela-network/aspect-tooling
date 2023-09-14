@@ -75,14 +75,10 @@ export class Entry {
         let out: AspectResponse;
         if (method == PointCutType.ON_TX_RECEIVE_METHOD) {
             const arg = LoadEthTxAspect(argPtr);
-
             const ctx = new FilterTxCtx(arg.tx);
             const isFilter = this.transactionAspect!.filterTx(ctx);
-
             const boolData = new BoolData(isFilter);
-
             out = NewDataResponse(true, "success", MessageUrlType.BoolData, boolData, BoolData.encode)
-
 
         } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {
             const arg = LoadEthTxAspect(argPtr);
