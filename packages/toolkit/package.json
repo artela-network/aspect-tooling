@@ -54,7 +54,7 @@
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-typescript": "^0.14.0",
-    "oclif": "^3.9.1",
+    "oclif": "^3.16.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.0",
     "typescript": "^5.1.6",
