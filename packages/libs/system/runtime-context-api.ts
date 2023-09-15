@@ -36,8 +36,12 @@ export class AspectContext {
         array[1] = aspectId;
         array[2] = contractAddr;
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_ASPECT_CONTEXT, array);
-        const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
-        return new ContextValue(stringData.data)
+        if (!response!.result!.success) {
+            return new ContextValue("")
+        } else {
+            const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
+            return new ContextValue(stringData.data)
+        }
     }
 
     public set<T>(key: string, value: T): bool {

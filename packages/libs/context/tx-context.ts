@@ -8,9 +8,9 @@ import {
     EthInnerTransaction,
     EthReceipt,
     EthStateChanges,
-    EthTransaction
+    EthTransaction,
 } from "../proto";
-import {RuntimeContextAccessor, StateDbAccessor, UtilityProvider} from "../system";
+import {RuntimeContextAccessor, StateDbAccessor, TraceCtx, UtilityProvider} from "../system";
 import {Protobuf} from "as-proto/assembly";
 
 export class EvmInnerTxContext {
@@ -47,16 +47,19 @@ export class EvmInnerTxContext {
     }
 }
 
-export class EvmTxContext {
-    tx: EthTransaction | null;
+export class TraceContext implements TraceCtx {
+    getCallStack(): EthCallStacks {
+        const response = RuntimeContextAccessor.get(DataSpaceType.TX_CALL_TREE, null);
+        if (!response.result.success || !response.data.value) {
+            return null
+        }
+        return Protobuf.decode<EthCallStacks>(response.data.value, EthCallStacks.decode);
 
-    constructor(tx: EthTransaction | null) {
-        this.tx = tx;
     }
 
-    public getStateChanges(variable: string, key: Uint8Array): EthStateChanges {
-
+    getStateChanges(addr: string, variable: string, key: Uint8Array): EthStateChanges {
         const array = Array<string>();
+        array.push(addr)
         array.push(variable)
         const keyStr = UtilityProvider.uint8ArrayToHex(key);
         array.push(keyStr)
@@ -65,20 +68,16 @@ export class EvmTxContext {
         if (!response.result.success || !response.data.value) {
             return null
         }
-
         return Protobuf.decode<EthStateChanges>(response.data.value, EthStateChanges.decode);
-
     }
+}
 
+export class EvmTxContext {
+    tx: EthTransaction | null;
 
-    public callTree(): EthCallStacks {
-        const response = RuntimeContextAccessor.get(DataSpaceType.TX_CALL_TREE, null);
-        if (!response.result.success || !response.data.value) {
-            return null
-        }
-        return Protobuf.decode<EthCallStacks>(response.data.value, EthCallStacks.decode);
+    constructor(tx: EthTransaction | null) {
+        this.tx = tx;
     }
-
 
     public getState(hash: string): string {
         return StateDbAccessor.getState(this.tx!.to, hash)
@@ -126,6 +125,7 @@ class TxContext {
 }
 
 export const TxContextProvider = new TxContext()
+
 
 export class EthReceiptContext {
     public get(): EthReceipt | null {

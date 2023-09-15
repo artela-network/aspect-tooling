@@ -53,7 +53,6 @@ export class Entry {
         const methodArg = new AString();
         methodArg.load(methodPtr);
         const method = methodArg.get();
-        UtilityProvider.sLog(method)
 
         if (method == PointCutType.ON_CONTRACT_BINDING_METHOD && this.transactionAspect) {
             const arg = LoadInputString(argPtr);

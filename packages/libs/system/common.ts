@@ -1,5 +1,10 @@
 import {BigInt} from "../types";
+import {EthCallStacks, EthStackTransaction, EthStateChanges} from "../proto";
 
+export interface TraceCtx {
+    getStateChanges(addr: string, variable: string, key: Uint8Array): EthStateChanges;
+    getCallStack(): EthCallStacks;
+}
 
 export class ContextValue {
     val: string;

@@ -9,7 +9,7 @@ export class PreContractCallCtx {
     private _innerTx: EthInnerTransaction | null;
 
     private _innerTxContext: EvmInnerTxContext | null;
-    private _context: AspectContext | null;
+    private _context: AspectContext;
     private _jitCall: JustInTimeCaller
     private _blockContext: BlockContext;
 
@@ -35,7 +35,7 @@ export class PreContractCallCtx {
         return this._tx;
     }
 
-    get innerTx(): EthInnerTransaction | null {
+    get currInnerTx(): EthInnerTransaction | null {
         return this._innerTx;
     }
 
@@ -43,7 +43,7 @@ export class PreContractCallCtx {
         return this._innerTxContext;
     }
 
-    get context(): AspectContext | null {
+    get context(): AspectContext {
         return this._context;
     }
 
@@ -58,7 +58,7 @@ export class PostContractCallCtx {
     private _innerTx: EthStackTransaction | null;
 
     private _innerTxContext: EvmInnerTxContext | null;
-    private _context: AspectContext | null;
+    private _context: AspectContext;
     private _jitCall: JustInTimeCaller
     private _blockContext: BlockContext;
 
@@ -81,11 +81,11 @@ export class PostContractCallCtx {
         return this._blockContext;
     }
 
-    get innerTx(): EthStackTransaction | null {
+    get currInnerTx(): EthStackTransaction |null {
         return this._innerTx;
     }
 
-    get tx(): EthTransaction | null {
+    get tx(): EthTransaction {
         return this._tx;
     }
 
@@ -98,7 +98,7 @@ export class PostContractCallCtx {
         return this._jitCall;
     }
 
-    get context(): AspectContext | null {
+    get context(): AspectContext {
         return this._context;
     }
 
