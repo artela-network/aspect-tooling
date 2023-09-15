@@ -1,4 +1,4 @@
-import {CallMessageRequest, CallMessageResponse} from "../proto";
+import {CallMessageRequest, CallMessageResponse, JitInherentRequest, JitInherentResponse} from "../proto";
 import {Protobuf} from "as-proto/assembly";
 import {AUint8Array} from "../types";
 
@@ -23,14 +23,14 @@ export class StaticCaller {
 }
 
 export class JustInTimeCaller {
-    public jitCall(request: CallMessageRequest): CallMessageResponse | null {
-        const encoded = Protobuf.encode(request, CallMessageRequest.encode);
+    public jitCall(request: JitInherentRequest): JitInherentResponse | null {
+        const encoded = Protobuf.encode(request, JitInherentRequest.encode);
         const input = new AUint8Array();
         input.set(encoded);
         const inputPtr = input.store();
         const ret = __EvmCallApi__.jitCall(inputPtr);
         const bytes = new AUint8Array();
         bytes.load(ret);
-        return Protobuf.decode<CallMessageResponse>(bytes.get(), CallMessageResponse.decode);
+        return Protobuf.decode<JitInherentResponse>(bytes.get(), JitInherentResponse.decode);
     }
 }
