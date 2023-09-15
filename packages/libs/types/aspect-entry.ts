@@ -14,14 +14,14 @@ import {
 } from ".";
 import {PointCutType} from "./aspect-interface";
 import {
-    DefAspectResponse, ErrAspectResponse,
+    DefAspectResponse, ErrAspectResponse, ErrorRunResult,
     LoadEthBlockAspect,
     LoadEthTxAspect,
     LoadInputString, MessageUrlType, NewDataResponse,
     StoreAspectResponse,
     StoreOutputBool
 } from "./message-helper";
-import {AspectResponse, BoolData, EthInnerTransaction, } from "../proto";
+import {AspectResponse, BoolData, EthInnerTransaction,} from "../proto";
 import {UtilityProvider} from "../system";
 
 export class Entry {
@@ -91,7 +91,7 @@ export class Entry {
             const arg = LoadEthTxAspect(argPtr);
             if (arg.currInnerTx == null) {
                 out = ErrAspectResponse("currInnerTx is null")
-            }else {
+            } else {
                 const ethInnerTransaction = new EthInnerTransaction(
                     arg.currInnerTx!.from,
                     arg.currInnerTx!.to,
@@ -134,12 +134,8 @@ export class Entry {
             const arg = LoadEthTxAspect(argPtr);
             const ctx = new OperationCtx(arg.tx);
             out = this.operationAspect!.operation(ctx)
-        } else {
-            throw new Error("method " + method + " not found or not implemented");
-        }
-
-        // block level aspect
-        if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
+        } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
+            // block level aspect
             const block = LoadEthBlockAspect(argPtr);
             const ctx = new OnBlockInitializeCtx(block.header);
             this.blockAspect!.onBlockInitialize(ctx);
@@ -149,6 +145,8 @@ export class Entry {
             const ctx = new OnBlockFinalizeCtx(block.header);
             this.blockAspect!.onBlockFinalize(ctx);
             out = DefAspectResponse();
+        } else {
+            out = ErrAspectResponse("method " + method + " not found or not implemented");
         }
 
         return StoreAspectResponse(out);

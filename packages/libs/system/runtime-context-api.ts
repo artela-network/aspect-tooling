@@ -16,7 +16,7 @@ declare namespace __RuntimeContextApi__ {
 
 class RuntimeContext {
     public get(dataSpace: DataSpaceType, keys: Array<string>): ContextQueryResponse | null {
-        const contextQueryRequest = new ContextQueryRequest(dataSpace,keys);
+        const contextQueryRequest = new ContextQueryRequest(dataSpace, keys);
         const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
         const input = new AUint8Array();
         input.set(encoded);
@@ -30,9 +30,11 @@ class RuntimeContext {
 
 
 export class AspectContext {
-    public get(key: string): ContextValue | null {
-        const array = new Array<string>(1);
-        array[0]=key;
+    public get(key: string, aspectId: string = "", contractAddr: string = ""): ContextValue | null {
+        const array = new Array<string>(3);
+        array[0] = key;
+        array[1] = aspectId;
+        array[2] = contractAddr;
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_ASPECT_CONTEXT, array);
         const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
         return new ContextValue(stringData.data)

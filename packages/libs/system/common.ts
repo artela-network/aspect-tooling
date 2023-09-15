@@ -55,6 +55,9 @@ export function ToContextValue(value: string): ContextValue {
 
 export function ToString<T>(value: T): string {
 
+    if (!value){
+        return ""
+    }
     let valueStr: string;
     if (value instanceof string) valueStr = value.toString();
     if (value instanceof bool) valueStr = value ? "1" : "0";
