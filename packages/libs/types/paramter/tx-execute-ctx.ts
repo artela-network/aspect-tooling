@@ -1,19 +1,21 @@
 import {EthTransaction} from "../../proto";
-import {BlockContext, EvmTxContext} from "../../context";
+import {BlockContext} from "../../context";
 import {AspectContext, StaticCaller} from "../../system";
+import {StateContext} from "../../system/statedb-api";
+import {TraceContext} from "../../context/tx-context";
 
 export class PreTxExecuteCtx {
     private _tx: EthTransaction | null;
     private _aspectContext: AspectContext | null;
-    private _staticCaller: StaticCaller | null;
-    private _evmTxContext: EvmTxContext | null;
+    private _staticCaller: StaticCaller;
+    private _stateContext: StateContext ;
     private _blockContext: BlockContext;
 
     constructor(tx: EthTransaction | null) {
         this._tx = tx;
         this._aspectContext = new AspectContext();
         this._staticCaller = new StaticCaller();
-        this._evmTxContext = new EvmTxContext(tx);
+        this._stateContext = new StateContext();
         this._blockContext = new BlockContext();
     };
 
@@ -22,8 +24,9 @@ export class PreTxExecuteCtx {
         return this._staticCaller;
     }
 
-    get evmTxContext(): EvmTxContext | null {
-        return this._evmTxContext;
+
+    get stateContext(): StateContext | null {
+        return this._stateContext;
     }
 
     get blockContext(): BlockContext {
@@ -44,14 +47,16 @@ export class PostTxExecuteCtx {
     private _tx: EthTransaction | null;
     private _aspectContext: AspectContext | null;
     private _staticCaller: StaticCaller | null;
-    private _evmTxContext: EvmTxContext | null;
+    private _stateContext: StateContext ;
+    private _traceContext: TraceContext ;
     private _blockContext: BlockContext;
 
     constructor(tx: EthTransaction | null) {
         this._tx = tx;
         this._aspectContext = new AspectContext();
         this._staticCaller = new StaticCaller();
-        this._evmTxContext = new EvmTxContext(tx);
+        this._stateContext = new StateContext();
+        this._traceContext = new TraceContext();
         this._blockContext = new BlockContext();
     };
 
@@ -60,8 +65,13 @@ export class PostTxExecuteCtx {
         return this._staticCaller;
     }
 
-    get evmTxContext(): EvmTxContext | null {
-        return this._evmTxContext;
+
+    get stateContext(): StateContext {
+        return this._stateContext;
+    }
+
+    get traceContext(): TraceContext {
+        return this._traceContext;
     }
 
     get blockContext(): BlockContext {

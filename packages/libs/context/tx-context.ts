@@ -1,104 +1,43 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 
 import {
-    GasMeter,
-    TxExtProperty,
     DataSpaceType,
     EthCallStacks,
-    EthInnerTransaction,
     EthReceipt,
     EthStateChanges,
     EthTransaction,
+    GasMeter,
+    TxExtProperty,
 } from "../proto";
-import {RuntimeContextAccessor, StateDbAccessor, TraceCtx, UtilityProvider} from "../system";
+import { RuntimeContextAccessor, TraceCtx, UtilityProvider} from "../system";
 import {Protobuf} from "as-proto/assembly";
 
-export class EvmInnerTxContext {
-    tx: EthInnerTransaction | null;
-
-    constructor(tx: EthInnerTransaction | null) {
-        this.tx = tx;
-    }
-
-
-    public callTree(): EthCallStacks {
-        const response = RuntimeContextAccessor.get(DataSpaceType.TX_CALL_TREE, null);
-        if (!response.result.success || !response.data.value) {
-            return null
-        }
-        return Protobuf.decode<EthCallStacks>(response.data.value, EthCallStacks.decode);
-    }
-
-
-    public getState(hash: string): string {
-        return StateDbAccessor.getState(this.tx!.to, hash)
-    }
-
-    public getRefund(): i64 {
-        return StateDbAccessor.getRefund()
-    }
-
-    public getCodeHash(): string {
-        return StateDbAccessor.getCodeHash(this.tx!.to)
-    }
-
-    public getNonce(): i64 {
-        return StateDbAccessor.getNonce(this.tx!.from)
-    }
-}
-
 export class TraceContext implements TraceCtx {
-    getCallStack(): EthCallStacks {
+    getCallStack(): EthCallStacks |null {
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_CALL_TREE, null);
-        if (!response.result.success || !response.data.value) {
+        if (!response!.result!.success) {
             return null
         }
-        return Protobuf.decode<EthCallStacks>(response.data.value, EthCallStacks.decode);
+        return Protobuf.decode<EthCallStacks>(response!.data!.value, EthCallStacks.decode);
 
     }
 
-    getStateChanges(addr: string, variable: string, key: Uint8Array): EthStateChanges {
-        const array = Array<string>();
-        array.push(addr)
-        array.push(variable)
-        const keyStr = UtilityProvider.uint8ArrayToHex(key);
-        array.push(keyStr)
+    getStateChanges(addr: string, variable: string, key: Uint8Array): EthStateChanges|null {
+        const array = new Array<string>(3);
+        array[0]=addr
+        array[1]=variable
+        array[2]=UtilityProvider.uint8ArrayToHex(key)
+
 
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
-        if (!response.result.success || !response.data.value) {
+        if (!response!.result!.success) {
             return null
         }
-        return Protobuf.decode<EthStateChanges>(response.data.value, EthStateChanges.decode);
+        return Protobuf.decode<EthStateChanges>(response!.data!.value, EthStateChanges.decode);
     }
-}
-
-export class EvmTxContext {
-    tx: EthTransaction | null;
-
-    constructor(tx: EthTransaction | null) {
-        this.tx = tx;
-    }
-
-    public getState(hash: string): string {
-        return StateDbAccessor.getState(this.tx!.to, hash)
-    }
-
-    public getRefund(): i64 {
-        return StateDbAccessor.getRefund()
-    }
-
-    public getCodeHash(): string {
-        return StateDbAccessor.getCodeHash(this.tx!.to)
-    }
-
-    public getNonce(): i64 {
-        return StateDbAccessor.getNonce(this.tx!.from)
-    }
-
 }
 
 class TxContext {
-
     public getExtProperties(): TxExtProperty | null {
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_EXT_PROPERTIES, null);
         if (!response.result.success || !response.data.value) {

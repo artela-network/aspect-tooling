@@ -14,7 +14,7 @@ declare namespace __StateDbApi__ {
 
 }
 
-class StatedbApi {
+export class StateContext {
     public getBalance(addr: string): string {
         const input = new AString();
         input.set(addr);
@@ -69,5 +69,3 @@ class StatedbApi {
         return output.get();
     }
 }
-
-export const StateDbAccessor = new StatedbApi();

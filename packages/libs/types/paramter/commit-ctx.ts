@@ -1,4 +1,4 @@
-import {BlockContext, EthReceiptContext, EvmTxContext,} from "../../context";
+import {BlockContext, EthReceiptContext,} from "../../context";
 import {EthTransaction} from "../../proto";
 import {AspectContext, StaticCaller} from "../../system";
 import {ScheduleManager} from "../../components/scheduler/schedule-service";
@@ -9,7 +9,6 @@ export class PostTxCommitCtx {
     private _receipt: EthReceiptContext | null;
     private _aspectContext: AspectContext | null;
     private _staticCaller: StaticCaller | null;
-    private _evmTxContext: EvmTxContext | null;
     private _scheduleManager: ScheduleManager;
     private _blockContext: BlockContext;
 
@@ -19,7 +18,6 @@ export class PostTxCommitCtx {
         this._aspectContext = new AspectContext();
         this._receipt = new EthReceiptContext();
         this._staticCaller = new StaticCaller();
-        this._evmTxContext = new EvmTxContext(tx);
         this._scheduleManager = new ScheduleManager();
         this._blockContext=new BlockContext();
     };
@@ -49,10 +47,6 @@ export class PostTxCommitCtx {
         return this._staticCaller;
     }
 
-
-    get evmTxContext(): EvmTxContext | null {
-        return this._evmTxContext;
-    }
 
     get schedule(): ScheduleManager | null {
         return this._scheduleManager;
