@@ -1,8 +1,8 @@
 import {CryptoProvider, UtilityProvider} from "../../../system";
 
 export namespace ethereum {
-    export function abiEncode(method: string, types: Coder[]): string {
-        let enc = '0x';
+    export function abiEncode(method: string, types: Coder[], prefix: string = '0x'): string {
+        let enc = prefix;
         if (method.length > 0) {
             const methodSig = method + '(' + types.map((t: Coder) => t.typeName()).join(',') + ')';
             enc += UtilityProvider.uint8ArrayToHex(CryptoProvider.keccak(UtilityProvider.stringToUint8Array(methodSig)).slice(0, 4));
@@ -84,7 +84,7 @@ export namespace ethereum {
         }
 
         protected static calcPaddedLen(hex: string): i32 {
-            return ((hex.length / 2 + 32 - 1) / 32 * 32) as i32
+            return ((((hex.length >> 1) + 31) >> 5) << 5) as i32
         }
 
         protected static fromHex(hex: string, output: ByteArray, paddingLeft: boolean = false): ByteArray {
@@ -152,7 +152,7 @@ export namespace ethereum {
 
         protected constructor(str: string) {
             super(ByteArray.calcPaddedLen(str));
-            this.contentLen = str.length;
+            this.contentLen = str.length >> 1;
         }
 
         /**
