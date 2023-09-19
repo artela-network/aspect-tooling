@@ -4,6 +4,7 @@ export namespace ethereum {
 
     export  function encodeAddress(val: ethereum.Address): Uint8Array {
         const s = ethereum.abiEncode("", [val])
+
         return UtilityProvider.hexToUint8Array(s);
     }
     export function abiEncode(method: string, types: Coder[]): string {
@@ -378,7 +379,7 @@ export namespace ethereum {
         }
 
         static fromBoolean(x: boolean): Boolean {
-            return new ethereum.Boolean(x);
+            return new ethereum.Boolean(x)
         }
 
         typeKind(): Type {

@@ -1,9 +1,11 @@
 import {BigInt} from "../types";
-import {EthCallStacks,  EthStateChanges} from "../proto";
+import {EthCallStacks, EthStateChanges} from "../proto";
+import {KeysBundle} from "../context/key-builder";
 
 export interface TraceCtx {
-    getStateChanges(addr: string, variable: string, key:Array<Uint8Array>): EthStateChanges|null;
-    getCallStack(): EthCallStacks|null;
+    getStateChanges(addr: string, variable: string, key: KeysBundle): EthStateChanges | null;
+
+    getCallStack(): EthCallStacks | null;
 }
 
 export class ContextValue {
@@ -60,7 +62,7 @@ export function ToContextValue(value: string): ContextValue {
 
 export function ToString<T>(value: T): string {
 
-    if (!value){
+    if (!value) {
         return ""
     }
     let valueStr: string;

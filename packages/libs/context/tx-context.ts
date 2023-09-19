@@ -11,6 +11,7 @@ import {
 } from "../proto";
 import { RuntimeContextAccessor, TraceCtx, UtilityProvider} from "../system";
 import {Protobuf} from "as-proto/assembly";
+import {KeysBundle} from "./key-builder";
 
 export class TraceContext implements TraceCtx {
     getCallStack(): EthCallStacks |null {
@@ -22,12 +23,11 @@ export class TraceContext implements TraceCtx {
 
     }
 
-    getStateChanges(addr: string, variable: string, key: Uint8Array): EthStateChanges|null {
+    getStateChanges(addr: string, variable: string, key: KeysBundle): EthStateChanges|null {
         const array = new Array<string>(3);
         array[0]=addr
         array[1]=variable
-        array[2]=UtilityProvider.uint8ArrayToHex(key)
-
+        array[2]=key.marshal()
 
         const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
         if (!response!.result!.success) {
