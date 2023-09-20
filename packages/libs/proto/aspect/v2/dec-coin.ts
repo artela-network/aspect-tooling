@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class DecCoin {
   static encode(message: DecCoin, writer: Writer): void {
@@ -41,7 +41,7 @@ export class DecCoin {
   denom: string;
   amount: string;
 
-  constructor(denom: string = "", amount: string = "") {
+  constructor(denom: string = '', amount: string = '') {
     this.denom = denom;
     this.amount = amount;
   }

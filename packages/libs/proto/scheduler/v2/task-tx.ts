@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class TaskTx {
   static encode(message: TaskTx, writer: Writer): void {
@@ -41,7 +41,7 @@ export class TaskTx {
   blockHeight: i64;
   txHash: string;
 
-  constructor(blockHeight: i64 = 0, txHash: string = "") {
+  constructor(blockHeight: i64 = 0, txHash: string = '') {
     this.blockHeight = blockHeight;
     this.txHash = txHash;
   }

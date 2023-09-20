@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { Validator } from "./validator";
+import { Writer, Reader } from 'as-proto/assembly';
+import { Validator } from './validator';
 
 export class VoteInfo {
   static encode(message: VoteInfo, writer: Writer): void {
@@ -47,10 +47,7 @@ export class VoteInfo {
   validator: Validator | null;
   signedLastBlock: bool;
 
-  constructor(
-    validator: Validator | null = null,
-    signedLastBlock: bool = false
-  ) {
+  constructor(validator: Validator | null = null, signedLastBlock: bool = false) {
     this.validator = validator;
     this.signedLastBlock = signedLastBlock;
   }

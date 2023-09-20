@@ -1,6 +1,6 @@
-import {AString} from './';
+import { AString } from './';
 
-import {IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx} from '../types';
+import { IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx } from '../types';
 import {
   FilterTxCtx,
   OnBlockFinalizeCtx,
@@ -11,7 +11,7 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
 } from '.';
-import {PointCutType} from './aspect-interface';
+import { PointCutType } from './aspect-interface';
 import {
   DefAspectResponse,
   ErrAspectResponse,
@@ -23,7 +23,7 @@ import {
   StoreAspectResponse,
   StoreOutputBool,
 } from './message-helper';
-import {AspectResponse, BoolData, EthInnerTransaction} from '../proto';
+import { AspectResponse, BoolData, EthInnerTransaction } from '../proto';
 
 export class Entry {
   blockAspect: IAspectBlock | null;

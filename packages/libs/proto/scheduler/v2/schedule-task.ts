@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { Schedule } from "./schedule";
+import { Writer, Reader } from 'as-proto/assembly';
+import { Schedule } from './schedule';
 
 export class ScheduleTask {
   static encode(message: ScheduleTask, writer: Writer): void {
@@ -74,9 +74,9 @@ export class ScheduleTask {
   constructor(
     schedule: Schedule | null = null,
     blockHeight: i64 = 0,
-    txHash: string = "",
+    txHash: string = '',
     txNonce: u64 = 0,
-    sdkTx: Uint8Array = new Uint8Array(0)
+    sdkTx: Uint8Array = new Uint8Array(0),
   ) {
     this.schedule = schedule;
     this.blockHeight = blockHeight;

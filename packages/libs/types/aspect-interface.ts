@@ -9,7 +9,7 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
 } from '.';
-import {AspectResponse} from '../proto';
+import { AspectResponse } from '../proto';
 
 export interface IAspectBlock {
   isOwner(sender: string): bool;

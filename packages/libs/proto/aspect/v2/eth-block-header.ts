@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class EthBlockHeader {
   static encode(message: EthBlockHeader, writer: Writer): void {
@@ -162,12 +162,12 @@ export class EthBlockHeader {
   excessDataGas: string;
 
   constructor(
-    parentHash: string = "",
-    uncleHash: string = "",
-    coinbase: string = "",
-    stateRoot: string = "",
-    transactionsRoot: string = "",
-    receiptHash: string = "",
+    parentHash: string = '',
+    uncleHash: string = '',
+    coinbase: string = '',
+    stateRoot: string = '',
+    transactionsRoot: string = '',
+    receiptHash: string = '',
     difficulty: u64 = 0,
     number: u64 = 0,
     gasLimit: u64 = 0,
@@ -177,8 +177,8 @@ export class EthBlockHeader {
     mixHash: Uint8Array = new Uint8Array(0),
     nonce: u64 = 0,
     baseFee: u64 = 0,
-    withdrawalsRoot: string = "",
-    excessDataGas: string = ""
+    withdrawalsRoot: string = '',
+    excessDataGas: string = '',
   ) {
     this.parentHash = parentHash;
     this.uncleHash = uncleHash;

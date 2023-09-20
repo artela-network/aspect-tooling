@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class EvidenceParams {
   static encode(message: EvidenceParams, writer: Writer): void {
@@ -49,11 +49,7 @@ export class EvidenceParams {
   maxAgeDuration: i64;
   maxBytes: i64;
 
-  constructor(
-    maxAgeNumBlocks: i64 = 0,
-    maxAgeDuration: i64 = 0,
-    maxBytes: i64 = 0
-  ) {
+  constructor(maxAgeNumBlocks: i64 = 0, maxAgeDuration: i64 = 0, maxBytes: i64 = 0) {
     this.maxAgeNumBlocks = maxAgeNumBlocks;
     this.maxAgeDuration = maxAgeDuration;
     this.maxBytes = maxBytes;

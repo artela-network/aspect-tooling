@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class RunResult {
   static encode(message: RunResult, writer: Writer): void {
@@ -41,7 +41,7 @@ export class RunResult {
   success: bool;
   message: string;
 
-  constructor(success: bool = false, message: string = "") {
+  constructor(success: bool = false, message: string = '') {
     this.success = success;
     this.message = message;
   }

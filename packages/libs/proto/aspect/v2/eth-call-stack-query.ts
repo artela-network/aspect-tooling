@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class EthCallStackQuery {
   static encode(message: EthCallStackQuery, writer: Writer): void {
@@ -54,11 +54,7 @@ export class EthCallStackQuery {
   indexIn: Array<u64>;
   parentIndexEq: u64;
 
-  constructor(
-    toEq: string = "",
-    indexIn: Array<u64> = [],
-    parentIndexEq: u64 = 0
-  ) {
+  constructor(toEq: string = '', indexIn: Array<u64> = [], parentIndexEq: u64 = 0) {
     this.toEq = toEq;
     this.indexIn = indexIn;
     this.parentIndexEq = parentIndexEq;

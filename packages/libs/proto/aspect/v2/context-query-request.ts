@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { DataSpaceType } from "./data-space-type";
+import { Writer, Reader } from 'as-proto/assembly';
+import { DataSpaceType } from './data-space-type';
 
 export class ContextQueryRequest {
   static encode(message: ContextQueryRequest, writer: Writer): void {

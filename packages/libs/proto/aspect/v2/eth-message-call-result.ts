@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { EthLog } from "./eth-log";
+import { Writer, Reader } from 'as-proto/assembly';
+import { EthLog } from './eth-log';
 
 export class EthMessageCallResult {
   static encode(message: EthMessageCallResult, writer: Writer): void {
@@ -72,11 +72,11 @@ export class EthMessageCallResult {
   gasUsed: u64;
 
   constructor(
-    hash: string = "",
+    hash: string = '',
     logs: Array<EthLog> = [],
     ret: Uint8Array = new Uint8Array(0),
-    vmError: string = "",
-    gasUsed: u64 = 0
+    vmError: string = '',
+    gasUsed: u64 = 0,
   ) {
     this.hash = hash;
     this.logs = logs;

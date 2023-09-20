@@ -99,7 +99,7 @@ export default class Generator {
   }
 
   write(str: string): boolean {
-    fs.writeFileSync(this.tsPath, str, { flag: 'w+' });
+    fs.writeFileSync(this.tsPath, str);
     return true;
   }
 

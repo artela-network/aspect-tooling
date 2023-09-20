@@ -3,10 +3,10 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { ScheduleId } from "./schedule-id";
-import { EthTransaction } from "../../aspect/v2/eth-transaction";
-import { ScheduleStatus } from "./schedule-status";
+import { Writer, Reader } from 'as-proto/assembly';
+import { ScheduleId } from './schedule-id';
+import { EthTransaction } from '../../aspect/v2/eth-transaction';
+import { ScheduleStatus } from './schedule-status';
 
 export class Schedule {
   static encode(message: Schedule, writer: Writer): void {
@@ -110,7 +110,7 @@ export class Schedule {
     startBlock: u64 = 0,
     everyNBlock: u64 = 0,
     maxRetry: u64 = 0,
-    count: u64 = 0
+    count: u64 = 0,
   ) {
     this.id = id;
     this.createHeight = createHeight;

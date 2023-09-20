@@ -1,4 +1,4 @@
-import {UtilityProvider} from "../../system";
+import { UtilityProvider } from '../../system';
 
 export enum typeIndex {
   Empty = 0,

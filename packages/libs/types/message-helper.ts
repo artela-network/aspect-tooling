@@ -1,7 +1,7 @@
-import {ABool, AString, AUint8Array} from '.';
-import {Protobuf} from 'as-proto/assembly';
-import {Any, AspectResponse, EthBlockAspect, EthTxAspect, RunResult} from '../proto';
-import {Writer} from 'as-proto/assembly/Writer';
+import { ABool, AString, AUint8Array } from '.';
+import { Protobuf } from 'as-proto/assembly';
+import { Any, AspectResponse, EthBlockAspect, EthTxAspect, RunResult } from '../proto';
+import { Writer } from 'as-proto/assembly/Writer';
 
 export function LoadEthTxAspect(argPtr: i32): EthTxAspect {
   const encodedArg = new AUint8Array();

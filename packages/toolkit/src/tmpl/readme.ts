@@ -1,4 +1,4 @@
-export const  ReadMeTmpl=`
+export const ReadMeTmpl = `
 # Sample Aspect
 
 ## Instruction
@@ -59,4 +59,4 @@ This is a sample project of Artela Aspect.
                             --inputs '["a", 1, true]' 
     \`\`\`
  
-`
+`;

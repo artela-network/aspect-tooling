@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { EthMessage } from "./eth-message";
+import { Writer, Reader } from 'as-proto/assembly';
+import { EthMessage } from './eth-message';
 
 export class CallMessageRequest {
   static encode(message: CallMessageRequest, writer: Writer): void {

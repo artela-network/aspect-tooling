@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class PeriodicType {
   static encode(message: PeriodicType, writer: Writer): void {
@@ -57,12 +57,7 @@ export class PeriodicType {
   maxRetry: u64;
   count: u64;
 
-  constructor(
-    startBlock: u64 = 0,
-    everyNBlocks: u64 = 0,
-    maxRetry: u64 = 0,
-    count: u64 = 0
-  ) {
+  constructor(startBlock: u64 = 0, everyNBlocks: u64 = 0, maxRetry: u64 = 0, count: u64 = 0) {
     this.startBlock = startBlock;
     this.everyNBlocks = everyNBlocks;
     this.maxRetry = maxRetry;

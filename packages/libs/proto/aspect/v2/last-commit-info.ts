@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.24.3
 
-import { Writer, Reader } from "as-proto/assembly";
-import { VoteInfo } from "./vote-info";
+import { Writer, Reader } from 'as-proto/assembly';
+import { VoteInfo } from './vote-info';
 
 export class LastCommitInfo {
   static encode(message: LastCommitInfo, writer: Writer): void {
