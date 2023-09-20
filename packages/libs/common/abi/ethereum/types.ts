@@ -1,16 +1,11 @@
 import {CryptoProvider, UtilityProvider} from "../../../system";
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ethereum {
-
-    export  function encodeAddress(val: ethereum.Address): Uint8Array {
-        const s = ethereum.abiEncode("", [val])
-
-        return UtilityProvider.hexToUint8Array(s);
-    }
-    export function abiEncode(method: string, types: Coder[]): string {
+    export function abiEncode(method: string, types: Type[]): string {
         let enc = '0x';
         if (method.length > 0) {
-            const methodSig = method + '(' + types.map((t: Coder) => t.typeName()).join(',') + ')';
+            const methodSig = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
             enc += UtilityProvider.uint8ArrayToHex(CryptoProvider.keccak(UtilityProvider.stringToUint8Array(methodSig)).slice(0, 4));
         }
 
@@ -35,7 +30,7 @@ export namespace ethereum {
         return enc + variableInput;
     }
 
-    enum Type {
+    enum TypeId {
         Number,
         BytesN,
         Address,
@@ -46,11 +41,16 @@ export namespace ethereum {
         String,
     }
 
-    export interface Coder {
+    export interface Type {
         /**
          * encode type to hex
          */
         encodeHex(): string;
+
+        /**
+         * encode type to Uint8Array
+         */
+        encodeUint8Array(): Uint8Array;
 
         /**
          * return name of the type, used to generate function signature
@@ -60,7 +60,7 @@ export namespace ethereum {
         /**
          * type kind
          */
-        typeKind(): Type;
+        typeKind(): TypeId;
 
         /**
          * true if type is dynamic, otherwise false
@@ -73,7 +73,7 @@ export namespace ethereum {
         typeSize(): u64;
     }
 
-    export class ByteArray extends Uint8Array implements Coder {
+    export class ByteArray extends Uint8Array implements Type {
         protected static validateAndTrimHex(hex: string, paddingLeft: boolean = false): string {
             assert(hex.length % 2 == 0, 'input ' + hex + ' has odd length');
 
@@ -95,7 +95,7 @@ export namespace ethereum {
 
         protected static fromHex(hex: string, output: ByteArray, paddingLeft: boolean = false): ByteArray {
             if (paddingLeft) {
-                let paddingOffset = (64 - hex.length) >> 1;
+                const paddingOffset = (64 - hex.length) >> 1;
                 for (let i = 0; i < hex.length; i += 2) {
                     output[paddingOffset + (i >> 1)] = U8.parseInt(hex.substr(i, 2), 16);
                 }
@@ -124,15 +124,19 @@ export namespace ethereum {
             return output;
         }
 
-        public encodeHex(): string {
+        encodeHex(): string {
             let res = '';
             for (let i = 0; i < this.length; ++i) {
                 let hex = this[i].toString(16);
-                hex = hex.length % 2 != 0 ? '0' + hex : hex;
+                hex = hex.length % 2 == 0 ? hex : '0' + hex;
                 res += hex;
             }
 
             return res;
+        }
+
+        encodeUint8Array(): Uint8Array {
+            return UtilityProvider.hexToUint8Array(this.encodeHex());
         }
 
         typeName(): string {
@@ -147,8 +151,23 @@ export namespace ethereum {
             return 32;
         }
 
-        typeKind(): Type {
+        typeKind(): TypeId {
             throw new Error("method not implemented.");
+        }
+
+        @operator('==')
+        static equals(a: ByteArray, b: ByteArray): bool {
+            if (a.length != b.length) {
+                return false;
+            }
+
+            for (let i = 0; i < a.length; ++i) {
+                if (a[i] != b[i]) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 
@@ -171,11 +190,15 @@ export namespace ethereum {
             return changetype<Bytes>(this.fromHex(str, new Bytes(str)));
         }
 
-        public encodeHex(): string {
+        encodeHex(): string {
             return Number.fromU64(this.contentLen).encodeHex() + super.encodeHex();
         }
 
-        public typeName(): string {
+        encodeUint8Array(): Uint8Array {
+            return UtilityProvider.hexToUint8Array(this.encodeHex());
+        }
+
+        typeName(): string {
             return 'bytes';
         }
 
@@ -183,8 +206,13 @@ export namespace ethereum {
             return true;
         }
 
-        typeKind(): Type {
-            return Type.Bytes;
+        typeKind(): TypeId {
+            return TypeId.Bytes;
+        }
+
+        @operator('==')
+        static equals(a: Bytes, b: Bytes): bool {
+            return ByteArray.equals(a, b);
         }
     }
 
@@ -192,7 +220,7 @@ export namespace ethereum {
 
         static fromString(str: string): String {
             str = this.validateAndTrimHex(str);
-            return changetype<String>(this.fromBuffer(utils.encodeStringUTF8(str), new ethereum.String(str)));
+            return changetype<String>(this.fromBuffer(UtilityProvider.encodeStringUTF8(str), new ethereum.String(str)));
         }
 
         static fromUTF16String(str: string): String {
@@ -203,8 +231,13 @@ export namespace ethereum {
             return 'string';
         }
 
-        typeKind(): Type {
-            return Type.String;
+        typeKind(): TypeId {
+            return TypeId.String;
+        }
+
+        @operator('==')
+        static equals(a: String, b: String): bool {
+            return ByteArray.equals(a, b);
         }
     }
 
@@ -238,8 +271,17 @@ export namespace ethereum {
             return 'bytes' + this._byteSize.toString(10);
         }
 
-        typeKind(): Type {
-            return Type.BytesN;
+        typeKind(): TypeId {
+            return TypeId.BytesN;
+        }
+
+        @operator('==')
+        static equals(a: BytesN, b: BytesN): bool {
+            if (a._byteSize != b._byteSize) {
+                return false;
+            }
+
+            return ByteArray.equals(a, b);
         }
     }
 
@@ -327,8 +369,49 @@ export namespace ethereum {
             return (this._signed ? 'int' : 'uint') + ((this._byteSize as u16) * 8).toString();
         }
 
-        typeKind(): Type {
-            return Type.Number;
+        typeKind(): TypeId {
+            return TypeId.Number;
+        }
+
+        @operator('==')
+        static equals(a: Number, b: Number): bool {
+            if (a._byteSize != b._byteSize) {
+                return false;
+            }
+
+            return ByteArray.equals(a, b);
+        }
+
+        @operator('>')
+        static greater(a: Number, b: Number): bool {
+            for (let i = 0; i < 32; ++i) {
+                if (a[i] > b[i]) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        @operator('>=')
+        static greaterEq(a: Number, b: Number): bool {
+            for (let i = 0; i < 32; ++i) {
+                if (a[i] < b[i]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @operator('<')
+        static less(a: Number, b: Number): bool {
+            return !this.greaterEq(a, b);
+        }
+
+        @operator('<=')
+        static lessEq(a: Number, b: Number): bool {
+            return !this.greater(a, b);
         }
     }
 
@@ -340,6 +423,31 @@ export namespace ethereum {
         public typeName(): string {
             return 'uint';
         }
+
+        @operator('==')
+        static equals(a: Uint, b: Uint): bool {
+            return Number.equals(a, b);
+        }
+
+        @operator('>')
+        static greater(a: Uint, b: Uint): bool {
+            return Number.greater(a, b);
+        }
+
+        @operator('>=')
+        static greaterEq(a: Uint, b: Uint): bool {
+            return Number.greaterEq(a, b);
+        }
+
+        @operator('<')
+        static less(a: Uint, b: Uint): bool {
+            return Number.less(a, b);
+        }
+
+        @operator('<=')
+        static lessEq(a: Uint, b: Uint): bool {
+            return Number.lessEq(a, b);
+        }
     }
 
     export class Int extends Number {
@@ -350,6 +458,31 @@ export namespace ethereum {
         public typeName(): string {
             return 'int';
         }
+
+        @operator('==')
+        static equals(a: Int, b: Int): bool {
+            return Number.equals(a, b);
+        }
+
+        @operator('>')
+        static greater(a: Int, b: Int): bool {
+            return Number.greater(a, b);
+        }
+
+        @operator('>=')
+        static greaterEq(a: Int, b: Int): bool {
+            return Number.greaterEq(a, b);
+        }
+
+        @operator('<')
+        static less(a: Int, b: Int): bool {
+            return Number.less(a, b);
+        }
+
+        @operator('<=')
+        static lessEq(a: Int, b: Int): bool {
+            return Number.lessEq(a, b);
+        }
     }
 
     /** An Ethereum address (20 bytes). */
@@ -359,7 +492,7 @@ export namespace ethereum {
         }
 
         static fromHexString(str: string): Address {
-            assert(str.length == str.startsWith('0x') ? 42 : 40, 'invalid address');
+            assert(str.length == (str.startsWith('0x') ? 42 : 40), 'invalid address');
             return changetype<Address>(this.fromHexStringWithBuffer(str, new Address()));
         }
 
@@ -367,8 +500,13 @@ export namespace ethereum {
             return 'address';
         }
 
-        typeKind(): Type {
-            return Type.Address;
+        typeKind(): TypeId {
+            return TypeId.Address;
+        }
+
+        @operator('==')
+        static equals(a: Address, b: Address): bool {
+            return Number.equals(a, b);
         }
     }
 
@@ -382,17 +520,22 @@ export namespace ethereum {
             return new ethereum.Boolean(x)
         }
 
-        typeKind(): Type {
-            return Type.Boolean;
+        typeKind(): TypeId {
+            return TypeId.Boolean;
         }
 
         public typeName(): string {
             return 'bool';
         }
+
+        @operator('==')
+        static equals(a: Boolean, b: Boolean): bool {
+            return ByteArray.equals(a, b);
+        }
     }
 
-    export class ArraySlice implements Coder {
-        private _elements: Coder[] = [];
+    export class ArraySlice implements Type {
+        private _elements: Type[] = [];
 
         private readonly _size: u64;
 
@@ -404,16 +547,16 @@ export namespace ethereum {
             return this._size > 0;
         }
 
-        get elements(): ethereum.Coder[] {
+        get elements(): ethereum.Type[] {
             return this._elements;
         }
 
-        private constructor(coders: ethereum.Coder[], _size: u64) {
+        private constructor(coders: ethereum.Type[], _size: u64) {
             assert(coders.length > 0, 'empty array');
             assert(_size == 0 || coders.length == _size,
                 'input does not match fixed array size');
 
-            let typeKind = coders[0].typeKind();
+            const typeKind = coders[0].typeKind();
 
             for (let i = 0; i < coders.length; ++i) {
                 if (i > 1) {
@@ -426,27 +569,27 @@ export namespace ethereum {
             this._size = _size;
         }
 
-        static fromCoders(coders: ethereum.Coder[], _size: u64 = 0): ethereum.ArraySlice {
+        static fromCoders(coders: ethereum.Type[], _size: u64 = 0): ethereum.ArraySlice {
             return new ethereum.ArraySlice(coders, _size);
         }
 
         encodeHex(): string {
             let res = '';
-            let valLen = this._elements.length;
+            const valLen = this._elements.length;
             if (!this.isFixedSize) {
                 res += ethereum.Number.fromU64(valLen).encodeHex();
             }
 
             let offset: u64 = 0;
-            let offsetRequired = this._elements[0].isDynamicType();
+            const offsetRequired = this._elements[0].isDynamicType();
             if (offsetRequired) {
                 offset = this._elements[0].typeSize() * valLen;
             }
 
             let tail = '';
             for (let i = 0; i < valLen; ++i) {
-                let e = this._elements[i];
-                let val = e.encodeHex();
+                const e = this._elements[i];
+                const val = e.encodeHex();
                 if (offsetRequired) {
                     res += ethereum.Number.fromU64(offset).encodeHex();
                     offset += (val.length >> 1);
@@ -459,6 +602,9 @@ export namespace ethereum {
             return res + tail;
         }
 
+        encodeUint8Array(): Uint8Array {
+            return UtilityProvider.hexToUint8Array(this.encodeHex());
+        }
 
         typeName(): string {
             assert(this._elements.length > 0, 'empty array');
@@ -470,9 +616,9 @@ export namespace ethereum {
         }
 
         typeSize(): u64 {
-            let element = this._elements[0];
+            const element = this._elements[0];
             if (this.isFixedSize && !element.isDynamicType()) {
-                if (element.typeKind() == Type.Tuple || element.typeKind() == Type.Array) {
+                if (element.typeKind() == TypeId.Tuple || element.typeKind() == TypeId.Array) {
                     return this._size * element.typeSize();
                 }
 
@@ -482,15 +628,15 @@ export namespace ethereum {
             return 32;
         }
 
-        typeKind(): Type {
-            return Type.Array;
+        typeKind(): TypeId {
+            return TypeId.Array;
         }
     }
 
-    export class Tuple implements Coder {
-        private _members: Coder[] = [];
+    export class Tuple implements Type {
+        private _members: Type[] = [];
 
-        private constructor(coders: Coder[]) {
+        private constructor(coders: Type[]) {
             assert(coders.length > 0, 'empty tuple');
 
             for (let i = 0; i < coders.length; ++i) {
@@ -498,18 +644,18 @@ export namespace ethereum {
             }
         }
 
-        static fromCoders(coders: Coder[]): Tuple {
+        static fromCoders(coders: Type[]): Tuple {
             return new Tuple(coders);
         }
 
-        get members(): Coder[] {
+        get members(): Type[] {
             return this._members;
         }
 
         typeName(): string {
             let res = '(';
             for (let i = 0; i < this._members.length; ++i) {
-                let typeName = this._members[i].typeName();
+                const typeName = this._members[i].typeName();
                 res += (i > 0 ? ',' + typeName : typeName);
             }
             res += ')';
@@ -527,8 +673,8 @@ export namespace ethereum {
             return false;
         }
 
-        typeKind(): Type {
-            return Type.Tuple;
+        typeKind(): TypeId {
+            return TypeId.Tuple;
         }
 
         typeSize(): u64 {
@@ -554,7 +700,7 @@ export namespace ethereum {
             let tail = '';
 
             for (let i = 0; i < this._members.length; ++i) {
-                let m = this._members[i];
+                const m = this._members[i];
                 const val = m.encodeHex();
                 if (m.isDynamicType()) {
                     res += Number.fromU64(offset).encodeHex();
@@ -566,6 +712,10 @@ export namespace ethereum {
             }
 
             return res + tail;
+        }
+
+        encodeUint8Array(): Uint8Array {
+            return UtilityProvider.hexToUint8Array(this.encodeHex());
         }
     }
 }

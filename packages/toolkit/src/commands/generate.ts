@@ -1,6 +1,6 @@
 import {Command, Flags} from "@oclif/core";
 import * as util from "../utils";
-import Generator, {StorageItem} from "../generator";
+import Generator from "../generator";
 import path from "path";
 import fs from 'fs';
 
@@ -19,13 +19,13 @@ export default class Generate extends Command {
 
     toHyphenCase(str: string): string {
         return str
-            // 插入一个连字符在小写和大写字母之间，或在字母和数字之间
+            // insert a hyphen between lower and upper case letters, or between letters and numbers
             .replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2')
-            // 替换所有的下划线为连字符
+            // convert above comment to english: replace all underscores with hyphens
             .replace(/_/g, '-')
-            // 转换为小写
+            // convert above comment to english: convert to lowercase
             .toLowerCase()
-            // 移除开头的连字符（如果有）
+            // remove leading hyphens (if any)
             .replace(/^-/, '');
     }
 
@@ -37,7 +37,7 @@ export default class Generate extends Command {
         const {flags} = await this.parse(Generate)
 
         if (flags.in == "") {
-            this.log('Input your storage layout json file path like ` -i xx_layout.json`');
+            this.log('Input your storage layout json file path like ` -i storage_layout.json`');
             process.exit(0);
         } else {
             sourceFilePath = path.resolve(flags.in);
@@ -79,35 +79,7 @@ export default class Generate extends Command {
 
         for (const inputAndOutput of inputAndOutputs) {
             const tracer: Generator = new Generator(inputAndOutput[0], inputAndOutput[1]);
-            const structNameSet: Set<string> = new Set();
-            const jsonStr = tracer.getLayoutJson();
-            const obj = tracer.getStorage(jsonStr);
-            const items = obj.storage;
-
-            // 1. append reference
-            tracer.append(tracer.refLib, 0);
-            // 2.1 append namespace start
-            tracer.append(tracer.getNameSpace(util.getStrAfterLastColon(items[0].contract)), 0);
-            tracer.append(tracer.getSysBalanceClass(), 1);
-
-            // ----- 3.1 Loop to handle multi params start ------
-            for (const item of items) {
-                const structName = util.getStructName(item.type);
-                if (structName.startsWith("t_mapping")) {
-                    util.handleMapping(item, tracer, structNameSet, obj);
-                } else if (util.isStringEmpty(structName)) {
-                    util.handleBasic(item.label, item, tracer, false, 0);
-                } else if (!structNameSet.has(structName)) {
-                    const members = obj.types[item.type].members as StorageItem[];
-                    structNameSet.add(structName);
-                    util.handleStruct(item, tracer, structName, members);
-                }
-            }
-            // ----- 3.2 Loop to handle multi params end ------
-
-
-            // 2.2 append namespace end
-            tracer.append(tracer.endBracket, 0);
+            tracer.generate();
         }
     }
 }
