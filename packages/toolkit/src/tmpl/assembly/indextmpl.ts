@@ -1,5 +1,4 @@
-
-export const  WasmIndexTmpl=`
+export const WasmIndexTmpl = `
 import { Entry,utils } from "@artela/aspect-libs";
 import Aspect from "./aspect/aspect";
 

@@ -1,4 +1,4 @@
-export const  BindTmpl=`
+export const BindTmpl = `
 
 "use strict"
 const Web3 = require("@artela/web3");
@@ -72,4 +72,4 @@ async function f() {
         });
 }
 f().then();
-`
+`;

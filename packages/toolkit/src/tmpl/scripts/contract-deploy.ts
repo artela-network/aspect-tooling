@@ -108,4 +108,4 @@ async function deploy() {
 }
 
 deploy().then();
-`
+`;

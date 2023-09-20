@@ -1,11 +1,11 @@
-import Generator, {StorageItem, StorageLayout} from './generator';
+import { StorageItem } from './generator';
 
 export function isStringEmpty(str: string): boolean {
-    return !str.trim();
+  return !str.trim();
 }
-  
+
 export function getStrBetweenColon(str: string): string {
-    const startIndex = str.indexOf('(');
+  const startIndex = str.indexOf('(');
   const endIndex = str.indexOf(')');
 
   if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) {
@@ -16,284 +16,498 @@ export function getStrBetweenColon(str: string): string {
 }
 
 export function getStrAfterLastColon(input: string): string {
-    const lastColonIndex = input.lastIndexOf(":");
-    if (lastColonIndex === -1) {
-      return "";
-    }
-    return input.slice(lastColonIndex + 1).trim();
+  const lastColonIndex = input.lastIndexOf(':');
+  if (lastColonIndex === -1) {
+    return input;
+  }
+  return input.slice(lastColonIndex + 1).trim();
 }
 
 export function getStrBetLastCommaAndParen(input: string): string {
-    if (!input.startsWith("t_mapping")) {
-        return input;
-    }
-    const lastCommaIndex = input.lastIndexOf(',');
-    const lastParenthesisIndex = input.lastIndexOf(')');
-    
-    if (lastCommaIndex === -1 || lastParenthesisIndex === -1 || lastCommaIndex >= lastParenthesisIndex) {
-      return "";
-    }
-    
-    return input.slice(lastCommaIndex + 1, lastParenthesisIndex).trim();
+  if (!input.startsWith('t_mapping')) {
+    return input;
+  }
+  const lastCommaIndex = input.lastIndexOf(',');
+  const lastParenthesisIndex = input.lastIndexOf(')');
+
+  if (
+    lastCommaIndex === -1 ||
+    lastParenthesisIndex === -1 ||
+    lastCommaIndex >= lastParenthesisIndex
+  ) {
+    return '';
   }
 
-  export function getMapSecondParam(input: string): string {
-    if (!input.startsWith("t_mapping")) {
-        return input;
-    }
-    const i = input.indexOf(',');
-    const j = input.lastIndexOf(')');
-    
-    if (i === -1 || j === -1 || i >= j) {
-      return "";
-    }
-    
-    return input.slice(i + 1, j).trim();
+  return input.slice(lastCommaIndex + 1, lastParenthesisIndex).trim();
+}
+
+export function getMapSecondParam(input: string): string {
+  if (!input.startsWith('t_mapping')) {
+    return input;
+  }
+  const i = input.indexOf(',');
+  const j = input.lastIndexOf(')');
+
+  if (i === -1 || j === -1 || i >= j) {
+    return '';
   }
 
-  
-  export function getMapFirstParam(input: string): string {
-    if (!input.startsWith("t_mapping")) {
-        return input;
-    }
-    const i = input.lastIndexOf('(');
-    const j = input.lastIndexOf(',');
-    
-    if (i === -1 || j === -1 || i >= j) {
-      return "";
-    }
-    
-    return input.slice(i + 1, j).trim();
+  return input.slice(i + 1, j).trim();
+}
+
+export function getMapFirstParam(input: string): string {
+  if (!input.startsWith('t_mapping')) {
+    return input;
+  }
+  const i = input.lastIndexOf('(');
+  const j = input.lastIndexOf(',');
+
+  if (i === -1 || j === -1 || i >= j) {
+    return '';
   }
 
-export function getTypeTag(itemType: string): string {
-    const paramType = getStrBetLastCommaAndParen(itemType);
-    switch(paramType) {
-        case "t_int32":
-            return "i32";
-        case "t_int64":
-            return "i64";
-        case "t_int256":
-            return "BigInt";
-        case "t_uint32":
-            return "u32";
-        case "t_uint64":
-            return "u64";
-        case "t_uint256":
-            return "BigInt";
-        case "t_string_storage":
-            return "string";
-        case "t_bool":
-            return "bool";
-        case "t_address":
-            return "ethereum.Address";
-        default:
-            return "";
+  return input.slice(i + 1, j).trim();
+}
+
+enum ASTTypeId {
+  Number,
+  BytesN,
+  Address,
+  Boolean,
+  Array,
+  Mapping,
+  Tuple,
+  Bytes,
+  String,
+}
+
+export interface ASTType {
+  typeId(): ASTTypeId;
+
+  isComplexType(): boolean;
+
+  asType(): string;
+
+  classDef(prefix: string): string;
+
+  generateClass(prefix: string, stateVarName: string): string;
+
+  constructorFunc(stateVarName: string): string;
+
+  getClassName(prefix: string): string;
+
+  parseKeyFunc(): string;
+}
+
+abstract class BaseType implements ASTType {
+  isComplexType(): boolean {
+    const typeId = this.typeId();
+    return typeId == ASTTypeId.Mapping || typeId == ASTTypeId.Array || typeId == ASTTypeId.Tuple;
+  }
+
+  asType(): string {
+    return '';
+  }
+
+  abstract typeId(): ASTTypeId;
+
+  abstract unmarshalStateFunc(): string;
+
+  abstract parseKeyFunc(): string;
+
+  getClassName(prefix: string): string {
+    return prefix;
+  }
+
+  constructorFunc(stateVarName: string): string {
+    return `
+        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
+            super(ctx, addr, '${stateVarName}', indices);
+        }
+        `;
+  }
+
+  classDef(prefix: string): string {
+    return (
+      'export class ' +
+      this.getClassName(prefix) +
+      ' extends StateChange<' +
+      this.asType() +
+      '> {\n'
+    );
+  }
+
+  generateClass(prefix: string, stateVarName: string): string {
+    let res = '';
+    res += this.classDef(prefix);
+    res += this.constructorFunc(stateVarName);
+    res += this.unmarshalStateFunc();
+    res += '}\n';
+    return res;
+  }
+}
+
+abstract class BaseComplexType extends BaseType {
+  override unmarshalStateFunc(): string {
+    return '';
+  }
+
+  getClassName(prefix: string): string {
+    return prefix;
+  }
+
+  classDef(prefix: string): string {
+    return (
+      'export class ' + this.getClassName(prefix) + ' extends StateKey<' + this.asType() + '> {\n'
+    );
+  }
+}
+
+export class ASTNumber extends BaseType {
+  constructor(private bits: number, private signed = false) {
+    super();
+
+    if (bits % 8 != 0) {
+      throw new Error('number bits must be multiple of 8');
     }
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Number;
+  }
+
+  asType(): string {
+    if (this.bits <= 64) {
+      if (this.signed) {
+        return 'i' + this.bits;
+      }
+      return 'u' + this.bits;
+    }
+
+    return 'BigInt';
+  }
+
+  unmarshalStateFunc(): string {
+    if (this.bits > 64) {
+      return `
+            override unmarshalState(raw: EthStateChange) : State<BigInt> {
+                let valueHex = UtilityProvider.uint8ArrayToHex(raw.value);
+                let value = BigInt.fromString(valueHex, 16);
+                return new State(raw.account, value, raw.callIndex);
+            }
+        `;
+    }
+
+    return `
+        override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
+            let valueHex = UtilityProvider.uint8ArrayToHex(raw.value);
+            let value = BigInt.fromString(valueHex, 16);
+            return new State(raw.account, <${this.asType()}>value.to${
+      this.signed ? 'U' : ''
+    }Int64(), raw.callIndex);
+        }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    if (this.bits <= 64) {
+      return `
+                protected parseKey(key: ${this.asType()}): Uint8Array {
+                    return ethereum.Number.from${this.asType().toUpperCase()}(key).encodeUint8Array();
+                }
+            `;
+    }
+
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return ethereum.Number.fromHexString(key.toString(16), ${
+                  this.signed
+                }).encodeUint8Array();
+            }
+        `;
+  }
+}
+
+export class ASTBoolean extends BaseType {
+  asType(): string {
+    return 'bool';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Boolean;
+  }
+
+  unmarshalStateFunc(): string {
+    return `
+        override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
+            return new State(raw.account, raw.value[0] > 0, raw.callIndex);
+        }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return ethereum.Boolean.fromBoolean(key).encodeUint8Array();
+            }
+        `;
+  }
+}
+
+export class ASTAddress extends BaseType {
+  asType(): string {
+    return 'string';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Address;
+  }
+
+  unmarshalStateFunc(): string {
+    return `
+        override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
+            return new State(raw.account, UtilityProvider.uint8ArrayToHex(raw.value), raw.callIndex);
+        }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return ethereum.Address.fromHexString(key).encodeUint8Array();
+            }
+        `;
+  }
+}
+
+export class ASTBytes extends BaseType {
+  asType(): string {
+    return 'Uint8Array';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Bytes;
+  }
+
+  unmarshalStateFunc(): string {
+    return `
+        override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
+            return new State(raw.account, raw.value, raw.callIndex);
+        }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return key;
+            }
+        `;
+  }
+}
+
+export class ASTBytesN extends ASTBytes {
+  typeId(): ASTTypeId {
+    return ASTTypeId.BytesN;
+  }
+
+  asType(): string {
+    return 'string';
+  }
+
+  parseKeyFunc(): string {
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return ethereum.BytesN.fromHexString(key).encodeUint8Array();
+            }
+        `;
+  }
+}
+
+export class ASTString extends BaseType {
+  asType(): string {
+    return 'string';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.String;
+  }
+
+  unmarshalStateFunc(): string {
+    return `
+        override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
+            return new State(raw.account, UtilityProvider.uint8ArrayToString(raw.value), raw.callIndex);
+        }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return `
+            protected parseKey(key: ${this.asType()}): Uint8Array {
+                return UtilityProvider.stringToUint8Array(key);
+            }
+        `;
+  }
+}
+
+export class ASTArray extends BaseComplexType {
+  constructor(private elemType: ASTType) {
+    super();
+  }
+
+  asType(): string {
+    return 'u64';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Array;
+  }
+
+  accessOperator(childClass: string): string {
+    return `
+            @operator("[]")
+            get(index: u64): ${childClass} {
+                
+                return new ${childClass}(this.ctx, this.account, 
+                                         UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
+            }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return `
+        protected parseKey(key: u64): Uint8Array {
+            return ethereum.Number.fromU64(key).encodeUint8Array();
+        }
+        `;
+  }
+
+  generateClass(prefix: string, stateVarName: string): string {
+    let res = '';
+    const childClassName = this.elemType.getClassName(prefix + '_ArrayElement');
+    res += this.elemType.generateClass(childClassName, stateVarName);
+    res += this.classDef(prefix);
+    res += this.constructorFunc(stateVarName);
+    res += this.accessOperator(childClassName);
+    res += this.parseKeyFunc();
+    res += '}\n';
+    return res;
+  }
+}
+
+export class ASTMapping extends BaseComplexType {
+  constructor(private keyType: ASTType, private valueType: ASTType) {
+    super();
+  }
+
+  asType(): string {
+    return this.keyType.asType();
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Mapping;
+  }
+
+  accessOperator(childClass: string): string {
+    return `
+            @operator("[]")
+            get(index: ${this.asType()}): ${childClass} {
+                // @ts-ignore
+                return new ${childClass}(this.ctx, this.account, 
+                                         UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
+            }
+        `;
+  }
+
+  parseKeyFunc(): string {
+    return this.keyType.parseKeyFunc();
+  }
+
+  generateClass(prefix: string, stateVarName: string): string {
+    let res = '';
+    const valueClass = this.valueType.getClassName(prefix + '_MappingValue');
+    res += this.valueType.generateClass(valueClass, stateVarName);
+    res += this.classDef(prefix);
+    res += this.constructorFunc(stateVarName);
+    res += this.accessOperator(valueClass);
+    res += this.parseKeyFunc();
+    res += '}\n';
+    return res;
+  }
+}
+
+export class ASTStruct extends BaseComplexType {
+  constructor(private members: [string, ASTType][]) {
+    super();
+  }
+
+  asType(): string {
+    return 'void';
+  }
+
+  typeId(): ASTTypeId {
+    return ASTTypeId.Tuple;
+  }
+
+  generateProperties(propertyClasses: string[]): string {
+    let res = '';
+    for (let i = 0; i < this.members.length; i++) {
+      res += `
+            public readonly ${this.members[i][0]}: ${propertyClasses[i]};
+            `;
+    }
+
+    return res;
+  }
+
+  structConstructor(stateVarName: string, properties: [string, string][]): string {
+    let res = `
+        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
+            super(ctx, addr, '${stateVarName}', indices);
+        `;
+
+    for (let i = 0; i < properties.length; i++) {
+      res += `
+            this.${properties[i][0]} = new ${properties[i][1]}(ctx, addr,
+             UtilityProvider.arrayCopyPush(this.prefixes, UtilityProvider.stringToUint8Array('${properties[i][0]}')));
+            `;
+    }
+
+    return res + '}\n';
+  }
+
+  generateClass(prefix: string, stateVarName: string): string {
+    let res = '';
+    const memberClassNames: string[] = [];
+    for (let i = 0; i < this.members.length; i++) {
+      const propertyClass = this.members[i][1].getClassName(
+        prefix + '_StructField_' + this.members[i][0],
+      );
+      memberClassNames.push(propertyClass);
+      res += this.members[i][1].generateClass(propertyClass, stateVarName);
+    }
+    res += this.classDef(prefix);
+    res += this.generateProperties(memberClassNames);
+    res += this.structConstructor(
+      stateVarName,
+      this.members.map((m, i) => [m[0], memberClassNames[i]]),
+    );
+    res += this.parseKeyFunc();
+    res += '}\n';
+    return res;
+  }
+
+  parseKeyFunc(): string {
+    return `
+        protected parseKey(key: void): Uint8Array {
+            return new Uint8Array(0);
+        }
+        `;
+  }
 }
 
 export function getParamPrefix(item: StorageItem): string {
-    const contractName = getStrAfterLastColon(item.contract);
-    if (isStringEmpty(contractName))
-      return "";
-    return contractName + "." + item.label;
-}
-
-export function getStructName(typeStr: string): string {
-    if (typeStr.startsWith("t_mapping")) {
-        return typeStr;
-    }
-    const paramType = getStrBetLastCommaAndParen(typeStr);
-    if (paramType.startsWith("t_struct")) {
-        return getStrBetweenColon(paramType);
-    }
-    return "";
-}
-
-export function getValueFunc(itemType: string): string {
-    const paramType = getStrBetLastCommaAndParen(itemType);
-    switch(paramType) {
-        case "t_int32":
-            return "Int32";
-        case "t_int64":
-            return "Int64";
-        case "t_int256":
-            return "Int256";
-        case "t_uint32":
-            return "UInt32";
-        case "t_uint64":
-            return "UInt64";
-        case "t_uint256":
-            return "UInt256";
-        case "t_string_storage":
-            return "String";
-        case "t_bool":
-            return "Bool";
-        case "t_address":
-            return "Address";
-        default:
-            return "";
-    }
-}
-
-export function isNumber(itemType: string): boolean {
-    const paramType = getStrBetLastCommaAndParen(itemType);
-    switch(paramType) {
-        case "t_int32":
-            return true;
-        case "t_int64":
-            return true;
-        case "t_int256":
-            return true;
-        case "t_uint32":
-            return true;
-        case "t_uint64":
-            return true;
-        case "t_uint256":
-            return true;
-        default:
-            return false;
-    }
-}
-
-export function handleBasic(className: string, item: StorageItem, 
-    tracer: Generator, isStruct: boolean, n: number) {
-    // 1 append class start
-    tracer.append(tracer.getClass(className), 1+n);
-    // 2 append addr and prefix
-    if (isStruct) {
-        tracer.append(tracer.argsTemplateStruct ,2+n);
-    } else {
-        tracer.append(tracer.argsTemplate ,2+n);
-    }
-    // 3 append constructor
-    if (isStruct) {
-        tracer.append(tracer.constructorTemplateStruct ,2+n);
-    } else {
-        tracer.append(tracer.constructorTemplate ,2+n);
-    }
-    // 4 append before func
-    tracer.append(tracer.getBeforeFunc(getTypeTag(item.type), 
-        getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
-    // 5 append changes func
-    tracer.append(tracer.getChangesFunc(getTypeTag(item.type), 
-        getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
-    // 6 append lastest func
-    tracer.append(tracer.getLatestFunc(getTypeTag(item.type), 
-        getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
-    // 7 append diff func (only for number type)
-    // if (isNumber(item.type)) {
-    //     tracer.append(tracer.getDiffFunc(getTypeTag(item.type), 
-    //     getParamPrefix(item), getValueFunc(item.type), isStruct, isNumber(item.type)) ,2+n);
-    // }
-    
-    // 1' append class end
-    tracer.append(tracer.endBracket, 1+n);
-}
-
-export function handleStruct(item: StorageItem, tracer: Generator, 
-    structName: string, members: StorageItem[]) {
-    // 1 append class start
-    tracer.append(tracer.getClass(structName), 1);
-    // 2 append addr and variable and prefix
-    tracer.append(tracer.argsTemplateStruct ,2);
-    // 3 append constructor
-    tracer.append(tracer.constructorTemplateStruct ,2);
-    // 4 handle params
-    for (const item of members) {
-        tracer.append(tracer.getStructParam(item.label, structName+"."+item.label) ,2)
-    }
-    // 1' append class end
-    tracer.append(tracer.endBracket, 1);
-
-    // 5 handle struct params to class
-    tracer.append(`export namespace ${structName} {\n`, 1);
-    for (const item of members) {
-        handleBasic(item.label, item, tracer, true, 1);
-    }
-    tracer.append(tracer.endBracket, 1);
-}
-
-export function handleMapping(item: StorageItem, tracer: Generator, 
-    structNameSet: Set<string>, obj: StorageLayout) {
-    let firstParamType = getMapFirstParam(item.type);
-    let secondParamType = getMapSecondParam(item.type);
-    let ft = getTypeTag(firstParamType);
-    let ff = getValueFunc(firstParamType);
-    if (secondParamType.startsWith("t_mapping")) {
-        firstParamType = getMapFirstParam(secondParamType);
-        secondParamType = getMapSecondParam(secondParamType);
-        ft = getTypeTag(firstParamType);
-        ff = getValueFunc(firstParamType);
-        
-        const prefix = getStrAfterLastColon(item.contract) + "." + item.label;
-        tracer.append(tracer.getClass(item.label), 1);
-        tracer.append(tracer.argsTemplate ,2);
-        tracer.append(tracer.constructorTemplate ,2);
-        tracer.append(tracer.getNestedMappingValue(ft, ff, item.label, prefix), 2);
-        tracer.append(tracer.endBracket, 1);
-
-        tracer.append(`export namespace ${item.label} {\n`, 1);
-        tracer.append(`export class Value {\n`, 2);
-        tracer.append(tracer.argsTemplateStruct ,2);
-        tracer.append(tracer.constructorTemplateStruct ,2);
-
-        tracer.append(tracer.getBeforeFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        tracer.append(tracer.getChangesFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        tracer.append(tracer.getLatestFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        tracer.append(tracer.getIsExistFuncMap(ft, ff, "this.variable") ,2);
-    
-        // if (isNumber(secondParamType)) {
-        //     tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
-        //     "this.variable", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        // }
-
-        tracer.append(tracer.endBracket, 2);
-        tracer.append(tracer.endBracket, 1);
-        return;
-    }
-    // 1 append class start
-    tracer.append(tracer.getClass(item.label), 1);
-    // 2 append addr and prefix
-    tracer.append(tracer.argsTemplate ,2);
-    // 3 append constructor
-    tracer.append(tracer.constructorTemplate ,2);
-    // 4 handle map second param
-    let secondParamIsStruct = false;
-    if (secondParamType.startsWith("t_struct")) {
-        secondParamIsStruct = true;
-    }
-    if (secondParamIsStruct) {
-        const structName = getStructName(secondParamType);
-        const prefix = getStrAfterLastColon(item.contract) + "." + item.label;
-        tracer.append(tracer.getMappingSecondParam(structName.toLowerCase(), structName, prefix), 2);
-        tracer.append(tracer.endBracket, 1);
-        // if struct has not been hadle
-        if (!structNameSet.has(structName)) {
-            const members = obj.types[getStrBetLastCommaAndParen(item.type)].members as StorageItem[];
-            structNameSet.add(structName);
-            handleStruct(item, tracer, structName, members);
-        }
-    } else {
-        // 4.1 append before func
-        tracer.append(tracer.getBeforeFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        // 4.2 append changes func
-        tracer.append(tracer.getChangesFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        // 4.3 append lastest func
-        tracer.append(tracer.getLatestFuncMap(ft, ff, getTypeTag(secondParamType), 
-        "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        tracer.append(tracer.getIsExistFuncMap(ft, ff, "\""+getParamPrefix(item)+"\"") ,2);
-        // 4.4 append diff func (only for number type)
-        // if (isNumber(secondParamType)) {
-        //     tracer.append(tracer.getDiffFuncMap(ft, ff, getTypeTag(secondParamType), 
-        //     "\""+getParamPrefix(item)+"\"", getValueFunc(secondParamType), isNumber(secondParamType)) ,2);
-        // }
-        // 1' append class end
-        tracer.append(tracer.endBracket, 1);
-    }      
+  const contractName = getStrAfterLastColon(item.contract);
+  if (isStringEmpty(contractName)) return '';
+  return contractName + '.' + item.label;
 }
