@@ -366,7 +366,7 @@ export class ASTArray extends BaseComplexType {
   accessOperator(childClass: string): string {
     return `
             @operator("[]")
-            private __access(index: u64): ${childClass} {
+            get(index: u64): ${childClass} {
                 
                 return new ${childClass}(this.ctx, this.account, 
                                          UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
@@ -411,7 +411,7 @@ export class ASTMapping extends BaseComplexType {
   accessOperator(childClass: string): string {
     return `
             @operator("[]")
-            private __access(index: ${this.asType()}): ${childClass} {
+            get(index: ${this.asType()}): ${childClass} {
                 // @ts-ignore
                 return new ${childClass}(this.ctx, this.account, 
                                          UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
