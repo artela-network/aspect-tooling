@@ -96,7 +96,7 @@ export class PostContractCallCtx {
         return this._currInnerTx;
     }
 
-    get tx(): EthTransaction {
+    get tx(): EthTransaction|null {
         return this._tx;
     }
 

@@ -15,7 +15,7 @@ import {
 import {PointCutType} from "./aspect-interface";
 import {
     DefAspectResponse, ErrAspectResponse, ErrorRunResult,
-    LoadEthBlockAspect,
+    LoadEthBlockAspect, LoadEthTransaction,
     LoadEthTxAspect,
     LoadInputString, MessageUrlType, NewDataResponse,
     StoreAspectResponse,
@@ -130,8 +130,8 @@ export class Entry {
             out = DefAspectResponse();
 
         } else if (method == PointCutType.OPERATION_METHOD) {
-            const arg = LoadEthTxAspect(argPtr);
-            const ctx = new OperationCtx(arg.tx);
+            const arg = LoadEthTransaction(argPtr);
+            const ctx = new OperationCtx(arg);
             out = this.operationAspect!.operation(ctx)
         } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
             // block level aspect

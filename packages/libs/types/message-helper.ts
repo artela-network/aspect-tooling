@@ -1,15 +1,19 @@
 import {ABool, AString, AUint8Array} from ".";
 import {Protobuf} from "as-proto/assembly";
-import {Any, AspectResponse, RunResult, EthBlockAspect, EthTxAspect} from "../proto";
+import {Any, AspectResponse, RunResult, EthBlockAspect, EthTxAspect, EthTransaction} from "../proto";
 import {Writer} from "as-proto/assembly/Writer";
-import {UtilityProvider} from "../system";
-
 
 export function LoadEthTxAspect(argPtr: i32): EthTxAspect {
     const encodedArg = new AUint8Array();
     encodedArg.load(argPtr);
     return Protobuf.decode<EthTxAspect>(encodedArg.get(), EthTxAspect.decode);
 }
+export function LoadEthTransaction(argPtr: i32): EthTransaction {
+    const encodedArg = new AUint8Array();
+    encodedArg.load(argPtr);
+    return Protobuf.decode<EthTransaction>(encodedArg.get(), EthTransaction.decode);
+}
+
 
 export function LoadEthBlockAspect(argPtr: i32): EthBlockAspect {
     const encodedArg = new AUint8Array();
