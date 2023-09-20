@@ -92,7 +92,7 @@ export namespace ethereum {
     }
 
     protected static calcPaddedLen(hex: string): i32 {
-      return (((hex.length / 2 + 32 - 1) / 32) * 32) as i32;
+      return ((((hex.length >> 1) + 31) >> 5) << 5) as i32
     }
 
     protected static fromHex(
@@ -138,7 +138,7 @@ export namespace ethereum {
       let res = '';
       for (let i = 0; i < this.length; ++i) {
         let hex = this[i].toString(16);
-        hex = hex.length % 2 == 0 ? hex : '0' + hex;
+        hex = hex.length % 2 != 0 ? '0' + hex : hex;
         res += hex;
       }
 
@@ -187,7 +187,7 @@ export namespace ethereum {
 
     protected constructor(str: string) {
       super(ByteArray.calcPaddedLen(str));
-      this.contentLen = str.length;
+      this.contentLen = str.length >> 1;
     }
 
     /**
