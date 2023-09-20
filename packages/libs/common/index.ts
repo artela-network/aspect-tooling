@@ -1,2 +1,2 @@
-export {ethereum} from './abi';
-export {State} from './states/trace';
+export { ethereum } from './abi';
+export { State, StateChange, StateKey } from './states/trace';

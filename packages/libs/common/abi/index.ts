@@ -1,1 +1,1 @@
-export {ethereum} from './ethereum/coders';
+export { ethereum } from './ethereum/types';

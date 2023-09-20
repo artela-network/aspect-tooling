@@ -1,1 +1,7 @@
-export { Scheduler, PeriodicSchedule, AdHocSchedule,ScheduleTx,Opts } from './scheduler/schedule-service';
+export {
+  Scheduler,
+  PeriodicSchedule,
+  AdHocSchedule,
+  ScheduleTx,
+  Opts,
+} from './scheduler/schedule-service';

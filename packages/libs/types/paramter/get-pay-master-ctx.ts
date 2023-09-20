@@ -1,29 +1,26 @@
-import {EthTransaction} from "../../proto";
-import {AspectContext, StaticCaller} from "../../system";
-
+import { EthTransaction } from '../../proto';
+import { AspectContext, StaticCaller } from '../../system';
 
 export class GetPayMasterCtx {
-    private _tx: EthTransaction | null;
-    private _context: AspectContext | null;
-    private _staticCaller: StaticCaller;
+  private _tx: EthTransaction | null;
+  private _context: AspectContext | null;
+  private _staticCaller: StaticCaller;
 
-    constructor(tx: EthTransaction | null) {
-        this._tx = tx;
-        this._context = new AspectContext();
-        this._staticCaller = new StaticCaller();
-    };
+  constructor(tx: EthTransaction | null) {
+    this._tx = tx;
+    this._context = new AspectContext();
+    this._staticCaller = new StaticCaller();
+  }
 
+  get staticCaller(): StaticCaller {
+    return this._staticCaller;
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get tx(): EthTransaction | null {
+    return this._tx;
+  }
 
-    get tx(): EthTransaction | null {
-        return this._tx;
-    }
-
-
-    get context(): AspectContext | null {
-        return this._context;
-    }
+  get context(): AspectContext | null {
+    return this._context;
+  }
 }

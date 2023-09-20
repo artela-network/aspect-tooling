@@ -1,4 +1,4 @@
-export const  DeployTmpl=`
+export const DeployTmpl = `
 "use strict"
 const Web3 = require("@artela/web3");
 const fs = require("fs");
@@ -76,4 +76,4 @@ async function f() {
     console.log(\`--aspectAccount \${aspectDeployer}  --aspectId \${aspectRt.options.address}\`);
 }
 f().then();
-`
+`;
