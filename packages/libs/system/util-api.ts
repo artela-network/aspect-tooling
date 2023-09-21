@@ -66,17 +66,8 @@ class ExtUtility extends Utility {
     return ethereum.Address.fromHexString(hex);
   }
 
-  public uint8ArrayToString(arr: Uint8Array, decode: bool = true): string {
-    if (decode) {
-      return String.UTF8.decode(arr.buffer, false);
-    }
-
-    let result = '';
-    for (let i = 0; i < arr.length; i++) {
-      // Convert each byte to a character
-      result += String.fromCharCode(arr[i]);
-    }
-    return result;
+  public uint8ArrayToString(arr: Uint8Array): string {
+    return String.UTF8.decode(arr.buffer, false);
   }
 
   public uint8ArrayToBool(data: Uint8Array): bool {

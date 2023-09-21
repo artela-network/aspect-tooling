@@ -25,7 +25,7 @@ export class TraceContext implements TraceCtx {
     array[0] = addr;
     array[1] = variable;
     for (let i = 0; i < indices.length; i++) {
-      array[2 + i] = UtilityProvider.uint8ArrayToString(indices[i], false);
+      array[2 + i] = UtilityProvider.uint8ArrayToHex(indices[i]);
     }
 
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
@@ -45,7 +45,7 @@ export class TraceContext implements TraceCtx {
     array[0] = addr;
     array[1] = variable;
     for (let i = 0; i < indices.length; i++) {
-      array[2 + i] = UtilityProvider.uint8ArrayToString(indices[i], false);
+      array[2 + i] = UtilityProvider.uint8ArrayToHex(indices[i]);
     }
 
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
