@@ -4,7 +4,6 @@ import {IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx} from '
 import {
     FilterTxCtx,
     OnBlockInitializeCtx,
-
     PreTxExecuteCtx,
     PreContractCallCtx,
     PostContractCallCtx,
@@ -14,17 +13,15 @@ import {
 } from ".";
 import {PointCutType} from "./aspect-interface";
 import {
-    DefAspectResponse, ErrAspectResponse, ErrorRunResult,
+    DefAspectResponse, ErrAspectResponse,
     LoadEthBlockAspect, LoadEthTransaction,
     LoadEthTxAspect,
     LoadInputString, MessageUrlType, NewDataResponse,
     StoreAspectResponse,
     StoreOutputBool
 } from "./message-helper";
-import {Any, AspectResponse, BoolData, BytesData, EthInnerTransaction, RunResult, StringData,} from "../proto";
-import {UtilityProvider} from "../system";
+import {Any, AspectResponse, BoolData, BytesData, EthInnerTransaction, RunResult,} from "../proto";
 import {Protobuf} from "as-proto/assembly";
-import {BytesArrayData} from "../proto/aspect/v2/bytes-array-data";
 
 export class Entry {
     blockAspect: IAspectBlock | null;
@@ -135,14 +132,14 @@ export class Entry {
             const arg = LoadEthTransaction(argPtr);
             const ctx = new OperationCtx(arg);
             const ret = this.operationAspect!.operation(ctx)
-            if (ret==null || ret.length==0) {
-                out=ErrAspectResponse("operation fail");
-            }else {
+            if (ret == null || ret.length == 0) {
+                out = ErrAspectResponse("operation fail");
+            } else {
                 const bytesData = new BytesData(ret);
                 const encodeData = Protobuf.encode(bytesData, BytesData.encode);
                 const any = new Any(MessageUrlType.BytesData, encodeData);
-                const runResult = new RunResult(true,"success")
-                out= new AspectResponse(runResult, MessageUrlType.BytesData, any);
+                const runResult = new RunResult(true, "success")
+                out = new AspectResponse(runResult, MessageUrlType.BytesData, any);
             }
 
         } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
