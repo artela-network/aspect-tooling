@@ -1,15 +1,14 @@
 import { EthTransaction } from '../../proto';
-import { BlockContext } from '../../context';
-import { AspectContext, StaticCaller } from '../../system';
-import { StateContext } from '../../system/statedb-api';
-import { TraceContext } from '../../context/tx-context';
+import { BlockContext,TraceContext ,TxContext} from '../../context';
+import { AspectContext, StaticCaller ,StateContext} from '../../system';
 
 export class PreTxExecuteCtx {
   private _tx: EthTransaction | null;
-  private _aspectContext: AspectContext | null;
+  private _aspectContext: AspectContext;
   private _staticCaller: StaticCaller;
   private _stateContext: StateContext;
   private _blockContext: BlockContext;
+  private _txContext: TxContext;
 
   constructor(tx: EthTransaction | null) {
     this._tx = tx;
@@ -19,11 +18,15 @@ export class PreTxExecuteCtx {
     this._blockContext = new BlockContext();
   }
 
-  get staticCaller(): StaticCaller | null {
+  get txContext(): TxContext {
+    return this._txContext;
+  }
+
+  get staticCaller(): StaticCaller  {
     return this._staticCaller;
   }
 
-  get stateContext(): StateContext | null {
+  get stateContext(): StateContext  {
     return this._stateContext;
   }
 
@@ -35,15 +38,15 @@ export class PreTxExecuteCtx {
     return this._tx;
   }
 
-  get aspectContext(): AspectContext | null {
+  get aspectContext(): AspectContext  {
     return this._aspectContext;
   }
 }
 
 export class PostTxExecuteCtx {
   private _tx: EthTransaction | null;
-  private _aspectContext: AspectContext | null;
-  private _staticCaller: StaticCaller | null;
+  private _aspectContext: AspectContext ;
+  private _staticCaller: StaticCaller ;
   private _stateContext: StateContext;
   private _traceContext: TraceContext;
   private _blockContext: BlockContext;
@@ -57,7 +60,7 @@ export class PostTxExecuteCtx {
     this._blockContext = new BlockContext();
   }
 
-  get staticCaller(): StaticCaller | null {
+  get staticCaller(): StaticCaller {
     return this._staticCaller;
   }
 
@@ -77,7 +80,7 @@ export class PostTxExecuteCtx {
     return this._tx;
   }
 
-  get aspectContext(): AspectContext | null {
+  get aspectContext(): AspectContext {
     return this._aspectContext;
   }
 }

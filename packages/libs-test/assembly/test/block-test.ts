@@ -18,14 +18,14 @@ function AssertTrue(cond: bool, msg: string): void {
 class AspectTest implements IAspectBlock {
     onBlockInitialize(ctx: OnBlockInitializeCtx): void {
         AssertTrue(ctx.blockHeader != null, "onBlockInitialize blockHeader is empty")
-        AssertTrue(ctx.scheduleManager != null, "onBlockInitialize scheduleManager is empty")
+        AssertTrue(ctx.schedule != null, "onBlockInitialize scheduleManager is empty")
         AssertTrue(ctx.blockContext != null, "onBlockInitialize blockContext is empty")
         AssertTrue(ctx.staticCaller != null, "onBlockInitialize staticCaller is empty")
     }
 
     onBlockFinalize(ctx: OnBlockFinalizeCtx): void {
         AssertTrue(ctx.blockHeader != null, "onBlockFinalize blockHeader is empty")
-        AssertTrue(ctx.scheduleManager != null, "onBlockFinalize scheduleManager is empty")
+        AssertTrue(ctx.schedule != null, "onBlockFinalize scheduleManager is empty")
         AssertTrue(ctx.blockContext != null, "onBlockFinalize blockContext is empty")
         AssertTrue(ctx.staticCaller != null, "onBlockFinalize staticCaller is empty")
     }

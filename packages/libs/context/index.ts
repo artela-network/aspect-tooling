@@ -1,3 +1,3 @@
 export { EnvContextProvider } from './env-context';
 export { BlockContext } from './block-context';
-export { TxContextProvider, EthReceiptContext } from './tx-context';
+export { TxContext, EthReceiptContext,TraceContext } from './tx-context';

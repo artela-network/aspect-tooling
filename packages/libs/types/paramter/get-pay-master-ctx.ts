@@ -1,15 +1,17 @@
 import { EthTransaction } from '../../proto';
 import { AspectContext, StaticCaller } from '../../system';
+import {TxContext} from "../../context";
 
 export class GetPayMasterCtx {
   private _tx: EthTransaction | null;
-  private _context: AspectContext | null;
+  private _aspectContext: AspectContext | null;
   private _staticCaller: StaticCaller;
-
+  private _txContext: TxContext;
   constructor(tx: EthTransaction | null) {
     this._tx = tx;
-    this._context = new AspectContext();
+    this._aspectContext = new AspectContext();
     this._staticCaller = new StaticCaller();
+    this._txContext = new TxContext();
   }
 
   get staticCaller(): StaticCaller {
@@ -20,7 +22,11 @@ export class GetPayMasterCtx {
     return this._tx;
   }
 
-  get context(): AspectContext | null {
-    return this._context;
+  get txContext(): TxContext {
+    return this._txContext;
+  }
+
+  get aspectContext(): AspectContext | null {
+    return this._aspectContext;
   }
 }

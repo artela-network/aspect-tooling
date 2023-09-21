@@ -64,3 +64,4 @@ export * from './aspect/v2/validator-params';
 export * from './aspect/v2/verify-tx-result';
 export * from './aspect/v2/version';
 export * from './aspect/v2/version-params';
+export * from './aspect/v2/bytes-data';

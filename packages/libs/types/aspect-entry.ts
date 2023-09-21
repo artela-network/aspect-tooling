@@ -21,8 +21,10 @@ import {
     StoreAspectResponse,
     StoreOutputBool
 } from "./message-helper";
-import {AspectResponse, BoolData, EthInnerTransaction,} from "../proto";
+import {Any, AspectResponse, BoolData, BytesData, EthInnerTransaction, RunResult, StringData,} from "../proto";
 import {UtilityProvider} from "../system";
+import {Protobuf} from "as-proto/assembly";
+import {BytesArrayData} from "../proto/aspect/v2/bytes-array-data";
 
 export class Entry {
     blockAspect: IAspectBlock | null;
@@ -132,7 +134,17 @@ export class Entry {
         } else if (method == PointCutType.OPERATION_METHOD) {
             const arg = LoadEthTransaction(argPtr);
             const ctx = new OperationCtx(arg);
-            out = this.operationAspect!.operation(ctx)
+            const ret = this.operationAspect!.operation(ctx)
+            if (ret==null || ret.length==0) {
+                out=ErrAspectResponse("operation fail");
+            }else {
+                const bytesData = new BytesData(ret);
+                const encodeData = Protobuf.encode(bytesData, BytesData.encode);
+                const any = new Any(MessageUrlType.BytesData, encodeData);
+                const runResult = new RunResult(true,"success")
+                out= new AspectResponse(runResult, MessageUrlType.BytesData, any);
+            }
+
         } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
             // block level aspect
             const block = LoadEthBlockAspect(argPtr);

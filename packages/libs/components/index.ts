@@ -4,4 +4,5 @@ export {
   AdHocSchedule,
   ScheduleTx,
   Opts,
+  ScheduleManager,
 } from './scheduler/schedule-service';

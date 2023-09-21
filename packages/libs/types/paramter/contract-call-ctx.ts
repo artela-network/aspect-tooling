@@ -1,8 +1,6 @@
 import {EthInnerTransaction, EthStackTransaction, EthTransaction} from "../../proto";
-import {BlockContext,} from "../../context";
-import {AspectContext, JustInTimeCaller} from "../../system";
-import {StateContext} from "../../system/statedb-api";
-import {TraceContext} from "../../context/tx-context";
+import {BlockContext, TraceContext, TxContext} from "../../context";
+import {AspectContext, JustInTimeCaller,StateContext} from "../../system";
 
 
 export class PreContractCallCtx {
@@ -10,11 +8,13 @@ export class PreContractCallCtx {
     private _tx: EthTransaction | null;
     private _innerTx: EthInnerTransaction | null;
 
-    private _context: AspectContext;
+    private _aspectContext: AspectContext;
     private _jitCall: JustInTimeCaller
     private _blockContext: BlockContext;
     private _stateContext:StateContext;
     private _traceContext:TraceContext;
+    private _txContext:TxContext;
+
 
     constructor(tx: EthTransaction | null, innerTx: EthInnerTransaction | null) {
         if (tx) {
@@ -23,13 +23,18 @@ export class PreContractCallCtx {
         if (innerTx) {
             this._innerTx = innerTx;
         }
-        this._context = new AspectContext();
+        this._aspectContext = new AspectContext();
         this._jitCall = new JustInTimeCaller();
         this._blockContext = new BlockContext();
         this._stateContext = new StateContext();
         this._traceContext = new TraceContext();
+        this._txContext = new TxContext();
     };
 
+
+    get txContext(): TxContext {
+        return this._txContext;
+    }
 
     get blockContext(): BlockContext {
         return this._blockContext;
@@ -51,8 +56,8 @@ export class PreContractCallCtx {
         return this._traceContext;
     }
 
-    get context(): AspectContext {
-        return this._context;
+    get aspectContext(): AspectContext {
+        return this._aspectContext;
     }
 
     get jitCall(): JustInTimeCaller {
@@ -65,12 +70,12 @@ export class PostContractCallCtx {
     private _tx: EthTransaction | null;
     private _currInnerTx: EthStackTransaction | null;
 
-    private _context: AspectContext;
+    private _aspectContext: AspectContext;
     private _jitCall: JustInTimeCaller
     private _blockContext: BlockContext;
     private _stateContext:StateContext;
     private _traceContext:TraceContext;
-
+    private _txContext:TxContext;
 
 
     constructor(tx: EthTransaction | null, innerTx: EthStackTransaction | null) {
@@ -80,13 +85,18 @@ export class PostContractCallCtx {
         if (innerTx) {
             this._currInnerTx = innerTx;
         }
-        this._context = new AspectContext();
+        this._aspectContext = new AspectContext();
         this._jitCall = new JustInTimeCaller();
         this._blockContext = new BlockContext();
         this._stateContext = new StateContext();
         this._traceContext = new TraceContext();
-
+        this._txContext = new TxContext();
     };
+
+
+    get txContext(): TxContext {
+        return this._txContext;
+    }
 
     get blockContext(): BlockContext {
         return this._blockContext;
@@ -104,10 +114,9 @@ export class PostContractCallCtx {
         return this._jitCall;
     }
 
-    get context(): AspectContext {
-        return this._context;
+    get aspectContext(): AspectContext {
+        return this._aspectContext;
     }
-
 
     get stateContext(): StateContext {
         return this._stateContext;

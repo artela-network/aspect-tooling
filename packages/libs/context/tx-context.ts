@@ -60,7 +60,7 @@ export class TraceContext implements TraceCtx {
   }
 }
 
-class TxContext {
+export class TxContext {
   public getExtProperties(): TxExtProperty | null {
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_EXT_PROPERTIES, null);
     if (!response.result.success || !response.data.value) {
@@ -85,9 +85,6 @@ class TxContext {
     return Protobuf.decode<GasMeter>(response.data.value, GasMeter.decode);
   }
 }
-
-export const TxContextProvider = new TxContext();
-
 export class EthReceiptContext {
   public get(): EthReceipt | null {
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_RECEIPT, null);

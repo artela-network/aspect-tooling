@@ -1,7 +1,7 @@
 import { BlockContext, EthReceiptContext } from '../../context';
 import { EthTransaction } from '../../proto';
 import { AspectContext, StaticCaller } from '../../system';
-import { ScheduleManager } from '../../components/scheduler/schedule-service';
+import { ScheduleManager } from '../../components';
 
 export class PostTxCommitCtx {
   private _tx: EthTransaction | null;
@@ -22,10 +22,6 @@ export class PostTxCommitCtx {
 
   get blockContext(): BlockContext {
     return this._blockContext;
-  }
-
-  get scheduleManager(): ScheduleManager {
-    return this._scheduleManager;
   }
 
   get tx(): EthTransaction | null {

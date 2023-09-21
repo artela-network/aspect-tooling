@@ -55,11 +55,13 @@ process_dir() {
 
 rm -rf ./proto/aspect ./proto/scheduler ./proto/jitinherent
 
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto scheduler/v2/schedule_message.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto aspect/v2/base_message.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto aspect/v2/entry_api.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto aspect/v2/host_api.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto aspect/v2/cosmos_type.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-sdk/proto/message --as_out=./proto jitinherent/v1/jit_inherent_message.proto
+##protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message/aspect/v1 --as_out=./proto hostapi_message.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto scheduler/v2/schedule_message.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto aspect/v2/base_message.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto aspect/v2/entry_api.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto aspect/v2/host_api.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto aspect/v2/cosmos_type.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=/Users/admin/mytech/go-work/src/github.com/artela-network/artelasdk/proto/message --as_out=./proto jitinherent/v1/jit_inherent_message.proto
+
 
 process_dir ./proto/

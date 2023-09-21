@@ -5,10 +5,9 @@ import {
     GetPayMasterCtx,
     IAspectTransaction,
     PostContractCallCtx, PostTxCommitCtx, PostTxExecuteCtx, PreContractCallCtx, PreTxExecuteCtx,
-    VerifyAccountCtx, VerifyTxCtx
-} from "@artela/aspect-libs/types";
-import {UtilityProvider} from "@artela/aspect-libs/system";
-import {Entry} from "@artela/aspect-libs/types/aspect-entry";
+    VerifyAccountCtx, VerifyTxCtx,Entry,
+    UtilityProvider
+} from "@artela/aspect-libs";
 
 function AssertTrue(cond: bool, msg: string): void {
     if (!cond) {
@@ -21,7 +20,7 @@ class AspectTest implements IAspectTransaction {
     filterTx(ctx: FilterTxCtx): bool {
 
         AssertTrue(ctx.tx != null, 'FilterTxCtx tx is empty')
-        AssertTrue(ctx.context != null, "FilterTxCtx context is empty")
+        AssertTrue(ctx.aspectContext != null, "FilterTxCtx context is empty")
 
         return true;
     }
@@ -29,7 +28,7 @@ class AspectTest implements IAspectTransaction {
     getPayMaster(ctx: GetPayMasterCtx): string {
 
         AssertTrue(ctx.tx != null, 'GetPayMasterCtx tx is empty')
-        AssertTrue(ctx.context != null, "GetPayMasterCtx context is empty")
+        AssertTrue(ctx.aspectContext != null, "GetPayMasterCtx context is empty")
 
         return "test";
     }
@@ -47,7 +46,7 @@ class AspectTest implements IAspectTransaction {
     postContractCall(ctx: PostContractCallCtx): void {
         AssertTrue(ctx.tx != null, 'postContractCall tx is empty')
         AssertTrue(ctx.jitCall != null, "postContractCall call is empty")
-        AssertTrue(ctx.context != null, "postContractCall context is empty")
+        AssertTrue(ctx.aspectContext != null, "postContractCall context is empty")
         AssertTrue(ctx.innerTx != null, "postContractCall innerTx is empty")
         AssertTrue(ctx.innerTxContext != null, "postContractCall innerTxContext is empty")
     }
@@ -75,7 +74,7 @@ class AspectTest implements IAspectTransaction {
 
         AssertTrue(ctx.tx != null, 'preContractCall tx is empty')
         AssertTrue(ctx.innerTx != null, "preContractCall receipt is empty")
-        AssertTrue(ctx.context != null, "preContractCall context is empty")
+        AssertTrue(ctx.aspectContext != null, "preContractCall context is empty")
         AssertTrue(ctx.innerTxContext != null, "preContractCall staticCaller is empty")
         AssertTrue(ctx.jitCall != null, "preContractCall justInTimeCaller is empty")
 

@@ -10,7 +10,7 @@ declare namespace __RuntimeContextApi__ {
 }
 
 class RuntimeContext {
-  public get(dataSpace: DataSpaceType, keys: Array<string>): ContextQueryResponse | null {
+  public get(dataSpace: DataSpaceType, keys: Array<string>): ContextQueryResponse {
     const contextQueryRequest = new ContextQueryRequest(dataSpace, keys);
     const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
     const input = new AUint8Array();
@@ -24,7 +24,7 @@ class RuntimeContext {
 }
 
 export class AspectContext {
-  public get(key: string, aspectId: string = '', contractAddr: string = ''): ContextValue | null {
+  public get(key: string, aspectId: string = '', contractAddr: string = ''): ContextValue {
     const array = new Array<string>(3);
     array[0] = key;
     array[1] = aspectId;

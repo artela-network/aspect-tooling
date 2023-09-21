@@ -9,7 +9,6 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
 } from '.';
-import { AspectResponse } from '../proto';
 
 export interface IAspectBlock {
   isOwner(sender: string): bool;
@@ -38,7 +37,7 @@ export interface IAspectTransaction {
 }
 
 export interface IAspectOperation {
-  operation(ctx: OperationCtx): AspectResponse;
+  operation(ctx: OperationCtx): Uint8Array|null;
 }
 
 export class PointCutType {
