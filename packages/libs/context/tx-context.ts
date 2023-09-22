@@ -29,11 +29,11 @@ export class TraceContext implements TraceCtx {
     }
 
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response!.result!.success) {
+    if (!response.result!.success) {
       return null;
     }
 
-    return Protobuf.decode<EthStateChanges>(response!.data!.value, EthStateChanges.decode);
+    return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
   }
 
   getStateChangeIndices(
@@ -49,12 +49,12 @@ export class TraceContext implements TraceCtx {
     }
 
     const response = RuntimeContextAccessor.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response!.result!.success) {
+    if (!response.result!.success) {
       return null;
     }
 
     return Protobuf.decode<EthStateChangeIndices>(
-      response!.data!.value,
+      response.data!.value,
       EthStateChangeIndices.decode,
     );
   }

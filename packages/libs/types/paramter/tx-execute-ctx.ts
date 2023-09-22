@@ -16,6 +16,7 @@ export class PreTxExecuteCtx {
     this._staticCaller = new StaticCaller();
     this._stateContext = new StateContext();
     this._blockContext = new BlockContext();
+    this._txContext = new TxContext();
   }
 
   get txContext(): TxContext {
@@ -50,6 +51,7 @@ export class PostTxExecuteCtx {
   private _stateContext: StateContext;
   private _traceContext: TraceContext;
   private _blockContext: BlockContext;
+  private _txContext: TxContext;
 
   constructor(tx: EthTransaction | null) {
     this._tx = tx;
@@ -58,6 +60,13 @@ export class PostTxExecuteCtx {
     this._stateContext = new StateContext();
     this._traceContext = new TraceContext();
     this._blockContext = new BlockContext();
+    this._txContext = new TxContext();
+
+  }
+
+
+  get txContext(): TxContext {
+    return this._txContext;
   }
 
   get staticCaller(): StaticCaller {
