@@ -13,7 +13,7 @@ import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
 const toolVersion = '^0.0.31';
-const libVersion = '^0.0.17';
+const libVersion = '^0.0.19';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -326,22 +326,22 @@ export default class Init extends Command {
         updated = true;
       }
       if (!dependencies['@artela/web3']) {
-        dependencies['@artela/web3'] = '^1.9.2';
+        dependencies['@artela/web3'] = '^1.9.8';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-atl-aspect']) {
-        dependencies['@artela/web3-atl-aspect'] = '^1.9.2';
+        dependencies['@artela/web3-atl-aspect'] = '^1.9.8';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-eth-contract']) {
-        dependencies['@artela/web3-eth-contract'] = '^1.9.2';
+        dependencies['@artela/web3-eth-contract'] = '^1.9.8';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-utils']) {
-        dependencies['@artela/web3-utils'] = '^1.9.1';
+        dependencies['@artela/web3-utils'] = '^1.9.8';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
@@ -387,10 +387,10 @@ export default class Init extends Command {
             license: 'ISC',
             dependencies: {
               '@artela/aspect-libs': libVersion,
-              '@artela/web3': '^1.9.2',
-              '@artela/web3-atl-aspect': '^1.9.2',
-              '@artela/web3-eth-contract': '^1.9.2',
-              '@artela/web3-utils': '^1.9.1',
+              '@artela/web3': '^1.9.8',
+              '@artela/web3-atl-aspect': '^1.9.8',
+              '@artela/web3-eth-contract': '^1.9.8',
+              '@artela/web3-utils': '^1.9.8',
               '@assemblyscript/loader': '^0.27.5',
               'as-proto': '^1.3.0',
             },
