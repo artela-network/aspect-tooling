@@ -1,6 +1,6 @@
 {
   "name": "@artela/aspect-tool",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "Dev tool for aspect to generate libs from solidity storage layout.",
   "engines": {
     "node": ">=14"
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsc -b tsconfig.build.json && oclif manifest && oclif readme",
-    "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz && node scripts/rename-tarballs.mjs",
+    "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz",
     "format": "prettier --write -c **/*.ts",
     "type-check": "tsc --noEmit"
   },
@@ -45,26 +45,26 @@
   },
   "devDependencies": {
     "@oclif/test": "^2.3.26",
+    "@types/chai": "^4",
+    "@types/mocha": "^9.0.0",
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
+    "chai": "^4",
     "eslint": "^8.42.0",
+    "eslint-config-oclif": "^4",
+    "eslint-config-oclif-typescript": "^1.0.3",
     "eslint-config-standard-with-typescript": "^35.0.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-typescript": "^0.14.0",
-    "oclif": "^3.9.1",
+    "mocha": "^9",
+    "oclif": "^3.16.0",
+    "shx": "^0.3.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.0",
     "typescript": "^5.1.6",
-    "typescript-eslint-parser": "^22.0.0",
-    "@types/chai": "^4",
-    "@types/mocha": "^9.0.0",
-    "chai": "^4",
-    "eslint-config-oclif": "^4",
-    "eslint-config-oclif-typescript": "^1.0.3",
-    "mocha": "^9",
-    "shx": "^0.3.3"
+    "typescript-eslint-parser": "^18.0.0"
   }
 }
