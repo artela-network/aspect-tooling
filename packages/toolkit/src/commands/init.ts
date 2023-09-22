@@ -12,7 +12,7 @@ import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
-const toolVersion = '^0.0.31';
+const toolVersion = '^0.0.32';
 const libVersion = '^0.0.19';
 
 export default class Init extends Command {
