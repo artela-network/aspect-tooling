@@ -1,34 +1,26 @@
-import {EthTransaction} from '../../proto';
-import {AspectContext, StaticCaller} from '../../system';
-import {TxContext} from "../../context";
+import { AspectContext, StaticCaller } from '../../system';
+import { TxContext } from '../../context';
 
 export class FilterTxCtx {
-    private _tx: EthTransaction | null;
+  private readonly _aspectContext: AspectContext;
+  private readonly _staticCaller: StaticCaller;
+  private readonly _txContext: TxContext;
 
-    private _aspectContext: AspectContext;
-    private _staticCaller: StaticCaller;
-    private _txContext: TxContext;
+  constructor() {
+    this._aspectContext = AspectContext.get();
+    this._staticCaller = StaticCaller.get();
+    this._txContext = TxContext.get();
+  }
 
-    constructor(tx: EthTransaction | null) {
-        this._tx = tx;
-        this._aspectContext = new AspectContext();
-        this._staticCaller = new StaticCaller();
-        this._txContext = new TxContext();
-    }
+  get evm(): StaticCaller {
+    return this._staticCaller;
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get tx(): TxContext {
+    return this._txContext;
+  }
 
-    get txContext(): TxContext {
-        return this._txContext;
-    }
-
-    get tx(): EthTransaction {
-        return this._tx!;
-    }
-
-    get aspectContext(): AspectContext {
-        return this._aspectContext;
-    }
+  get aspect(): AspectContext {
+    return this._aspectContext;
+  }
 }

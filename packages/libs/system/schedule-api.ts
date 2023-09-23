@@ -6,7 +6,11 @@ declare namespace __ScheduleApi__ {
   function submit(sch: i32): i32;
 }
 
-class Schedule {
+export class Scheduler {
+  private static instance: Scheduler;
+
+  private constructor() {}
+
   public submit(sch: ScheduleMsg): bool {
     const encoded = Protobuf.encode(sch, ScheduleMsg.encode);
     const input = new AUint8Array();
@@ -17,6 +21,9 @@ class Schedule {
     output.load(outPtr);
     return output.get();
   }
-}
 
-export const ScheduleAccessor = new Schedule();
+  public static get(): Scheduler {
+    Scheduler.instance ||= new Scheduler();
+    return Scheduler.instance;
+  }
+}

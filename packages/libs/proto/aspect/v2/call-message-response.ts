@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { RunResult } from "./run-result";
-import { EthMessageCallResult } from "./eth-message-call-result";
+import { Writer, Reader } from 'as-proto/assembly';
+import { RunResult } from './run-result';
+import { EthMessageCallResult } from './eth-message-call-result';
 
 export class CallMessageResponse {
   static encode(message: CallMessageResponse, writer: Writer): void {
@@ -53,10 +53,7 @@ export class CallMessageResponse {
   result: RunResult | null;
   data: EthMessageCallResult | null;
 
-  constructor(
-    result: RunResult | null = null,
-    data: EthMessageCallResult | null = null
-  ) {
+  constructor(result: RunResult | null = null, data: EthMessageCallResult | null = null) {
     this.result = result;
     this.data = data;
   }

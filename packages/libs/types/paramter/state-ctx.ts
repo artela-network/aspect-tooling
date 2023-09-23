@@ -1,29 +1,20 @@
-import {EthTransaction} from '../../proto';
-import {StaticCaller} from '../../system';
-import {ScheduleManager} from "../../components";
+import { StaticCaller } from '../../system';
+import { ScheduleManager } from '../../components';
 
 export class OperationCtx {
-    private _input: Uint8Array | null;
-    private _staticCaller: StaticCaller;
-    private _schedule: ScheduleManager;
+  private readonly _staticCaller: StaticCaller;
+  private readonly _schedule: ScheduleManager;
 
-    constructor(tx: EthTransaction | null) {
-        if (tx != null) {
-            this._input = tx.input;
-        }
-        this._staticCaller = new StaticCaller();
-        this._schedule = new ScheduleManager();
-    }
+  constructor() {
+    this._staticCaller = StaticCaller.get();
+    this._schedule = ScheduleManager.get();
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get evm(): StaticCaller {
+    return this._staticCaller;
+  }
 
-    get input(): Uint8Array | null {
-        return this._input;
-    }
-
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
+  get scheduler(): ScheduleManager {
+    return this._schedule;
+  }
 }

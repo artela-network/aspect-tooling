@@ -1,128 +1,90 @@
-import {EthInnerTransaction, EthStackTransaction, EthTransaction} from "../../proto";
-import {BlockContext, TraceContext, TxContext} from "../../context";
-import {AspectContext, JustInTimeCaller,StateContext} from "../../system";
-
+import { EthInnerTransaction, EthStackTransaction } from '../../proto';
+import { BlockContext, TraceContext, TxContext } from '../../context';
+import { AspectContext, JustInTimeCaller, StateContext } from '../../system';
 
 export class PreContractCallCtx {
+  private readonly _innerTx: EthInnerTransaction;
+  private readonly _aspectContext: AspectContext;
+  private readonly _jitCall: JustInTimeCaller;
+  private readonly _blockContext: BlockContext;
+  private readonly _stateContext: StateContext;
+  private readonly _traceContext: TraceContext;
+  private readonly _txContext: TxContext;
 
-    private _tx: EthTransaction | null;
-    private _innerTx: EthInnerTransaction | null;
+  constructor(innerTx: EthInnerTransaction) {
+    this._innerTx = innerTx;
+    this._aspectContext = AspectContext.get();
+    this._jitCall = JustInTimeCaller.get();
+    this._blockContext = BlockContext.get();
+    this._stateContext = StateContext.get();
+    this._traceContext = TraceContext.get();
+    this._txContext = TxContext.get();
+  }
 
-    private _aspectContext: AspectContext;
-    private _jitCall: JustInTimeCaller
-    private _blockContext: BlockContext;
-    private _stateContext:StateContext;
-    private _traceContext:TraceContext;
-    private _txContext:TxContext;
+  get tx(): TxContext {
+    return this._txContext;
+  }
 
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    constructor(tx: EthTransaction | null, innerTx: EthInnerTransaction | null) {
-        if (tx) {
-            this._tx = tx;
-        }
-        if (innerTx) {
-            this._innerTx = innerTx;
-        }
-        this._aspectContext = new AspectContext();
-        this._jitCall = new JustInTimeCaller();
-        this._blockContext = new BlockContext();
-        this._stateContext = new StateContext();
-        this._traceContext = new TraceContext();
-        this._txContext = new TxContext();
-    };
+  get currInnerTx(): EthInnerTransaction | null {
+    return this._innerTx;
+  }
 
+  get stateDB(): StateContext {
+    return this._stateContext;
+  }
 
-    get txContext(): TxContext {
-        return this._txContext;
-    }
+  get trace(): TraceContext {
+    return this._traceContext;
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
+  get aspect(): AspectContext {
+    return this._aspectContext;
+  }
 
-    get tx(): EthTransaction | null {
-        return this._tx;
-    }
-
-    get currInnerTx(): EthInnerTransaction | null {
-        return this._innerTx;
-    }
-
-    get stateContext(): StateContext {
-        return this._stateContext;
-    }
-
-    get traceContext(): TraceContext {
-        return this._traceContext;
-    }
-
-    get aspectContext(): AspectContext {
-        return this._aspectContext;
-    }
-
-    get jitCall(): JustInTimeCaller {
-        return this._jitCall;
-    }
+  get jitCall(): JustInTimeCaller {
+    return this._jitCall;
+  }
 }
 
 export class PostContractCallCtx {
+  private readonly _aspectContext: AspectContext = AspectContext.get();
+  private readonly _jitCall: JustInTimeCaller = JustInTimeCaller.get();
+  private readonly _blockContext: BlockContext = BlockContext.get();
+  private readonly _stateContext: StateContext = StateContext.get();
+  private readonly _traceContext: TraceContext = TraceContext.get();
+  private readonly _txContext: TxContext = TxContext.get();
 
-    private _tx: EthTransaction | null;
-    private _currInnerTx: EthStackTransaction | null;
+  constructor(private readonly _currInnerTx: EthStackTransaction) {}
 
-    private _aspectContext: AspectContext;
-    private _jitCall: JustInTimeCaller
-    private _blockContext: BlockContext;
-    private _stateContext:StateContext;
-    private _traceContext:TraceContext;
-    private _txContext:TxContext;
+  get tx(): TxContext {
+    return this._txContext;
+  }
 
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    constructor(tx: EthTransaction | null, innerTx: EthStackTransaction | null) {
-        if (tx) {
-            this._tx = tx;
-        }
-        if (innerTx) {
-            this._currInnerTx = innerTx;
-        }
-        this._aspectContext = new AspectContext();
-        this._jitCall = new JustInTimeCaller();
-        this._blockContext = new BlockContext();
-        this._stateContext = new StateContext();
-        this._traceContext = new TraceContext();
-        this._txContext = new TxContext();
-    };
+  get currInnerTx(): EthStackTransaction {
+    return this._currInnerTx;
+  }
 
+  get inherent(): JustInTimeCaller {
+    return this._jitCall;
+  }
 
-    get txContext(): TxContext {
-        return this._txContext;
-    }
+  get aspect(): AspectContext {
+    return this._aspectContext;
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
+  get stateDB(): StateContext {
+    return this._stateContext;
+  }
 
-    get currInnerTx(): EthStackTransaction |null {
-        return this._currInnerTx;
-    }
-
-    get tx(): EthTransaction|null {
-        return this._tx;
-    }
-
-    get jitCall(): JustInTimeCaller {
-        return this._jitCall;
-    }
-
-    get aspectContext(): AspectContext {
-        return this._aspectContext;
-    }
-
-    get stateContext(): StateContext {
-        return this._stateContext;
-    }
-
-    get traceContext(): TraceContext {
-        return this._traceContext;
-    }
+  get trace(): TraceContext {
+    return this._traceContext;
+  }
 }

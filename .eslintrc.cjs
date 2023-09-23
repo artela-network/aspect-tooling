@@ -15,9 +15,14 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['packages/ts/**'],
+      files: ['packages/libs/**'],
       rules: {
         '@typescript-eslint/no-namespace': 'off',
+        '@typescript-eslint/prefer-optional-chain': 'off',
+        '@typescript-eslint/consistent-type-assertions': 'off',
+        '@typescript-eslint/no-inferrable-types': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
         'unicorn/filename-case': 'warn',
         'sonarjs/no-inverted-boolean-check': 'warn',
         '@typescript-eslint/no-loss-of-precision': 'warn',

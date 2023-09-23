@@ -1,66 +1,51 @@
-import {EthBlockHeader} from '../../proto';
-import {StaticCaller} from '../../system';
-import {ScheduleManager} from '../../components';
-import {BlockContext} from '../../context';
+import { StaticCaller } from '../../system';
+import { ScheduleManager } from '../../components';
+import { BlockContext } from '../../context';
 
 export class OnBlockInitializeCtx {
-    private _blockHeader: EthBlockHeader | null;
-    private _staticCaller: StaticCaller;
-    private _blockContext: BlockContext;
-    private _schedule: ScheduleManager;
+  private readonly _staticCaller: StaticCaller;
+  private readonly _blockContext: BlockContext;
+  private readonly _schedule: ScheduleManager;
 
-    constructor(blockHeader: EthBlockHeader | null) {
-        this._blockHeader = blockHeader;
-        this._staticCaller = new StaticCaller();
-        this._blockContext = new BlockContext();
-        this._schedule = new ScheduleManager();
-    }
+  constructor() {
+    this._staticCaller = StaticCaller.get();
+    this._blockContext = BlockContext.get();
+    this._schedule = ScheduleManager.get();
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    get blockHeader(): EthBlockHeader | null {
-        return this._blockHeader;
-    }
+  get schedule(): ScheduleManager {
+    return this._schedule;
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
-
-
+  get evm(): StaticCaller {
+    return this._staticCaller;
+  }
 }
 
 export class OnBlockFinalizeCtx {
-    private _blockHeader: EthBlockHeader | null;
-    private _schedule: ScheduleManager;
-    private _staticCaller: StaticCaller;
-    private _blockContext: BlockContext;
+  private readonly _schedule: ScheduleManager;
+  private readonly _staticCaller: StaticCaller;
+  private readonly _blockContext: BlockContext;
 
-    constructor(blockHeader: EthBlockHeader | null) {
-        this._blockHeader = blockHeader;
-        this._schedule = new ScheduleManager();
-        this._staticCaller = new StaticCaller();
-        this._blockContext = new BlockContext();
-    }
+  constructor() {
+    this._schedule = ScheduleManager.get();
+    this._staticCaller = StaticCaller.get();
+    this._blockContext = BlockContext.get();
+  }
 
-    get blockHeader(): EthBlockHeader | null {
-        return this._blockHeader;
-    }
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
+  get scheduler(): ScheduleManager {
+    return this._schedule;
+  }
 
-
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
-
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get evm(): StaticCaller {
+    return this._staticCaller;
+  }
 }

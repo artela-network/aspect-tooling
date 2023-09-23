@@ -14,6 +14,10 @@ declare namespace __EvmCallApi__ {
 }
 
 export class StaticCaller {
+  private static instance: StaticCaller;
+
+  private constructor() {}
+
   public staticCall(request: CallMessageRequest): CallMessageResponse | null {
     const encoded = Protobuf.encode(request, CallMessageRequest.encode);
     const input = new AUint8Array();
@@ -24,9 +28,18 @@ export class StaticCaller {
     bytes.load(ret);
     return Protobuf.decode<CallMessageResponse>(bytes.get(), CallMessageResponse.decode);
   }
+
+  public static get(): StaticCaller {
+    StaticCaller.instance ||= new StaticCaller();
+    return StaticCaller.instance;
+  }
 }
 
 export class JustInTimeCaller {
+  private static instance: JustInTimeCaller;
+
+  private constructor() {}
+
   public jitCall(request: JitInherentRequest): JitInherentResponse | null {
     const encoded = Protobuf.encode(request, JitInherentRequest.encode);
     const input = new AUint8Array();
@@ -36,5 +49,10 @@ export class JustInTimeCaller {
     const bytes = new AUint8Array();
     bytes.load(ret);
     return Protobuf.decode<JitInherentResponse>(bytes.get(), JitInherentResponse.decode);
+  }
+
+  public static get(): JustInTimeCaller {
+    JustInTimeCaller.instance ||= new JustInTimeCaller();
+    return JustInTimeCaller.instance;
   }
 }

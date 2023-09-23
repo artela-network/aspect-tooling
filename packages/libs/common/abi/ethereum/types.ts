@@ -1,14 +1,11 @@
-import { CryptoProvider, UtilityProvider } from '../../../system';
+import { crypto, utils } from '../../../system';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ethereum {
   export function abiEncode(method: string, types: Type[]): string {
     let enc = '0x';
     if (method.length > 0) {
       const methodSig = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
-      enc += UtilityProvider.uint8ArrayToHex(
-        CryptoProvider.keccak(UtilityProvider.stringToUint8Array(methodSig)).slice(0, 4),
-      );
+      enc += utils.uint8ArrayToHex(crypto.keccak(utils.stringToUint8Array(methodSig)).slice(0, 4));
     }
 
     let inputOffset: u64 = 0;
@@ -92,7 +89,7 @@ export namespace ethereum {
     }
 
     protected static calcPaddedLen(hex: string): i32 {
-      return ((((hex.length >> 1) + 31) >> 5) << 5) as i32
+      return ((((hex.length >> 1) + 31) >> 5) << 5) as i32;
     }
 
     protected static fromHex(
@@ -138,7 +135,7 @@ export namespace ethereum {
       let res = '';
       for (let i = 0; i < this.length; ++i) {
         let hex = this[i].toString(16);
-        hex = hex.length % 2 != 0 ? '0' + hex : hex;
+        hex = hex.length % 2 == 0 ? hex : '0' + hex;
         res += hex;
       }
 
@@ -146,7 +143,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -205,7 +202,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -230,7 +227,7 @@ export namespace ethereum {
     static fromString(str: string): String {
       str = this.validateAndTrimHex(str);
       return changetype<String>(
-        this.fromBuffer(UtilityProvider.encodeStringUTF8(str), new ethereum.String(str)),
+        this.fromBuffer(utils.encodeStringUTF8(str), new ethereum.String(str)),
       );
     }
 
@@ -611,7 +608,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -723,7 +720,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
   }
 }

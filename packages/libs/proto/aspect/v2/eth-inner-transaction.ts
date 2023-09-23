@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class EthInnerTransaction {
   static encode(message: EthInnerTransaction, writer: Writer): void {
@@ -66,11 +66,11 @@ export class EthInnerTransaction {
   gas: string;
 
   constructor(
-    from: string = "",
-    to: string = "",
+    from: string = '',
+    to: string = '',
     data: Uint8Array = new Uint8Array(0),
-    value: string = "",
-    gas: string = ""
+    value: string = '',
+    gas: string = '',
   ) {
     this.from = from;
     this.to = to;

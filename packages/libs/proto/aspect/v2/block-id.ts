@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { PartSetHeader } from "./part-set-header";
+import { Writer, Reader } from 'as-proto/assembly';
+import { PartSetHeader } from './part-set-header';
 
 export class BlockID {
   static encode(message: BlockID, writer: Writer): void {
@@ -47,10 +47,7 @@ export class BlockID {
   hash: Uint8Array;
   partSetHeader: PartSetHeader | null;
 
-  constructor(
-    hash: Uint8Array = new Uint8Array(0),
-    partSetHeader: PartSetHeader | null = null
-  ) {
+  constructor(hash: Uint8Array = new Uint8Array(0), partSetHeader: PartSetHeader | null = null) {
     this.hash = hash;
     this.partSetHeader = partSetHeader;
   }

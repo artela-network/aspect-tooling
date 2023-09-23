@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { Evidence } from "./evidence";
+import { Writer, Reader } from 'as-proto/assembly';
+import { Evidence } from './evidence';
 
 export class EvidenceList {
   static encode(message: EvidenceList, writer: Writer): void {

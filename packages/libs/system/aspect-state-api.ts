@@ -1,75 +1,118 @@
-import {ABool, AString} from '../types';
-import {ContextValue, ToContextValue, ToString} from './common';
+import { ABool, AString } from '../types';
+import { MutableAspectValue } from './common';
+import { ErrUpdateAspectState } from './errors';
+import { utils } from './util-api';
+import fromString = utils.fromString;
+import toString = utils.toString;
 
 declare namespace __AspectStateApi__ {
-    function getAspectState(key: i32): i32;
+  function getAspectState(key: i32): i32;
 
-    function setAspectState(key: i32, value: i32): i32;
+  function setAspectState(key: i32, value: i32): i32;
 
-    function removeAspectState(key: i32): i32;
+  function removeAspectState(key: i32): i32;
 
-    function getProperty(key: i32): i32;
+  function getProperty(key: i32): i32;
 }
 
-class AspectProperty {
-    public get(key: string): ContextValue | null {
-        const input = new AString();
-        input.set(key);
-        const inPtr = input.store();
-        const outPtr = __AspectStateApi__.getProperty(inPtr);
-        if (outPtr == 0) {
-            return null
-        }
-        const output = new AString();
-        output.load(outPtr);
-        const newVar = output.get();
-        return ToContextValue(newVar);
+export class AspectProperty {
+  private static _instance: AspectProperty;
+
+  private constructor() {}
+
+  public get<T>(key: string): T | null {
+    const input = new AString();
+    input.set(key);
+    const inPtr = input.store();
+    const outPtr = __AspectStateApi__.getProperty(inPtr);
+    if (outPtr == 0) {
+      return null;
     }
+    const output = new AString();
+    output.load(outPtr);
+    return fromString(output.get());
+  }
+
+  public static get(): AspectProperty {
+    this._instance ||= new AspectProperty();
+    return this._instance;
+  }
 }
 
-class AspectState {
-    public get(key: string): ContextValue | null {
-        const input = new AString();
-        input.set(key);
-        const inPtr = input.store();
-        const outPtr = __AspectStateApi__.getAspectState(inPtr);
-        if (outPtr == 0) {
-            return null
-        }
-        const output = new AString();
-        output.load(outPtr);
-        const newVar = output.get();
-        return ToContextValue(newVar);
-    }
+export class AspectState {
+  private static instance: AspectState;
 
-    public set<T>(key: string, value: T): bool {
-        const inputKey = new AString();
-        inputKey.set(key);
-        const inPtr = inputKey.store();
-        const data = ToString(value);
-        const inputValue = new AString();
-        inputValue.set(data);
-        const ptrValue = inputValue.store();
+  private constructor() {}
 
-        const outPtr = __AspectStateApi__.setAspectState(inPtr, ptrValue);
-        const output = new ABool();
-        output.load(outPtr);
-        return output.get();
-    }
+  public get<T>(key: string): StateValue<T> {
+    return new StateValue<T>(key);
+  }
 
-    public remove(key: string): bool {
-        const inputKey = new AString();
-        inputKey.set(key);
-        const inPtr = inputKey.store();
-        const outPtr = __AspectStateApi__.removeAspectState(inPtr);
-        if (outPtr == 0) {
-            return false
-        }
-        const output = new ABool();
-        output.load(outPtr);
-        return output.get();
-    }
+  public static get(): AspectState {
+    AspectState.instance ||= new AspectState();
+    return AspectState.instance;
+  }
 }
 
-export const AspectStateProvider = new AspectState();
-export const AspectPropertyProvider = new AspectProperty();
+export class StateValue<T> implements MutableAspectValue<T> {
+  private val: T | null | undefined;
+
+  constructor(private readonly key: string) {}
+
+  set<T>(value: T): bool {
+    const inputKey = new AString();
+    inputKey.set(this.key);
+    const inPtr = inputKey.store();
+    const data = toString(value);
+    const inputValue = new AString();
+    inputValue.set(data);
+    const ptrValue = inputValue.store();
+    const outPtr = __AspectStateApi__.setAspectState(inPtr, ptrValue);
+    if (outPtr == 0) {
+      throw ErrUpdateAspectState;
+    }
+    const output = new ABool();
+    output.load(outPtr);
+    return output.get();
+  }
+
+  delete(): bool {
+    const inputKey = new AString();
+    inputKey.set(this.key);
+    const inPtr = inputKey.store();
+    const outPtr = __AspectStateApi__.removeAspectState(inPtr);
+    if (outPtr == 0) {
+      throw ErrUpdateAspectState;
+    }
+    const output = new ABool();
+    output.load(outPtr);
+    const success = output.get();
+    if (success) {
+      this.val = null;
+    }
+    return success;
+  }
+
+  refresh(): void {
+    const input = new AString();
+    input.set(this.key);
+    const inPtr = input.store();
+    const outPtr = __AspectStateApi__.getAspectState(inPtr);
+    if (outPtr == 0) {
+      this.val = null;
+      return;
+    }
+    const output = new AString();
+    output.load(outPtr);
+    const newVar = output.get();
+    this.val = fromString(newVar);
+  }
+
+  unwrap(): T | null {
+    if (this.val == undefined) {
+      this.refresh();
+    }
+
+    return this.val == undefined ? null : this.val;
+  }
+}

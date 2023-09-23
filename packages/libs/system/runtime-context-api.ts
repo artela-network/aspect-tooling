@@ -1,62 +1,100 @@
-import {ContextQueryRequest, ContextQueryResponse, DataSpaceType, StringData} from '../proto';
-import {ABool, AString, AUint8Array} from '../types';
-import {ContextValue, ToString} from './common';
-import {Protobuf} from 'as-proto/assembly';
+import { ContextQueryRequest, ContextQueryResponse, DataSpaceType, StringData } from '../proto';
+import { ABool, AString, AUint8Array } from '../types';
+import { MutableAspectValue } from './common';
+import { Protobuf } from 'as-proto/assembly';
+import { ErrLoadRuntimeCtxValue } from './errors';
+import { utils } from './util-api';
 
 declare namespace __RuntimeContextApi__ {
-    function get(query: i32): i32;
+  function get(query: i32): i32;
 
-    function setAspectContext(key: i32, value: i32): i32;
+  function setAspectContext(key: i32, value: i32): i32;
 }
 
-class RuntimeContext {
-    public get(dataSpace: DataSpaceType, keys: Array<string>): ContextQueryResponse | null {
-        const contextQueryRequest = new ContextQueryRequest(dataSpace, keys);
-        const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
-        const input = new AUint8Array();
-        input.set(encoded);
-        const inputPtr = input.store();
-        const ret = __RuntimeContextApi__.get(inputPtr);
-        if (ret == 0) {
-            return null
-        }
-        const bytes = new AUint8Array();
-        bytes.load(ret);
-        return Protobuf.decode<ContextQueryResponse>(bytes.get(), ContextQueryResponse.decode);
+export class RuntimeContext {
+  public static get(dataSpace: DataSpaceType, keys: Array<string> = []): ContextQueryResponse {
+    const contextQueryRequest = new ContextQueryRequest(dataSpace, keys);
+    const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
+    const input = new AUint8Array();
+    input.set(encoded);
+    const inputPtr = input.store();
+    const ret = __RuntimeContextApi__.get(inputPtr);
+    if (ret == 0) {
+      throw ErrLoadRuntimeCtxValue;
     }
+    const bytes = new AUint8Array();
+    bytes.load(ret);
+    return Protobuf.decode<ContextQueryResponse>(bytes.get(), ContextQueryResponse.decode);
+  }
 }
 
 export class AspectContext {
-    public get(key: string, aspectId: string = '', contractAddr: string = ''): ContextValue | null {
-        const array = new Array<string>(3);
-        array[0] = key;
-        array[1] = aspectId;
-        array[2] = contractAddr;
-        const response = RuntimeContextAccessor.get(DataSpaceType.TX_ASPECT_CONTEXT, array);
-        if (!response!.result!.success) {
-            return null
-        }
-        const stringData = Protobuf.decode<StringData>(response!.data!.value, StringData.decode);
-        return new ContextValue(stringData.data);
-    }
+  private static _instance: AspectContext;
 
-    public set<T>(key: string, value: T): bool {
-        const inputKey = new AString();
-        inputKey.set(key);
-        const inPtr = inputKey.store();
+  private constructor() {}
 
-        const inputValue = new AString();
-        const dataStr = ToString(value);
-        inputValue.set(dataStr);
-        const ptrValue = inputValue.store();
-        const outPtr = __RuntimeContextApi__.setAspectContext(inPtr, ptrValue);
-        if (outPtr == 0) {
-            return false
-        }
-        const output = new ABool();
-        output.load(outPtr);
-        return output.get();
-    }
+  public contextValue<T>(
+    key: string,
+    aspectId: string = '',
+    contractAddr: string = '',
+  ): ContextValue<T> {
+    return new ContextValue(key, aspectId, contractAddr);
+  }
+
+  public static get(): AspectContext {
+    this._instance ||= new AspectContext();
+    return this._instance;
+  }
 }
 
-export const RuntimeContextAccessor = new RuntimeContext();
+export class ContextValue<T> implements MutableAspectValue<T> {
+  private val: T | null | undefined;
+
+  constructor(
+    private readonly key: string,
+    private readonly aspectId: string = '',
+    private readonly contractAddr: string = '',
+  ) {}
+
+  set<T>(value: T): bool {
+    const inputKey = new AString();
+    inputKey.set(this.key);
+    const inPtr = inputKey.store();
+
+    const inputValue = new AString();
+    const dataStr = utils.toString(value);
+    inputValue.set(dataStr);
+    const ptrValue = inputValue.store();
+    const outPtr = __RuntimeContextApi__.setAspectContext(inPtr, ptrValue);
+    if (outPtr == 0) {
+      return false;
+    }
+    const output = new ABool();
+    output.load(outPtr);
+    return output.get();
+  }
+
+  refresh(): void {
+    const response = RuntimeContext.get(DataSpaceType.TX_ASPECT_CONTEXT, [
+      this.key,
+      this.aspectId,
+      this.contractAddr,
+    ]);
+    if (!response!.result!.success) {
+      this.val = null;
+      return;
+    }
+
+    this.val = utils.fromString(
+      Protobuf.decode<StringData>(response!.data!.value, StringData.decode).data,
+    );
+  }
+
+  unwrap(): T | null {
+    if (this.val == undefined) {
+      this.refresh();
+    }
+
+    return this.val == undefined ? null : this.val;
+  }
+}

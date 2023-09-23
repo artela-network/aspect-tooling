@@ -1,15 +1,3 @@
 {
-  "extends": "assemblyscript/std/assembly",
-  "include": [
-    "index.ts",
-    "common/abi",
-    "warp/common",
-    "entry",
-    "host",
-    "types/message",
-    "warp/scheduler",
-    "common/states",
-    "types",
-    "proto"
-  ]
+  "extends": "assemblyscript/std/assembly.json"
 }

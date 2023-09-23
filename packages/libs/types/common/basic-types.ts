@@ -1,4 +1,4 @@
-import { UtilityProvider } from '../../system';
+import { utils } from '../../system';
 
 export enum typeIndex {
   Empty = 0,
@@ -58,7 +58,7 @@ export class AString {
   }
 
   public store(): i32 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = utils.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
@@ -100,7 +100,7 @@ export class AUint8Array {
   }
 
   public store(): i32 {
-    let ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = utils.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     let bodyPtr = ptr + this.head.len();
     for (let i = 0; i < this.head.dataLen; i++) {
@@ -132,14 +132,14 @@ export class ABool {
   public load(ptr: i32): void {
     this.head = new header(0, 0);
     this.head.load(ptr);
-    let bodyPtr = ptr + this.head.len();
+    const bodyPtr = ptr + this.head.len();
     this.body = u8(i32.load8_u(bodyPtr)) == 0 ? false : true;
   }
 
   public store(): i32 {
-    let ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = utils.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
-    let bodyPtr = ptr + this.head.len();
+    const bodyPtr = ptr + this.head.len();
     memory.fill(bodyPtr, this.body ? 1 : 0, 1);
     return ptr;
   }
@@ -171,7 +171,7 @@ export class AI32 {
   }
 
   public store(): i32 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = utils.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i32.store(bodyPtr, this.body);
@@ -205,7 +205,7 @@ export class AI64 {
   }
 
   public store(): i64 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = utils.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i64.store(bodyPtr, this.body);

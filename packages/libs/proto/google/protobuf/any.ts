@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class Any {
   static encode(message: Any, writer: Writer): void {
@@ -41,7 +41,7 @@ export class Any {
   typeUrl: string;
   value: Uint8Array;
 
-  constructor(typeUrl: string = "", value: Uint8Array = new Uint8Array(0)) {
+  constructor(typeUrl: string = '', value: Uint8Array = new Uint8Array(0)) {
     this.typeUrl = typeUrl;
     this.value = value;
   }
