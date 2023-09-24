@@ -37,7 +37,7 @@ export interface IAspectTransaction extends AspectBase {
 }
 
 export interface IAspectOperation {
-  operation(ctx: OperationCtx, data: Uint8Array): Uint8Array | null;
+  operation(ctx: OperationCtx, data: Uint8Array): Uint8Array;
 }
 
 export class PointCutType {

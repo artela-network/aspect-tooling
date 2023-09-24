@@ -12,7 +12,7 @@ declare namespace __UtilApi__ {
   function sLog(ptr: i32): void;
 }
 
-export namespace utils {
+export namespace vm {
   export function revert(message: string): void {
     const input = new AString();
     input.set(message);
@@ -25,7 +25,9 @@ export namespace utils {
     const dataPtr = new AString(data).store();
     __UtilApi__.sLog(dataPtr);
   }
+}
 
+export namespace utils {
   export function uint8ArrayToHex(data: Uint8Array): string {
     const outPtr = __UtilApi__.toHexString(new AUint8Array(data).store());
     const out = new AString();

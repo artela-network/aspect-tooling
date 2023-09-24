@@ -123,15 +123,11 @@ export class Entry {
       const arg = LoadEthTransaction(argPtr);
       const ctx = new OperationCtx();
       const ret = this.operationAspect!.operation(ctx, arg.input);
-      if (ret == null || ret.length == 0) {
-        out = ErrAspectResponse('operation fail');
-      } else {
-        const bytesData = new BytesData(ret);
-        const encodeData = Protobuf.encode(bytesData, BytesData.encode);
-        const any = new Any(MessageUrlType.BytesData, encodeData);
-        const runResult = new RunResult(true, 'success');
-        out = new AspectResponse(runResult, MessageUrlType.BytesData, any);
-      }
+      const bytesData = new BytesData(ret);
+      const encodeData = Protobuf.encode(bytesData, BytesData.encode);
+      const any = new Any(MessageUrlType.BytesData, encodeData);
+      const runResult = new RunResult(true, 'success');
+      out = new AspectResponse(runResult, MessageUrlType.BytesData, any);
     } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
       // block level aspect
       const ctx = new OnBlockInitializeCtx();

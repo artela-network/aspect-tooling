@@ -17,17 +17,12 @@ export abstract class StateChange<T> {
   protected readonly changes: Array<State<T>>;
 
   protected constructor(
-    private readonly ctx: TraceContext,
-    private readonly account: string,
-    private readonly stateVar: string,
-    indices: Uint8Array[] = [],
+    protected readonly properties: StateChangeProperties
   ) {
-    this.ctx = ctx;
-    this.account = account;
-    this.stateVar = stateVar;
     this.changes = new Array<State<T>>();
 
-    const changes = ctx.stateChanges(account, stateVar, indices);
+    const changes = this.properties.ctx.stateChanges(
+        this.properties.account, this.properties.stateVar, this.properties.indices);
     for (let i = 0; i < changes.all.length; i++) {
       this.changes.push(this.unmarshalState(changes.all[i]));
     }
@@ -48,12 +43,12 @@ export abstract class StateChange<T> {
   public abstract unmarshalState(raw: EthStateChange): State<T>;
 }
 
-export class StateKeyProperties {
+export class StateChangeProperties {
   constructor(
     readonly ctx: TraceContext,
     readonly account: string,
     readonly stateVar: string,
-    readonly prefixes: Uint8Array[] = [],
+    readonly indices: Uint8Array[] = [],
   ) {
   }
 }
@@ -62,12 +57,12 @@ export abstract class StateKey<K> {
   protected readonly __children__: Uint8Array[];
 
   protected constructor(
-    private readonly __properties__: StateKeyProperties,
+    protected readonly __properties__: StateChangeProperties,
   ) {
     const children = __properties__.ctx.stateChangeIndices(
       __properties__.account,
       __properties__.stateVar,
-      __properties__.prefixes || [],
+      __properties__.indices || [],
     );
     if (children == null) {
       this.__children__ = [];

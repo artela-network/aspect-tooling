@@ -121,8 +121,8 @@ abstract class BaseType implements ASTType {
 
   constructorFunc(stateVarName: string): string {
     return `
-        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
-            super(ctx, addr, '${stateVarName}', indices);
+        constructor(ctx: TraceContext, addr: string, indices: Uint8Array[] = []) {
+            super({ctx, account: addr, stateVar: '${stateVarName}', indices});
         }
         `;
   }
@@ -191,7 +191,7 @@ export class ASTNumber extends BaseType {
     if (this.bits > 64) {
       return `
             override unmarshalState(raw: EthStateChange) : State<BigInt> {
-                let valueHex = UtilityProvider.uint8ArrayToHex(raw.value);
+                let valueHex = utils.uint8ArrayToHex(raw.value);
                 let value = BigInt.fromString(valueHex, 16);
                 return new State(raw.account, value, raw.callIndex);
             }
@@ -200,7 +200,7 @@ export class ASTNumber extends BaseType {
 
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            let valueHex = UtilityProvider.uint8ArrayToHex(raw.value);
+            let valueHex = utils.uint8ArrayToHex(raw.value);
             let value = BigInt.fromString(valueHex, 16);
             return new State(raw.account, <${this.asType()}>value.to${
       this.signed ? 'U' : ''
@@ -266,7 +266,7 @@ export class ASTAddress extends BaseType {
   unmarshalStateFunc(): string {
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            return new State(raw.account, UtilityProvider.uint8ArrayToHex(raw.value), raw.callIndex);
+            return new State(raw.account, utils.uint8ArrayToHex(raw.value), raw.callIndex);
         }
         `;
   }
@@ -336,7 +336,7 @@ export class ASTString extends BaseType {
   unmarshalStateFunc(): string {
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            return new State(raw.account, UtilityProvider.uint8ArrayToString(raw.value), raw.callIndex);
+            return new State(raw.account, utils.uint8ArrayToString(raw.value), raw.callIndex);
         }
         `;
   }
@@ -344,7 +344,7 @@ export class ASTString extends BaseType {
   parseKeyFunc(): string {
     return `
             protected parseKey(key: ${this.asType()}): Uint8Array {
-                return UtilityProvider.stringToUint8Array(key);
+                return utils.stringToUint8Array(key);
             }
         `;
   }
@@ -367,9 +367,8 @@ export class ASTArray extends BaseComplexType {
     return `
             @operator("[]")
             get(index: u64): ${childClass} {
-                
-                return new ${childClass}(this.ctx, this.account, 
-                                         UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
+                return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
+                                         utils.arrayCopyPush(this.__properties__.indices, this.parseKey(index)));
             }
         `;
   }
@@ -413,8 +412,8 @@ export class ASTMapping extends BaseComplexType {
             @operator("[]")
             get(index: ${this.asType()}): ${childClass} {
                 // @ts-ignore
-                return new ${childClass}(this.ctx, this.account, 
-                                         UtilityProvider.arrayCopyPush(this.prefixes, this.parseKey(index)));
+                return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
+                                         utils.arrayCopyPush(this.__properties__.indices, this.parseKey(index)));
             }
         `;
   }
@@ -462,14 +461,14 @@ export class ASTStruct extends BaseComplexType {
 
   structConstructor(stateVarName: string, properties: [string, string][]): string {
     let res = `
-        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
-            super(ctx, addr, '${stateVarName}', indices);
+        constructor(ctx: TraceContext, addr: string, indices: Uint8Array[] = []) {
+            super({ctx, account: addr, stateVar: '${stateVarName}', indices});
         `;
 
     for (let i = 0; i < properties.length; i++) {
       res += `
             this.${properties[i][0]} = new ${properties[i][1]}(ctx, addr,
-             UtilityProvider.arrayCopyPush(this.prefixes, UtilityProvider.stringToUint8Array('${properties[i][0]}')));
+             utils.arrayCopyPush(indices, utils.stringToUint8Array('${properties[i][0]}')));
             `;
     }
 
