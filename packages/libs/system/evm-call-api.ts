@@ -42,7 +42,7 @@ export class JustInTimeCaller {
 
   private constructor() {}
 
-  public jitCall(request: JitInherentRequest): JitInherentResponse | null {
+  public jitCall(request: JitInherentRequest): JitInherentResponse {
     const encoded = Protobuf.encode(request, JitInherentRequest.encode);
     const input = new AUint8Array();
     input.set(encoded);
