@@ -33,12 +33,12 @@ export class AspectContext {
 
   private constructor() {}
 
-  public contextValue<T>(
+  public transientStorage<T>(
     key: string,
     aspectId: string = '',
     contractAddr: string = '',
-  ): ContextValue<T> {
-    return new ContextValue(key, aspectId, contractAddr);
+  ): TransientStorageValue<T> {
+    return new TransientStorageValue(key, aspectId, contractAddr);
   }
 
   public static get(): AspectContext {
@@ -47,7 +47,7 @@ export class AspectContext {
   }
 }
 
-export class ContextValue<T> implements MutableAspectValue<T> {
+export class TransientStorageValue<T> implements MutableAspectValue<T> {
   private val: T | null | undefined;
 
   constructor(
@@ -74,7 +74,7 @@ export class ContextValue<T> implements MutableAspectValue<T> {
     return output.get();
   }
 
-  refresh(): void {
+  reload(): void {
     const response = RuntimeContext.get(DataSpaceType.TX_ASPECT_CONTEXT, [
       this.key,
       this.aspectId,
@@ -92,7 +92,7 @@ export class ContextValue<T> implements MutableAspectValue<T> {
 
   unwrap(): T | null {
     if (this.val == undefined) {
-      this.refresh();
+      this.reload();
     }
 
     return this.val == undefined ? null : this.val;

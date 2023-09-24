@@ -16,11 +16,9 @@ declare namespace __AspectStateApi__ {
 }
 
 export class AspectProperty {
-  private static _instance: AspectProperty;
-
   private constructor() {}
 
-  public get<T>(key: string): T | null {
+  public static get<T>(key: string): T | null {
     const input = new AString();
     input.set(key);
     const inPtr = input.store();
@@ -32,25 +30,13 @@ export class AspectProperty {
     output.load(outPtr);
     return fromString(output.get());
   }
-
-  public static get(): AspectProperty {
-    this._instance ||= new AspectProperty();
-    return this._instance;
-  }
 }
 
 export class AspectState {
-  private static instance: AspectState;
-
   private constructor() {}
 
   public get<T>(key: string): StateValue<T> {
     return new StateValue<T>(key);
-  }
-
-  public static get(): AspectState {
-    AspectState.instance ||= new AspectState();
-    return AspectState.instance;
   }
 }
 
@@ -93,7 +79,7 @@ export class StateValue<T> implements MutableAspectValue<T> {
     return success;
   }
 
-  refresh(): void {
+  reload(): void {
     const input = new AString();
     input.set(this.key);
     const inPtr = input.store();
@@ -110,7 +96,7 @@ export class StateValue<T> implements MutableAspectValue<T> {
 
   unwrap(): T | null {
     if (this.val == undefined) {
-      this.refresh();
+      this.reload();
     }
 
     return this.val == undefined ? null : this.val;
