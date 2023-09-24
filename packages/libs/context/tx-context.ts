@@ -18,10 +18,10 @@ export class TraceContext {
 
   get callTree(): EthCallStacks {
     const response = RuntimeContext.get(DataSpaceType.TX_CALL_TREE);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
-    return Protobuf.decode<EthCallStacks>(response.data.value, EthCallStacks.decode);
+    return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode);
   }
 
   stateChanges(addr: string, variable: string, indices: Uint8Array[]): EthStateChanges {
@@ -33,11 +33,11 @@ export class TraceContext {
     }
 
     const response = RuntimeContext.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
 
-    return Protobuf.decode<EthStateChanges>(response.data.value, EthStateChanges.decode);
+    return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
   }
 
   stateChangeIndices(addr: string, variable: string, indices: Uint8Array[]): EthStateChangeIndices {
@@ -49,12 +49,12 @@ export class TraceContext {
     }
 
     const response = RuntimeContext.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
 
     return Protobuf.decode<EthStateChangeIndices>(
-      response.data.value,
+      response.data!.value,
       EthStateChangeIndices.decode,
     );
   }
@@ -63,7 +63,7 @@ export class TraceContext {
     if (!this._instance) {
       this._instance = new TraceContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }
 
@@ -74,33 +74,33 @@ export class TxContext {
 
   get extProperties(): TxExtProperty {
     const response = RuntimeContext.get(DataSpaceType.TX_EXT_PROPERTIES);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
-    return Protobuf.decode<TxExtProperty>(response.data.value, TxExtProperty.decode);
+    return Protobuf.decode<TxExtProperty>(response.data!.value, TxExtProperty.decode);
   }
 
   get content(): EthTransaction {
     const response = RuntimeContext.get(DataSpaceType.TX_CONTENT);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
-    return Protobuf.decode<EthTransaction>(response.data.value, EthTransaction.decode);
+    return Protobuf.decode<EthTransaction>(response.data!.value, EthTransaction.decode);
   }
 
   get gasMeter(): GasMeter {
     const response = RuntimeContext.get(DataSpaceType.TX_GAS_METER);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
-    return Protobuf.decode<GasMeter>(response.data.value, GasMeter.decode);
+    return Protobuf.decode<GasMeter>(response.data!.value, GasMeter.decode);
   }
 
   public static get(): TxContext {
     if (!this._instance) {
       this._instance = new TxContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }
 
@@ -111,16 +111,16 @@ export class EthReceiptContext {
 
   public get(): EthReceipt {
     const response = RuntimeContext.get(DataSpaceType.TX_RECEIPT);
-    if (!response.data || !response.data.value) {
+    if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
-    return Protobuf.decode<EthReceipt>(response.data.value, EthReceipt.decode);
+    return Protobuf.decode<EthReceipt>(response.data!.value, EthReceipt.decode);
   }
 
   public static get(): EthReceiptContext {
     if (!this._instance) {
       this._instance = new EthReceiptContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

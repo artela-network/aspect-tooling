@@ -26,7 +26,7 @@ export class AspectProperty {
     }
     const output = new AString();
     output.load(outPtr);
-    return utils.fromString(output.get());
+    return utils.fromString<T>(output.get());
   }
 }
 
@@ -89,7 +89,7 @@ export class StateValue<T> implements MutableAspectValue<T> {
     const output = new AString();
     output.load(outPtr);
     const newVar = output.get();
-    this.val = utils.fromString(newVar);
+    this.val = utils.fromString<T>(newVar);
   }
 
   unwrap(): T | null {

@@ -26,6 +26,6 @@ export class Scheduler {
     if (!this._instance) {
       this._instance = new Scheduler();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

@@ -33,7 +33,7 @@ export class StaticCaller {
     if (!this._instance) {
       this._instance = new StaticCaller();
     }
-    return this._instance;
+    return this._instance!;
   }
 }
 
@@ -57,6 +57,6 @@ export class JustInTimeCaller {
     if (!this._instance) {
       this._instance = new JustInTimeCaller();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

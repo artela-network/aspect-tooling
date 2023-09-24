@@ -46,6 +46,6 @@ export class EnvContext {
     if (this._instance == null) {
       this._instance = new EnvContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

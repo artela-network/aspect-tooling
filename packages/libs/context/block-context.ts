@@ -67,6 +67,6 @@ export class BlockContext {
     if (this._instance == null) {
       this._instance = new BlockContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

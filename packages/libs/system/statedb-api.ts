@@ -75,6 +75,6 @@ export class StateContext {
     if (!this._instance) {
       this._instance = new StateContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }

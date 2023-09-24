@@ -45,7 +45,7 @@ export class AspectContext {
     if (!this._instance) {
       this._instance = new AspectContext();
     }
-    return this._instance;
+    return this._instance!;
   }
 }
 
@@ -82,13 +82,13 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
       this.aspectId,
       this.contractAddr,
     ]);
-    if (!response!.result!.success) {
+    if (response.result!.success) {
       this.val = null;
       return;
     }
 
-    this.val = utils.fromString(
-      Protobuf.decode<StringData>(response!.data!.value, StringData.decode).data,
+    this.val = utils.fromString<T>(
+      Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
     );
   }
 

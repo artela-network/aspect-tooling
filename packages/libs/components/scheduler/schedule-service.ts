@@ -18,7 +18,7 @@ export class ScheduleManager {
     if (this._instance == null) {
       this._instance = new ScheduleManager();
     }
-    return this._instance;
+    return this._instance!;
   }
 }
 

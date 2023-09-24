@@ -102,7 +102,7 @@ export class Entry {
       if (arg.currInnerTx == null) {
         out = ErrAspectResponse('currInnerTx is null');
       } else {
-        const ctx = new PostContractCallCtx(arg.currInnerTx);
+        const ctx = new PostContractCallCtx(arg.currInnerTx!);
         this.transactionAspect!.postContractCall(ctx);
         out = DefAspectResponse();
       }
@@ -115,7 +115,7 @@ export class Entry {
       if (arg.tx == null) {
         out = ErrAspectResponse('tx is null');
       } else {
-        const ctx = new PostTxCommitCtx(arg.tx);
+        const ctx = new PostTxCommitCtx(arg.tx!);
         this.transactionAspect!.postTxCommit(ctx);
         out = DefAspectResponse();
       }
