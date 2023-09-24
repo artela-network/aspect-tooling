@@ -20,6 +20,7 @@ module.exports = {
         '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/prefer-optional-chain': 'off',
         '@typescript-eslint/consistent-type-assertions': 'off',
+        'logical-assignment-operators': 'off',
         '@typescript-eslint/no-inferrable-types': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-empty-function': 'off',

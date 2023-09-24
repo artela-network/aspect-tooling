@@ -48,16 +48,21 @@ export abstract class StateChange<T> {
   public abstract unmarshalState(raw: EthStateChange): State<T>;
 }
 
+export class StateKeyProperties {
+  constructor(
+    readonly ctx: TraceContext,
+    readonly account: string,
+    readonly stateVar: string,
+    readonly prefixes: Uint8Array[] = [],
+  ) {
+  }
+}
+
 export abstract class StateKey<K> {
   protected readonly __children__: Uint8Array[];
 
   protected constructor(
-    private readonly __properties__: {
-      ctx: TraceContext;
-      account: string;
-      stateVar: string;
-      prefixes: Uint8Array[];
-    },
+    private readonly __properties__: StateKeyProperties,
   ) {
     const children = __properties__.ctx.stateChangeIndices(
       __properties__.account,

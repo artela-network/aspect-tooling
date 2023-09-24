@@ -2,8 +2,6 @@ import { ABool, AString } from '../types';
 import { MutableAspectValue } from './common';
 import { ErrUpdateAspectState } from './errors';
 import { utils } from './util-api';
-import fromString = utils.fromString;
-import toString = utils.toString;
 
 declare namespace __AspectStateApi__ {
   function getAspectState(key: i32): i32;
@@ -28,7 +26,7 @@ export class AspectProperty {
     }
     const output = new AString();
     output.load(outPtr);
-    return fromString(output.get());
+    return utils.fromString(output.get());
   }
 }
 
@@ -41,7 +39,7 @@ export class AspectState {
 }
 
 export class StateValue<T> implements MutableAspectValue<T> {
-  private val: T | null | undefined;
+  private val: T | null = null;
 
   constructor(private readonly key: string) {}
 
@@ -49,7 +47,7 @@ export class StateValue<T> implements MutableAspectValue<T> {
     const inputKey = new AString();
     inputKey.set(this.key);
     const inPtr = inputKey.store();
-    const data = toString(value);
+    const data = utils.toString(value);
     const inputValue = new AString();
     inputValue.set(data);
     const ptrValue = inputValue.store();
@@ -91,14 +89,14 @@ export class StateValue<T> implements MutableAspectValue<T> {
     const output = new AString();
     output.load(outPtr);
     const newVar = output.get();
-    this.val = fromString(newVar);
+    this.val = utils.fromString(newVar);
   }
 
   unwrap(): T | null {
-    if (this.val == undefined) {
+    if (this.val == null) {
       this.reload();
     }
 
-    return this.val == undefined ? null : this.val;
+    return this.val;
   }
 }

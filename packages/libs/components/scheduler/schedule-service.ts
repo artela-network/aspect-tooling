@@ -2,7 +2,7 @@ import { EthTransaction, ScheduleMsg, ScheduleMsgId, ScheduleStatus } from '../.
 import { Scheduler, utils } from '../../system';
 
 export class ScheduleManager {
-  private static _instance: ScheduleManager;
+  private static _instance: ScheduleManager | null = null;
 
   private constructor() {}
 
@@ -15,7 +15,9 @@ export class ScheduleManager {
   }
 
   public static get(): ScheduleManager {
-    this._instance ||= new ScheduleManager();
+    if (this._instance == null) {
+      this._instance = new ScheduleManager();
+    }
     return this._instance;
   }
 }

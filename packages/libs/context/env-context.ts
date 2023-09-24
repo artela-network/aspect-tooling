@@ -3,7 +3,7 @@ import { ChainConfig, ConsParams, DataSpaceType, EnvContent, EvmParams } from '.
 import { Protobuf } from 'as-proto/assembly';
 
 export class EnvContext {
-  private static _instance: EnvContext;
+  private static _instance: EnvContext | null;
 
   private constructor() {}
 
@@ -43,7 +43,9 @@ export class EnvContext {
   }
 
   public static get(): EnvContext {
-    EnvContext._instance ||= new EnvContext();
-    return EnvContext._instance;
+    if (this._instance == null) {
+      this._instance = new EnvContext();
+    }
+    return this._instance;
   }
 }

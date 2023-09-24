@@ -13,7 +13,7 @@ declare namespace __StateDbApi__ {
 }
 
 export class StateContext {
-  private static instance: StateContext;
+  private static _instance: StateContext | null;
 
   private constructor() {}
 
@@ -72,7 +72,9 @@ export class StateContext {
   }
 
   public static get(): StateContext {
-    StateContext.instance ||= new StateContext();
-    return StateContext.instance;
+    if (!this._instance) {
+      this._instance = new StateContext();
+    }
+    return this._instance;
   }
 }

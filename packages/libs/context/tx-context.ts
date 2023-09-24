@@ -12,7 +12,7 @@ import { ErrLoadRuntimeCtxValue, RuntimeContext, utils } from '../system';
 import { Protobuf } from 'as-proto/assembly';
 
 export class TraceContext {
-  private static _instance: TraceContext;
+  private static _instance: TraceContext | null;
 
   private constructor() {}
 
@@ -60,13 +60,15 @@ export class TraceContext {
   }
 
   public static get(): TraceContext {
-    this._instance ||= new TraceContext();
+    if (!this._instance) {
+      this._instance = new TraceContext();
+    }
     return this._instance;
   }
 }
 
 export class TxContext {
-  private static _instance: TxContext;
+  private static _instance: TxContext | null;
 
   private constructor() {}
 
@@ -95,13 +97,15 @@ export class TxContext {
   }
 
   public static get(): TxContext {
-    this._instance ||= new TxContext();
+    if (!this._instance) {
+      this._instance = new TxContext();
+    }
     return this._instance;
   }
 }
 
 export class EthReceiptContext {
-  private static _instance: EthReceiptContext;
+  private static _instance: EthReceiptContext | null;
 
   private constructor() {}
 
@@ -114,7 +118,9 @@ export class EthReceiptContext {
   }
 
   public static get(): EthReceiptContext {
-    this._instance ||= new EthReceiptContext();
+    if (!this._instance) {
+      this._instance = new EthReceiptContext();
+    }
     return this._instance;
   }
 }

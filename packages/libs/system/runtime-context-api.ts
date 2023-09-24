@@ -29,7 +29,7 @@ export class RuntimeContext {
 }
 
 export class AspectContext {
-  private static _instance: AspectContext;
+  private static _instance: AspectContext | null;
 
   private constructor() {}
 
@@ -42,13 +42,15 @@ export class AspectContext {
   }
 
   public static get(): AspectContext {
-    this._instance ||= new AspectContext();
+    if (!this._instance) {
+      this._instance = new AspectContext();
+    }
     return this._instance;
   }
 }
 
 export class TransientStorageValue<T> implements MutableAspectValue<T> {
-  private val: T | null | undefined;
+  private val: T | null = null;
 
   constructor(
     private readonly key: string,
@@ -91,10 +93,10 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
   }
 
   unwrap(): T | null {
-    if (this.val == undefined) {
+    if (this.val == null) {
       this.reload();
     }
 
-    return this.val == undefined ? null : this.val;
+    return this.val;
   }
 }

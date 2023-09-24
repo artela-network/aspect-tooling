@@ -14,7 +14,7 @@ declare namespace __EvmCallApi__ {
 }
 
 export class StaticCaller {
-  private static instance: StaticCaller;
+  private static _instance: StaticCaller | null;
 
   private constructor() {}
 
@@ -30,13 +30,15 @@ export class StaticCaller {
   }
 
   public static get(): StaticCaller {
-    StaticCaller.instance ||= new StaticCaller();
-    return StaticCaller.instance;
+    if (!this._instance) {
+      this._instance = new StaticCaller();
+    }
+    return this._instance;
   }
 }
 
 export class JustInTimeCaller {
-  private static instance: JustInTimeCaller;
+  private static _instance: JustInTimeCaller | null;
 
   private constructor() {}
 
@@ -52,7 +54,9 @@ export class JustInTimeCaller {
   }
 
   public static get(): JustInTimeCaller {
-    JustInTimeCaller.instance ||= new JustInTimeCaller();
-    return JustInTimeCaller.instance;
+    if (!this._instance) {
+      this._instance = new JustInTimeCaller();
+    }
+    return this._instance;
   }
 }

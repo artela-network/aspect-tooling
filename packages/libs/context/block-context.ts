@@ -11,7 +11,7 @@ import { Protobuf } from 'as-proto/assembly';
 import { ErrLoadRuntimeCtxValue, RuntimeContext } from '../system';
 
 export class BlockContext {
-  private static _instance: BlockContext;
+  private static _instance: BlockContext | null;
 
   private constructor() {}
 
@@ -64,7 +64,9 @@ export class BlockContext {
   }
 
   public static get(): BlockContext {
-    BlockContext._instance ||= new BlockContext();
-    return BlockContext._instance;
+    if (this._instance == null) {
+      this._instance = new BlockContext();
+    }
+    return this._instance;
   }
 }

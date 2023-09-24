@@ -7,7 +7,7 @@ declare namespace __ScheduleApi__ {
 }
 
 export class Scheduler {
-  private static instance: Scheduler;
+  private static _instance: Scheduler | null;
 
   private constructor() {}
 
@@ -23,7 +23,9 @@ export class Scheduler {
   }
 
   public static get(): Scheduler {
-    Scheduler.instance ||= new Scheduler();
-    return Scheduler.instance;
+    if (!this._instance) {
+      this._instance = new Scheduler();
+    }
+    return this._instance;
   }
 }

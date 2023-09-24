@@ -124,7 +124,7 @@ export namespace utils {
     if (!value) {
       return '';
     }
-    let valueStr: string;
+    let valueStr: string | null = null;
     if (value instanceof string) valueStr = <string>value;
     if (value instanceof bool) valueStr = value ? '1' : '0';
     if (value instanceof BigInt) valueStr = value.toString();
@@ -137,7 +137,9 @@ export namespace utils {
     if (value instanceof i64) valueStr = BigInt.fromInt64(<i64>value).toString();
     if (value instanceof u64) valueStr = BigInt.fromUInt64(<u64>value).toString();
 
-    valueStr ||= '';
+    if (valueStr == null) {
+      valueStr = '';
+    }
     return valueStr;
   }
 
