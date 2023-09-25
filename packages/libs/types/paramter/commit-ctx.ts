@@ -1,4 +1,4 @@
-import { BlockContext, EthReceiptContext } from '../../context';
+import {BlockContext, EnvContext, EthReceiptContext} from '../../context';
 import { EthTransaction } from '../../proto';
 import { AspectContext, StaticCaller } from '../../system';
 import { ScheduleManager } from '../../components';
@@ -10,6 +10,7 @@ export class PostTxCommitCtx {
   private readonly _staticCaller: StaticCaller;
   private readonly _scheduleManager: ScheduleManager;
   private readonly _blockContext: BlockContext;
+  private readonly _env: EnvContext;
 
   constructor(tx: EthTransaction) {
     this._tx = tx;
@@ -18,6 +19,7 @@ export class PostTxCommitCtx {
     this._staticCaller = StaticCaller.get();
     this._scheduleManager = ScheduleManager.get();
     this._blockContext = BlockContext.get();
+    this._env = EnvContext.get();
   }
 
   get blockContext(): BlockContext {
@@ -42,5 +44,9 @@ export class PostTxCommitCtx {
 
   get scheduler(): ScheduleManager {
     return this._scheduleManager;
+  }
+
+  get env(): EnvContext {
+    return this._env;
   }
 }

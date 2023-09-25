@@ -1,5 +1,5 @@
 import { EthInnerTransaction, EthStackTransaction } from '../../proto';
-import { BlockContext, TraceContext, TxContext } from '../../context';
+import {BlockContext, EnvContext, TraceContext, TxContext} from '../../context';
 import { AspectContext, JustInTimeCaller, StateContext } from '../../system';
 
 export class PreContractCallCtx {
@@ -10,6 +10,7 @@ export class PreContractCallCtx {
   private readonly _stateContext: StateContext;
   private readonly _traceContext: TraceContext;
   private readonly _txContext: TxContext;
+  private readonly _env: EnvContext;
 
   constructor(innerTx: EthInnerTransaction) {
     this._innerTx = innerTx;
@@ -19,6 +20,7 @@ export class PreContractCallCtx {
     this._stateContext = StateContext.get();
     this._traceContext = TraceContext.get();
     this._txContext = TxContext.get();
+    this._env = EnvContext.get();
   }
 
   get tx(): TxContext {
@@ -48,6 +50,10 @@ export class PreContractCallCtx {
   get jitCall(): JustInTimeCaller {
     return this._jitCall;
   }
+
+  get env(): EnvContext {
+    return this._env;
+  }
 }
 
 export class PostContractCallCtx {
@@ -57,6 +63,7 @@ export class PostContractCallCtx {
   private readonly _stateContext: StateContext = StateContext.get();
   private readonly _traceContext: TraceContext = TraceContext.get();
   private readonly _txContext: TxContext = TxContext.get();
+  private readonly _env: EnvContext = EnvContext.get();
 
   constructor(private readonly _currInnerTx: EthStackTransaction) {}
 
@@ -86,5 +93,9 @@ export class PostContractCallCtx {
 
   get trace(): TraceContext {
     return this._traceContext;
+  }
+
+  get env(): EnvContext {
+    return this._env;
   }
 }

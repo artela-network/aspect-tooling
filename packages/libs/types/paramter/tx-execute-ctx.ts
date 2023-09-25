@@ -1,4 +1,4 @@
-import { BlockContext, TraceContext, TxContext } from '../../context';
+import {BlockContext, EnvContext, TraceContext, TxContext} from '../../context';
 import { AspectContext, StateContext, StaticCaller } from '../../system';
 
 export class PreTxExecuteCtx {
@@ -7,6 +7,7 @@ export class PreTxExecuteCtx {
   private readonly _stateContext: StateContext;
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
+  private readonly _env: EnvContext;
 
   constructor() {
     this._aspectContext = AspectContext.get();
@@ -14,6 +15,7 @@ export class PreTxExecuteCtx {
     this._stateContext = StateContext.get();
     this._blockContext = BlockContext.get();
     this._txContext = TxContext.get();
+    this._env = EnvContext.get();
   }
 
   get tx(): TxContext {
@@ -35,6 +37,10 @@ export class PreTxExecuteCtx {
   get aspect(): AspectContext {
     return this._aspectContext;
   }
+
+  get env(): EnvContext {
+    return this._env;
+  }
 }
 
 export class PostTxExecuteCtx {
@@ -44,6 +50,7 @@ export class PostTxExecuteCtx {
   private readonly _traceContext: TraceContext;
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
+  private readonly _env: EnvContext;
 
   constructor() {
     this._aspectContext = AspectContext.get();
@@ -52,6 +59,7 @@ export class PostTxExecuteCtx {
     this._traceContext = TraceContext.get();
     this._blockContext = BlockContext.get();
     this._txContext = TxContext.get();
+    this._env = EnvContext.get();
   }
 
   get tx(): TxContext {
@@ -76,5 +84,9 @@ export class PostTxExecuteCtx {
 
   get aspect(): AspectContext {
     return this._aspectContext;
+  }
+
+  get env(): EnvContext {
+    return this._env;
   }
 }
