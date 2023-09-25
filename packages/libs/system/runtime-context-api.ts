@@ -9,6 +9,8 @@ declare namespace __RuntimeContextApi__ {
   function get(query: i32): i32;
 
   function setAspectContext(key: i32, value: i32): i32;
+
+  function aspectId(): i32;
 }
 
 export class RuntimeContext {
@@ -39,6 +41,15 @@ export class AspectContext {
     contractAddr: string = '',
   ): TransientStorageValue<T> {
     return new TransientStorageValue(key, aspectId, contractAddr);
+  }
+  public getId():string{
+    const outPtr = __RuntimeContextApi__.aspectId();
+    if (outPtr == 0) {
+      return "";
+    }
+    const output = new AString();
+    output.load(outPtr);
+    return output.get();
   }
 
   public static get(): AspectContext {
