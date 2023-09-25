@@ -1,5 +1,5 @@
 import {BlockContext, EnvContext, TraceContext, TxContext} from '../../context';
-import { AspectContext, StateContext, StaticCaller } from '../../system';
+import {AspectContext, JustInTimeCaller, StateContext, StaticCaller} from '../../system';
 
 export class PreTxExecuteCtx {
   private readonly _aspectContext: AspectContext;
@@ -8,6 +8,7 @@ export class PreTxExecuteCtx {
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
+  private readonly _jitCall: JustInTimeCaller;
 
   constructor() {
     this._aspectContext = AspectContext.get();
@@ -16,6 +17,7 @@ export class PreTxExecuteCtx {
     this._blockContext = BlockContext.get();
     this._txContext = TxContext.get();
     this._env = EnvContext.get();
+    this._jitCall = JustInTimeCaller.get();
   }
 
   get tx(): TxContext {
@@ -26,7 +28,7 @@ export class PreTxExecuteCtx {
     return this._staticCaller;
   }
 
-  get state(): StateContext {
+  get stateDB(): StateContext {
     return this._stateContext;
   }
 
@@ -41,6 +43,10 @@ export class PreTxExecuteCtx {
   get env(): EnvContext {
     return this._env;
   }
+
+  get inherent(): JustInTimeCaller {
+    return this._jitCall;
+  }
 }
 
 export class PostTxExecuteCtx {
@@ -51,6 +57,7 @@ export class PostTxExecuteCtx {
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
+  private readonly _jitCall: JustInTimeCaller;
 
   constructor() {
     this._aspectContext = AspectContext.get();
@@ -60,6 +67,7 @@ export class PostTxExecuteCtx {
     this._blockContext = BlockContext.get();
     this._txContext = TxContext.get();
     this._env = EnvContext.get();
+    this._jitCall = JustInTimeCaller.get();
   }
 
   get tx(): TxContext {
@@ -70,7 +78,7 @@ export class PostTxExecuteCtx {
     return this._staticCaller;
   }
 
-  get state(): StateContext {
+  get stateDB(): StateContext {
     return this._stateContext;
   }
 
@@ -88,5 +96,9 @@ export class PostTxExecuteCtx {
 
   get env(): EnvContext {
     return this._env;
+  }
+
+  get inherent(): JustInTimeCaller {
+    return this._jitCall;
   }
 }

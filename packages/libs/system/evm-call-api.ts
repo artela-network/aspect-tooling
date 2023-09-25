@@ -18,7 +18,7 @@ export class StaticCaller {
 
   private constructor() {}
 
-  public staticCall(request: CallMessageRequest): CallMessageResponse | null {
+  public staticCall(request: CallMessageRequest): CallMessageResponse {
     const encoded = Protobuf.encode(request, CallMessageRequest.encode);
     const input = new AUint8Array();
     input.set(encoded);
