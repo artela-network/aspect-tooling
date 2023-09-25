@@ -13,6 +13,12 @@ declare namespace __UtilApi__ {
 }
 
 export namespace vm {
+  export function require(condition: bool, message: string = ''): void {
+    if (!condition) {
+      revert(message);
+    }
+  }
+
   export function revert(message: string): void {
     const input = new AString();
     input.set(message);
