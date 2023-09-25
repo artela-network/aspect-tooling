@@ -33,7 +33,7 @@ export class AspectProperty {
 export class AspectState {
   private constructor() {}
 
-  public get<T>(key: string): StateValue<T> {
+  public static get<T>(key: string): StateValue<T> {
     return new StateValue<T>(key);
   }
 }
