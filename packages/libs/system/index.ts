@@ -3,7 +3,7 @@ export * from './aspect-state-api';
 export * from './crypto-api';
 export * from './errors';
 export * from './evm-call-api';
-export * from './runtime-context-api';
+export * from './runtime-api';
 export * from './schedule-api';
 export * from './statedb-api';
 export * from './util-api';

@@ -5,10 +5,10 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 import { Any } from "../../google/protobuf/any";
-import { QueryNameSpace } from "./query-name-space";
+import { RemoveNameSpace } from "./remove-name-space";
 
-export class ContextQueryRequest {
-  static encode(message: ContextQueryRequest, writer: Writer): void {
+export class ContextRemoveRequest {
+  static encode(message: ContextRemoveRequest, writer: Writer): void {
     writer.uint32(8);
     writer.int32(message.nameSpace);
 
@@ -21,9 +21,9 @@ export class ContextQueryRequest {
     }
   }
 
-  static decode(reader: Reader, length: i32): ContextQueryRequest {
+  static decode(reader: Reader, length: i32): ContextRemoveRequest {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new ContextQueryRequest();
+    const message = new ContextRemoveRequest();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
@@ -45,10 +45,10 @@ export class ContextQueryRequest {
     return message;
   }
 
-  nameSpace: QueryNameSpace;
+  nameSpace: RemoveNameSpace;
   query: Any | null;
 
-  constructor(nameSpace: QueryNameSpace = 0, query: Any | null = null) {
+  constructor(nameSpace: RemoveNameSpace = 0, query: Any | null = null) {
     this.nameSpace = nameSpace;
     this.query = query;
   }

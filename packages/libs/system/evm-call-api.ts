@@ -1,6 +1,6 @@
 import {
-  CallMessageRequest,
-  CallMessageResponse,
+  EthMessageCallResult,
+  EthTransaction,
   JitInherentRequest,
   JitInherentResponse,
 } from '../proto';
@@ -18,15 +18,15 @@ export class StaticCaller {
 
   private constructor() {}
 
-  public staticCall(request: CallMessageRequest): CallMessageResponse {
-    const encoded = Protobuf.encode(request, CallMessageRequest.encode);
+  public staticCall(request: EthTransaction): EthMessageCallResult {
+    const encoded = Protobuf.encode(request, EthTransaction.encode);
     const input = new AUint8Array();
     input.set(encoded);
     const inputPtr = input.store();
     const ret = __EvmCallApi__.staticCall(inputPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
-    return Protobuf.decode<CallMessageResponse>(bytes.get(), CallMessageResponse.decode);
+    return Protobuf.decode<EthMessageCallResult>(bytes.get(), EthMessageCallResult.decode);
   }
 
   public static get(): StaticCaller {

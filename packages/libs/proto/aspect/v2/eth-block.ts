@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthBlockHeader } from './eth-block-header';
-import { EthTransaction } from './eth-transaction';
+import { Writer, Reader } from "as-proto/assembly";
+import { EthBlockHeader } from "./eth-block-header";
+import { EthTransaction } from "./eth-transaction";
 
 export class EthBlock {
   static encode(message: EthBlock, writer: Writer): void {
@@ -59,7 +59,9 @@ export class EthBlock {
           break;
 
         case 3:
-          message.transactions.push(EthTransaction.decode(reader, reader.uint32()));
+          message.transactions.push(
+            EthTransaction.decode(reader, reader.uint32())
+          );
           break;
 
         case 4:
@@ -94,9 +96,9 @@ export class EthBlock {
     header: EthBlockHeader | null = null,
     uncles: Array<EthBlockHeader> = [],
     transactions: Array<EthTransaction> = [],
-    hash: string = '',
+    hash: string = "",
     size: u64 = 0,
-    dataHash: Uint8Array = new Uint8Array(0),
+    dataHash: Uint8Array = new Uint8Array(0)
   ) {
     this.header = header;
     this.uncles = uncles;

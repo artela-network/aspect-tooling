@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { RunResult } from './run-result';
-import { Any } from '../../google/protobuf/any';
+import { Writer, Reader } from "as-proto/assembly";
+import { RunResult } from "./run-result";
+import { Any } from "../../google/protobuf/any";
 
 export class AspectResponse {
   static encode(message: AspectResponse, writer: Writer): void {
@@ -63,8 +63,8 @@ export class AspectResponse {
 
   constructor(
     result: RunResult | null = null,
-    dataMessageType: string = '',
-    data: Any | null = null,
+    dataMessageType: string = "",
+    data: Any | null = null
   ) {
     this.result = result;
     this.dataMessageType = dataMessageType;

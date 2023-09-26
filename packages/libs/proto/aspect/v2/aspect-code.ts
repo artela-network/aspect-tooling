@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class AspectCode {
   static encode(message: AspectCode, writer: Writer): void {
@@ -58,10 +58,10 @@ export class AspectCode {
   code: Uint8Array;
 
   constructor(
-    aspectId: string = '',
+    aspectId: string = "",
     version: u64 = 0,
     priority: u32 = 0,
-    code: Uint8Array = new Uint8Array(0),
+    code: Uint8Array = new Uint8Array(0)
   ) {
     this.aspectId = aspectId;
     this.version = version;

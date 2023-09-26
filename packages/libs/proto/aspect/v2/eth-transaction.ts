@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthAccessTuple } from './eth-access-tuple';
+import { Writer, Reader } from "as-proto/assembly";
+import { EthAccessTuple } from "./eth-access-tuple";
 
 export class EthTransaction {
   static encode(message: EthTransaction, writer: Writer): void {
@@ -135,7 +135,9 @@ export class EthTransaction {
           break;
 
         case 15:
-          message.accessList.push(EthAccessTuple.decode(reader, reader.uint32()));
+          message.accessList.push(
+            EthAccessTuple.decode(reader, reader.uint32())
+          );
           break;
 
         case 16:
@@ -186,23 +188,23 @@ export class EthTransaction {
   constructor(
     blockHash: Uint8Array = new Uint8Array(0),
     blockNumber: i64 = 0,
-    from: string = '',
+    from: string = "",
     gas: u64 = 0,
-    gasPrice: string = '',
-    gasFeeCap: string = '',
-    gasTipCap: string = '',
+    gasPrice: string = "",
+    gasFeeCap: string = "",
+    gasTipCap: string = "",
     hash: Uint8Array = new Uint8Array(0),
     input: Uint8Array = new Uint8Array(0),
     nonce: u64 = 0,
-    to: string = '',
+    to: string = "",
     transactionIndex: i64 = 0,
-    value: string = '',
+    value: string = "",
     type: i32 = 0,
     accessList: Array<EthAccessTuple> = [],
-    chainId: string = '',
+    chainId: string = "",
     v: Uint8Array = new Uint8Array(0),
     r: Uint8Array = new Uint8Array(0),
-    s: Uint8Array = new Uint8Array(0),
+    s: Uint8Array = new Uint8Array(0)
   ) {
     this.blockHash = blockHash;
     this.blockNumber = blockNumber;

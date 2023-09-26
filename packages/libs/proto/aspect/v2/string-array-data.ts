@@ -5,26 +5,26 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 
-export class BytesArrayData {
-  static encode(message: BytesArrayData, writer: Writer): void {
+export class StringArrayData {
+  static encode(message: StringArrayData, writer: Writer): void {
     const data = message.data;
     if (data.length !== 0) {
       for (let i: i32 = 0; i < data.length; ++i) {
         writer.uint32(10);
-        writer.bytes(data[i]);
+        writer.string(data[i]);
       }
     }
   }
 
-  static decode(reader: Reader, length: i32): BytesArrayData {
+  static decode(reader: Reader, length: i32): StringArrayData {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new BytesArrayData();
+    const message = new StringArrayData();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.data.push(reader.bytes());
+          message.data.push(reader.string());
           break;
 
         default:
@@ -36,9 +36,9 @@ export class BytesArrayData {
     return message;
   }
 
-  data: Array<Uint8Array>;
+  data: Array<string>;
 
-  constructor(data: Array<Uint8Array> = []) {
+  constructor(data: Array<string> = []) {
     this.data = data;
   }
 }
