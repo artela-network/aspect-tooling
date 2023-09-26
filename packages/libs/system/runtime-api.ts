@@ -14,6 +14,7 @@ import { MutableAspectValue } from './common';
 import { Protobuf } from 'as-proto/assembly';
 import { ErrLoadRuntimeCtxValue } from './errors';
 import { utils } from './util-api';
+import { KeyPath } from './key-path';
 
 declare namespace __RuntimeContextApi__ {
   function get(query: i32): i32;
@@ -127,59 +128,6 @@ export class AspectContext {
   }
 }
 
-export class KeyPath {
-  public static AspectContext = 'aspect.context';
-  public static AspectState = 'aspect.state';
-  public static AspectProperty = 'aspect.property';
-  public static ExtProperties = 'tx.extProperties';
-  public static TxContent = 'tx.content';
-  public static TxStateChanges = 'tx.stateChanges';
-  public static TxCallTree = 'tx.callTree';
-  public static TxReceipt = 'tx.receipt';
-  public static TxGasMeter = 'tx.gasMeter';
-  public static EnvConsParams = 'env.consParams';
-  public static EnvChainConfig = 'env.chainConfig';
-  public static EnvEvmParams = 'env.evmParams';
-  public static EnvBaseInfo = 'env.baseInfo';
-  public static BlockHeader = 'block.header';
-  public static BlockTxs = 'block.txs';
-  public static BlockGasMeter = 'block.gasMeter';
-  public static BlockMinGasPrice = 'block.minGasPrice';
-  public static BlockLastCommit = 'block.lastCommit';
-
-  public static Occupy = '#';
-
-  arr = new Array<string>();
-
-  private static _instance: KeyPath | null;
-
-  public static New(...keys: string[]): KeyPath {
-    if (!this._instance) {
-      this._instance = new KeyPath(keys);
-    }
-    return this._instance!;
-  }
-  constructor(...keys: string[]) {
-    for (let i = 0; i < keys.length; i++) {
-      this.arr.push(keys[i]);
-    }
-  }
-
-  add(key: string = ''): this {
-    if (key != '') {
-      this.arr.push(key);
-    }
-    return this;
-  }
-
-  build(): string {
-    if (this.arr.length == 0) {
-      return '';
-    }
-    return this.arr.join('.');
-  }
-}
-
 export class TransientStorageValue<T> implements MutableAspectValue<T> {
   private val: T | null = null;
 
@@ -191,7 +139,7 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
   }
 
   reload(): void {
-    const path = KeyPath.New(KeyPath.AspectContext).add(this.key).add(this.aspectId).build();
+    const path = KeyPath.aspect.content.addKey(this.key).toPath();
 
     const response = RuntimeContext.get(path);
     if (response.result!.success) {
