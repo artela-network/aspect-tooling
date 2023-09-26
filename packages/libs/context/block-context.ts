@@ -8,7 +8,7 @@ import {
   MinGasPrice,
 } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
-import { ErrLoadRuntimeCtxValue, RuntimeContext } from '../system';
+import { ErrLoadRuntimeCtxValue, KeyPath, RuntimeContext } from '../system';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
@@ -16,7 +16,8 @@ export class BlockContext {
   private constructor() {}
 
   get header(): EthBlockHeader {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_HEADER);
+    var headerPath = KeyPath.New(KeyPath.BlockHeader).build();
+    const response = RuntimeContext.get(headerPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }

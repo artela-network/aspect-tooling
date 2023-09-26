@@ -1,5 +1,5 @@
 // The entry file of your WebAssembly module.
-export const  AspectTmpl=`
+export const AspectTmpl = `
 import {
     FilterTxCtx,
     IAspectBlock,
@@ -151,4 +151,4 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
         return new Uint8Array(0);
     }
 }
-`
+`;

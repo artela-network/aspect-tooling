@@ -16,13 +16,14 @@ export class State<T> {
 export abstract class StateChange<T> {
   protected readonly changes: Array<State<T>>;
 
-  protected constructor(
-    protected readonly properties: StateChangeProperties
-  ) {
+  protected constructor(protected readonly properties: StateChangeProperties) {
     this.changes = new Array<State<T>>();
 
     const changes = this.properties.ctx.stateChanges(
-        this.properties.account, this.properties.stateVar, this.properties.indices);
+      this.properties.account,
+      this.properties.stateVar,
+      this.properties.indices,
+    );
     for (let i = 0; i < changes.all.length; i++) {
       this.changes.push(this.unmarshalState(changes.all[i]));
     }
@@ -49,16 +50,13 @@ export class StateChangeProperties {
     readonly account: string,
     readonly stateVar: string,
     readonly indices: Uint8Array[] = [],
-  ) {
-  }
+  ) {}
 }
 
 export abstract class StateKey<K> {
   protected readonly __children__: Uint8Array[];
 
-  protected constructor(
-    protected readonly __properties__: StateChangeProperties,
-  ) {
+  protected constructor(protected readonly __properties__: StateChangeProperties) {
     const children = __properties__.ctx.stateChangeIndices(
       __properties__.account,
       __properties__.stateVar,

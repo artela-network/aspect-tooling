@@ -42,7 +42,7 @@ export class AspectContext {
   ): TransientStorageValue<T> {
     return new TransientStorageValue(key, aspectId, contractAddr);
   }
-  get id():string{
+  get id(): string {
     const outPtr = __RuntimeContextApi__.aspectId();
     if (outPtr == 0) {
       throw ErrLoadRuntimeCtxValue;

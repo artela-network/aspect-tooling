@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { SetNameSpace } from "./set-name-space";
+import { Writer, Reader } from 'as-proto/assembly';
+import { SetNameSpace } from './set-name-space';
 
 export class ContextSetRequest {
   static encode(message: ContextSetRequest, writer: Writer): void {
@@ -50,11 +50,7 @@ export class ContextSetRequest {
   key: string;
   value: string;
 
-  constructor(
-    nameSpace: SetNameSpace = 0,
-    key: string = "",
-    value: string = ""
-  ) {
+  constructor(nameSpace: SetNameSpace = 0, key: string = '', value: string = '') {
     this.nameSpace = nameSpace;
     this.key = key;
     this.value = value;

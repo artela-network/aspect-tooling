@@ -1,5 +1,5 @@
 import { AspectContext, StaticCaller } from '../../system';
-import {EnvContext, TxContext} from '../../context';
+import { EnvContext, TxContext } from '../../context';
 
 export class FilterTxCtx {
   private readonly _aspectContext: AspectContext;

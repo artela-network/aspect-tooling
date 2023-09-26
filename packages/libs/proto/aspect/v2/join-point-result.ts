@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { GasInfo } from "./gas-info";
-import { AspectResponse } from "./aspect-response";
+import { Writer, Reader } from 'as-proto/assembly';
+import { GasInfo } from './gas-info';
+import { AspectResponse } from './aspect-response';
 
 export class JoinPointResult {
   static encode(message: JoinPointResult, writer: Writer): void {
@@ -54,15 +54,11 @@ export class JoinPointResult {
           break;
 
         case 3:
-          let execResultMapKey: string = "";
+          let execResultMapKey: string = '';
           let execResultMapValue: AspectResponse | null = null;
           let execResultMapHasKey: bool = false;
           let execResultMapHasValue: bool = false;
-          for (
-            const end: usize = reader.ptr + reader.uint32();
-            reader.ptr < end;
-
-          ) {
+          for (const end: usize = reader.ptr + reader.uint32(); reader.ptr < end; ) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
               case 1:
@@ -71,10 +67,7 @@ export class JoinPointResult {
                 break;
 
               case 2:
-                execResultMapValue = AspectResponse.decode(
-                  reader,
-                  reader.uint32()
-                );
+                execResultMapValue = AspectResponse.decode(reader, reader.uint32());
                 execResultMapHasValue = true;
                 break;
 
@@ -112,8 +105,8 @@ export class JoinPointResult {
 
   constructor(
     gasInfo: GasInfo | null = null,
-    txHash: string = "",
-    execResultMap: Map<string, AspectResponse> = new Map()
+    txHash: string = '',
+    execResultMap: Map<string, AspectResponse> = new Map(),
   ) {
     this.gasInfo = gasInfo;
     this.txHash = txHash;

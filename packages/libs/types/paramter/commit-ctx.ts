@@ -1,4 +1,4 @@
-import {BlockContext, EnvContext, EthReceiptContext} from '../../context';
+import { BlockContext, EnvContext, EthReceiptContext } from '../../context';
 import { EthTransaction } from '../../proto';
 import { AspectContext, StaticCaller } from '../../system';
 import { ScheduleManager } from '../../components';

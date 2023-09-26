@@ -1,5 +1,5 @@
 import { EthInnerTransaction, EthStackTransaction } from '../../proto';
-import {BlockContext, EnvContext, TraceContext, TxContext} from '../../context';
+import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
 import { AspectContext, JustInTimeCaller, StateContext } from '../../system';
 
 export class PreContractCallCtx {

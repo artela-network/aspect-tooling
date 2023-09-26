@@ -1,6 +1,6 @@
 import { StaticCaller } from '../../system';
 import { ScheduleManager } from '../../components';
-import {BlockContext, EnvContext} from '../../context';
+import { BlockContext, EnvContext } from '../../context';
 
 export class OnBlockInitializeCtx {
   private readonly _staticCaller: StaticCaller;
