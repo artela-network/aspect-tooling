@@ -4,7 +4,6 @@
 //   protoc        v4.23.2
 
 export enum QueryNameSpace {
-  StateChanges = 0,
-  StateChangeChildKeys = 1,
-  CallTree = 2,
+  QueryAspectState = 0,
+  QueryAspectProperty = 1,
 }

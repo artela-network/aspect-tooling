@@ -50,33 +50,33 @@ class AspectTest implements IAspectTransaction {
     AssertTrue(ctx.tx != null, 'postContractCall tx is empty');
     AssertTrue(ctx.jitCall != null, 'postContractCall call is empty');
     AssertTrue(ctx.aspectContext != null, 'postContractCall context is empty');
-    AssertTrue(ctx.innerTx != null, 'postContractCall innerTx is empty');
-    AssertTrue(ctx.innerTxContext != null, 'postContractCall innerTxContext is empty');
+    AssertTrue(ctx.traceContext != null, 'postContractCall innerTx is empty');
+    AssertTrue(ctx.stateContext != null, 'postContractCall innerTxContext is empty');
   }
 
   postTxCommit(ctx: PostTxCommitCtx): void {
     AssertTrue(ctx.tx != null, 'postTxCommit tx is empty');
     AssertTrue(ctx.receipt != null, 'postTxCommit receipt is empty');
     AssertTrue(ctx.aspectContext != null, 'postTxCommit context is empty');
-    AssertTrue(ctx.staticCaller != null, 'postTxCommit staticCaller is empty');
-    AssertTrue(ctx.evmTxContext != null, 'postTxCommit evmTxContext is empty');
-    AssertTrue(ctx.scheduleManager != null, 'postTxCommit scheduleManager is empty');
+    AssertTrue(ctx.blockContext != null, 'postTxCommit staticCaller is empty');
+    AssertTrue(ctx.staticCaller != null, 'postTxCommit evmTxContext is empty');
+    AssertTrue(ctx.schedule != null, 'postTxCommit scheduleManager is empty');
   }
 
   postTxExecute(ctx: PostTxExecuteCtx): void {
     AssertTrue(ctx.tx != null, 'postTxExecute tx is empty');
     AssertTrue(ctx.aspectContext != null, 'postTxExecute aspectContext is empty');
-    AssertTrue(ctx.evmTxContext != null, 'postTxExecute evmTxContext is empty');
+    AssertTrue(ctx.stateContext != null, 'postTxExecute evmTxContext is empty');
     AssertTrue(ctx.staticCaller != null, 'postTxExecute staticCaller is empty');
     AssertTrue(ctx.blockContext != null, 'postTxExecute blockContext is empty');
   }
 
   preContractCall(ctx: PreContractCallCtx): void {
     AssertTrue(ctx.tx != null, 'preContractCall tx is empty');
-    AssertTrue(ctx.innerTx != null, 'preContractCall receipt is empty');
+    AssertTrue(ctx.jitCall != null, 'preContractCall receipt is empty');
     AssertTrue(ctx.aspectContext != null, 'preContractCall context is empty');
-    AssertTrue(ctx.innerTxContext != null, 'preContractCall staticCaller is empty');
-    AssertTrue(ctx.jitCall != null, 'preContractCall justInTimeCaller is empty');
+    AssertTrue(ctx.blockContext != null, 'preContractCall staticCaller is empty');
+    AssertTrue(ctx.stateContext != null, 'preContractCall justInTimeCaller is empty');
   }
 
   preTxExecute(ctx: PreTxExecuteCtx): void {

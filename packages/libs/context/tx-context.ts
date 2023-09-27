@@ -5,22 +5,20 @@ import {
   EthStateChanges,
   EthTransaction,
   GasMeter,
-  QueryNameSpace,
-  SateChangeQuery,
   TxExtProperty,
 } from '../proto';
-import {CtxKey, ErrLoadRuntimeCtxValue, NewMessageError, RuntimeContext} from '../system';
+import {tx, ErrLoadRuntimeCtxValue, NewMessageError, RuntimeContext} from '../system';
 import {Protobuf} from 'as-proto/assembly';
-import {MessageUrlType, ToAny} from "../types/message-helper";
 
 export class TraceContext {
   private static _instance: TraceContext | null;
 
   private constructor() {}
 
-  get callTree(): EthCallStacks {
+  callTree(value: Array<u64>): EthCallStacks {
 
-    const response = RuntimeContext.query(QueryNameSpace.CallTree,);
+    const idx = tx.callStack.callIndex(value).toString();
+    const response = RuntimeContext.get(idx);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -28,10 +26,8 @@ export class TraceContext {
   }
 
   stateChanges(addr: string, variable: string, indices: Array<Uint8Array>): EthStateChanges {
-
-    const sateChangeQuery = new SateChangeQuery(addr,variable,indices);
-    const query = ToAny<SateChangeQuery>(MessageUrlType.SateChangeQuery,sateChangeQuery,SateChangeQuery.encode);
-    const response = RuntimeContext.query(QueryNameSpace.StateChanges, query);
+    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).toString();
+    const response = RuntimeContext.get(statePath)
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
@@ -40,9 +36,8 @@ export class TraceContext {
   }
 
   stateChangeIndices(addr: string, variable: string, indices:  Array<Uint8Array>): EthStateChangeIndices {
-    const sateChangeQuery = new SateChangeQuery(addr,variable,indices);
-    const query = ToAny<SateChangeQuery>(MessageUrlType.SateChangeQuery,sateChangeQuery,SateChangeQuery.encode);
-    const response = RuntimeContext.query(QueryNameSpace.StateChangeChildKeys, query);
+    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).getIndices();
+    const response = RuntimeContext.get(statePath)
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
@@ -70,7 +65,7 @@ export class TxContext {
   private constructor() {}
 
   get extProperties(): TxExtProperty {
-    const key = CtxKey.tx.extProperties.toString();
+    const key = tx.extProperties.toString()
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -79,7 +74,7 @@ export class TxContext {
   }
 
   get content(): EthTransaction {
-    const key = CtxKey.tx.content;
+    const key = tx.content;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -88,7 +83,7 @@ export class TxContext {
   }
 
   get gasMeter(): GasMeter {
-    const key = CtxKey.tx.gasMeter;
+    const key = tx.gasMeter;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -110,7 +105,7 @@ export class EthReceiptContext {
   private constructor() {}
 
   public get(): EthReceipt {
-    const key = CtxKey.tx.receipt;
+    const key = tx.receipt;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;

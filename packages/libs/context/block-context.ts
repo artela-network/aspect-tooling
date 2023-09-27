@@ -6,7 +6,7 @@ import {
   MinGasPrice,
 } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
-import { ErrLoadRuntimeCtxValue, CtxKey, RuntimeContext } from '../system';
+import {block, ErrLoadRuntimeCtxValue, RuntimeContext} from '../system';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
@@ -14,7 +14,7 @@ export class BlockContext {
   private constructor() {}
 
   get header(): EthBlockHeader {
-    const headerPath = CtxKey.block.header
+    const headerPath = block.header
     const response = RuntimeContext.get(headerPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -23,7 +23,7 @@ export class BlockContext {
   }
 
   get partialBody(): EthTxArray {
-    const bodyPath = CtxKey.block.txs;
+    const bodyPath = block.txs;
     const response = RuntimeContext.get(bodyPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -32,7 +32,7 @@ export class BlockContext {
   }
 
   get gasMeter(): GasMeter {
-    const getKey = CtxKey.block.gasMeter;
+    const getKey = block.gasMeter;
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -41,7 +41,7 @@ export class BlockContext {
   }
 
   get minGasPrice(): MinGasPrice {
-    const getKey = CtxKey.block.minGasPrice;
+    const getKey = block.minGasPrice;
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -50,7 +50,7 @@ export class BlockContext {
   }
 
   get lastCommit(): LastCommitInfo {
-    const getKey = CtxKey.block.lastCommit;
+    const getKey = block.lastCommit;
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;

@@ -1,4 +1,4 @@
-import {CtxKey, ErrLoadRuntimeCtxValue, RuntimeContext} from '../system';
+import {env, ErrLoadRuntimeCtxValue, RuntimeContext} from '../system';
 import { ChainConfig, ConsParams, EnvContent, EvmParams } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
 
@@ -8,7 +8,7 @@ export class EnvContext {
   private constructor() {}
 
   get baseFee(): EnvContent {
-    const key = CtxKey.env.baseInfo;
+    const key = env.baseInfo;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -18,7 +18,7 @@ export class EnvContext {
 
   get consParams(): ConsParams {
     //   ENV_CONS_PARAMS = 7;
-    const key = CtxKey.env.consParams;
+    const key = env.consParams;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -28,7 +28,7 @@ export class EnvContext {
 
   get evmParams(): EvmParams {
     //   ENV_EVM_PARAMS = 9;
-    const key = CtxKey.env.evmParams;
+    const key =env.evmParams;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -38,7 +38,7 @@ export class EnvContext {
 
   get chainConfig(): ChainConfig {
     //   ENV_CHAIN_CONFIG = 8;
-    const key = CtxKey.env.chainConfig;
+    const key = env.chainConfig;
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
