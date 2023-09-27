@@ -2,22 +2,23 @@ import { MessageUrlType } from '../types';
 import { MutableAspectValue } from './common';
 import { utils } from './util-api';
 import { RuntimeContext } from './runtime-api';
-import { KeyPath } from './key-path';
+import { CtxKey } from './ctx-key';
 
 import { Protobuf } from 'as-proto';
 import { Any, RemoveNameSpace, SetNameSpace, StringData } from '../proto';
-import { ErrUpdateAspectState } from './errors';
+import {ErrUpdateAspectState, NewMessageError} from './errors';
 
 export class AspectProperty {
   private constructor() {}
 
   public static get<T>(key: string): T | null {
-    const keyPath = KeyPath.tx.extProperties.addKey(key).toPath();
+
+    const keyPath = CtxKey.tx.extProperties.key(key).toString();
     const outPtr = RuntimeContext.get(keyPath);
-    if (outPtr.result == null || !outPtr.result.success || outPtr.data == null) {
-      return null;
+    if (!outPtr.result!.success) {
+      throw NewMessageError(outPtr.result!.message);
     }
-    const stringData = Protobuf.decode<StringData>(outPtr.data.value, StringData.decode);
+    const stringData = Protobuf.decode<StringData>(outPtr!.data!.value, StringData.decode);
     return utils.fromString<T>(stringData.data);
   }
 }
@@ -40,7 +41,6 @@ export class StateValue<T> implements MutableAspectValue<T> {
     if (this.key == '') {
       throw ErrUpdateAspectState;
     }
-
     return RuntimeContext.set(SetNameSpace.SetAspectState, this.key, data);
   }
 
@@ -53,7 +53,7 @@ export class StateValue<T> implements MutableAspectValue<T> {
   }
 
   reload(): void {
-    const keyPath = KeyPath.aspect.state.addKey(this.key).toPath();
+    const keyPath = CtxKey.aspect.state.key(this.key).toString();
     const response = RuntimeContext.get(keyPath);
     const value = response.data!.value;
 

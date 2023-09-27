@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { DecCoin } from './dec-coin';
+import { Writer, Reader } from "as-proto/assembly";
+import { DecCoin } from "./dec-coin";
 
 export class MinGasPrice {
   static encode(message: MinGasPrice, writer: Writer): void {

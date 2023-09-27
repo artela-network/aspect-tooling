@@ -3,10 +3,10 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthTransaction } from './eth-transaction';
-import { EthStackTransaction } from './eth-stack-transaction';
-import { GasInfo } from './gas-info';
+import { Writer, Reader } from "as-proto/assembly";
+import { EthTransaction } from "./eth-transaction";
+import { EthStackTransaction } from "./eth-stack-transaction";
+import { GasInfo } from "./gas-info";
 
 export class EthTxAspect {
   static encode(message: EthTxAspect, writer: Writer): void {
@@ -47,7 +47,10 @@ export class EthTxAspect {
           break;
 
         case 2:
-          message.currInnerTx = EthStackTransaction.decode(reader, reader.uint32());
+          message.currInnerTx = EthStackTransaction.decode(
+            reader,
+            reader.uint32()
+          );
           break;
 
         case 3:
@@ -70,7 +73,7 @@ export class EthTxAspect {
   constructor(
     tx: EthTransaction | null = null,
     currInnerTx: EthStackTransaction | null = null,
-    gasInfo: GasInfo | null = null,
+    gasInfo: GasInfo | null = null
   ) {
     this.tx = tx;
     this.currInnerTx = currInnerTx;

@@ -7,3 +7,4 @@ export * from './runtime-api';
 export * from './schedule-api';
 export * from './statedb-api';
 export * from './util-api';
+export * from './ctx-key';

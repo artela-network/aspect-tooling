@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class TxExtProperty {
   static encode(message: TxExtProperty, writer: Writer): void {
@@ -31,11 +31,15 @@ export class TxExtProperty {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          let propertyKey: string = '';
-          let propertyValue: string = '';
+          let propertyKey: string = "";
+          let propertyValue: string = "";
           let propertyHasKey: bool = false;
           let propertyHasValue: bool = false;
-          for (const end: usize = reader.ptr + reader.uint32(); reader.ptr < end; ) {
+          for (
+            const end: usize = reader.ptr + reader.uint32();
+            reader.ptr < end;
+
+          ) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
               case 1:

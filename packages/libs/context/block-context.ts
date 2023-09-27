@@ -1,14 +1,12 @@
 import {
-  DataSpaceType,
   EthBlockHeader,
   EthTxArray,
-  Evidence,
   GasMeter,
   LastCommitInfo,
   MinGasPrice,
 } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
-import { ErrLoadRuntimeCtxValue, KeyPath, RuntimeContext } from '../system';
+import { ErrLoadRuntimeCtxValue, CtxKey, RuntimeContext } from '../system';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
@@ -16,7 +14,7 @@ export class BlockContext {
   private constructor() {}
 
   get header(): EthBlockHeader {
-    var headerPath = KeyPath.New(KeyPath.BlockHeader).build();
+    const headerPath = CtxKey.block.header
     const response = RuntimeContext.get(headerPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -25,7 +23,8 @@ export class BlockContext {
   }
 
   get partialBody(): EthTxArray {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_TXS);
+    const bodyPath = CtxKey.block.txs;
+    const response = RuntimeContext.get(bodyPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -33,7 +32,8 @@ export class BlockContext {
   }
 
   get gasMeter(): GasMeter {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_GAS_METER);
+    const getKey = CtxKey.block.gasMeter;
+    const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -41,7 +41,8 @@ export class BlockContext {
   }
 
   get minGasPrice(): MinGasPrice {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_MIN_GAS_PRICE);
+    const getKey = CtxKey.block.minGasPrice;
+    const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -49,19 +50,12 @@ export class BlockContext {
   }
 
   get lastCommit(): LastCommitInfo {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_LAST_COMMIT);
+    const getKey = CtxKey.block.lastCommit;
+    const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
     return Protobuf.decode<LastCommitInfo>(response.data.value, LastCommitInfo.decode);
-  }
-
-  get evidences(): Evidence {
-    const response = RuntimeContext.get(DataSpaceType.BLOCK_EVIDENCE);
-    if (!response.data || !response.data.value) {
-      throw ErrLoadRuntimeCtxValue;
-    }
-    return Protobuf.decode<Evidence>(response.data.value, Evidence.decode);
   }
 
   public static get(): BlockContext {

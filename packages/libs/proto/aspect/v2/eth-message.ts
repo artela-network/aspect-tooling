@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class EthMessage {
   static encode(message: EthMessage, writer: Writer): void {
@@ -106,16 +106,16 @@ export class EthMessage {
   isFake: bool;
 
   constructor(
-    to: string = '',
+    to: string = "",
     input: Uint8Array = new Uint8Array(0),
     nonce: u64 = 0,
-    from: string = '',
-    gasTipCap: string = '',
-    gasFeeCap: string = '',
+    from: string = "",
+    gasTipCap: string = "",
+    gasFeeCap: string = "",
     gas: u64 = 0,
-    gasPrice: string = '',
-    value: string = '',
-    isFake: bool = false,
+    gasPrice: string = "",
+    value: string = "",
+    isFake: bool = false
   ) {
     this.to = to;
     this.input = input;

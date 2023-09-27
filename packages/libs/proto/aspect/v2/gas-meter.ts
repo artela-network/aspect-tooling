@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class GasMeter {
   static encode(message: GasMeter, writer: Writer): void {
@@ -61,7 +61,7 @@ export class GasMeter {
     gasConsumed: u64 = 0,
     gasConsumedToLimit: u64 = 0,
     gasRemaining: u64 = 0,
-    limit: u64 = 0,
+    limit: u64 = 0
   ) {
     this.gasConsumed = gasConsumed;
     this.gasConsumedToLimit = gasConsumedToLimit;

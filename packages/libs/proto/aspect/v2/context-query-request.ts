@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { Any } from '../../google/protobuf/any';
-import { QueryNameSpace } from './query-name-space';
+import { Writer, Reader } from "as-proto/assembly";
+import { Any } from "../../google/protobuf/any";
+import { QueryNameSpace } from "./query-name-space";
 
 export class ContextQueryRequest {
   static encode(message: ContextQueryRequest, writer: Writer): void {

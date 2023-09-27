@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { Any } from '../../google/protobuf/any';
-import { RemoveNameSpace } from './remove-name-space';
+import { Writer, Reader } from "as-proto/assembly";
+import { Any } from "../../google/protobuf/any";
+import { RemoveNameSpace } from "./remove-name-space";
 
 export class ContextRemoveRequest {
   static encode(message: ContextRemoveRequest, writer: Writer): void {

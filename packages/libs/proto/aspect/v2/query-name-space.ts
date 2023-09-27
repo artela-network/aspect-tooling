@@ -5,5 +5,6 @@
 
 export enum QueryNameSpace {
   StateChanges = 0,
-  CallTree = 1,
+  StateChangeChildKeys = 1,
+  CallTree = 2,
 }

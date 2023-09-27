@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthStackTransaction } from './eth-stack-transaction';
+import { Writer, Reader } from "as-proto/assembly";
+import { EthStackTransaction } from "./eth-stack-transaction";
 
 export class EthCallStacks {
   static encode(message: EthCallStacks, writer: Writer): void {
@@ -38,7 +38,11 @@ export class EthCallStacks {
           let callsValue: EthStackTransaction | null = null;
           let callsHasKey: bool = false;
           let callsHasValue: bool = false;
-          for (const end: usize = reader.ptr + reader.uint32(); reader.ptr < end; ) {
+          for (
+            const end: usize = reader.ptr + reader.uint32();
+            reader.ptr < end;
+
+          ) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
               case 1:
@@ -47,7 +51,10 @@ export class EthCallStacks {
                 break;
 
               case 2:
-                callsValue = EthStackTransaction.decode(reader, reader.uint32());
+                callsValue = EthStackTransaction.decode(
+                  reader,
+                  reader.uint32()
+                );
                 callsHasValue = true;
                 break;
 
@@ -59,7 +66,12 @@ export class EthCallStacks {
               message.calls = new Map<u64, EthStackTransaction>();
             }
             const calls = message.calls;
-            if (calls !== null && callsHasKey && callsHasValue && callsValue !== null) {
+            if (
+              calls !== null &&
+              callsHasKey &&
+              callsHasValue &&
+              callsValue !== null
+            ) {
               calls.set(callsKey, callsValue);
             }
           }
