@@ -3,11 +3,11 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { BlockParams } from './block-params';
-import { EvidenceParams } from './evidence-params';
-import { ValidatorParams } from './validator-params';
-import { VersionParams } from './version-params';
+import { Writer, Reader } from "as-proto/assembly";
+import { BlockParams } from "./block-params";
+import { EvidenceParams } from "./evidence-params";
+import { ValidatorParams } from "./validator-params";
+import { VersionParams } from "./version-params";
 
 export class ConsParams {
   static encode(message: ConsParams, writer: Writer): void {
@@ -85,7 +85,7 @@ export class ConsParams {
     block: BlockParams | null = null,
     evidence: EvidenceParams | null = null,
     validator: ValidatorParams | null = null,
-    version: VersionParams | null = null,
+    version: VersionParams | null = null
   ) {
     this.block = block;
     this.evidence = evidence;

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class EthStackTransaction {
   static encode(message: EthStackTransaction, writer: Writer): void {
@@ -111,16 +111,16 @@ export class EthStackTransaction {
   childrenIndex: Array<u64>;
 
   constructor(
-    from: string = '',
-    to: string = '',
+    from: string = "",
+    to: string = "",
     data: Uint8Array = new Uint8Array(0),
-    value: string = '',
-    gas: string = '',
+    value: string = "",
+    gas: string = "",
     ret: Uint8Array = new Uint8Array(0),
     leftOverGas: u64 = 0,
     index: u64 = 0,
     parentIndex: u64 = 0,
-    childrenIndex: Array<u64> = [],
+    childrenIndex: Array<u64> = []
   ) {
     this.from = from;
     this.to = to;

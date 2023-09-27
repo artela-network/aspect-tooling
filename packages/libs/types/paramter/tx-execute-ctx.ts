@@ -1,5 +1,5 @@
-import {BlockContext, EnvContext, TraceContext, TxContext} from '../../context';
-import {AspectContext, JustInTimeCaller, StateContext, StaticCaller} from '../../system';
+import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
+import { AspectContext, JustInTimeCaller, StateContext, StaticCaller } from '../../system';
 
 export class PreTxExecuteCtx {
   private readonly _aspectContext: AspectContext;

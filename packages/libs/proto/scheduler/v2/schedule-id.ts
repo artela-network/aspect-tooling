@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Writer, Reader } from "as-proto/assembly";
 
 export class ScheduleId {
   static encode(message: ScheduleId, writer: Writer): void {
@@ -41,7 +41,7 @@ export class ScheduleId {
   scheduleName: string;
   aspectId: string;
 
-  constructor(scheduleName: string = '', aspectId: string = '') {
+  constructor(scheduleName: string = "", aspectId: string = "") {
     this.scheduleName = scheduleName;
     this.aspectId = aspectId;
   }

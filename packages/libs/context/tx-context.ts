@@ -1,5 +1,4 @@
 import {
-  DataSpaceType,
   EthCallStacks,
   EthReceipt,
   EthStateChangeIndices,
@@ -8,51 +7,44 @@ import {
   GasMeter,
   TxExtProperty,
 } from '../proto';
-import { ErrLoadRuntimeCtxValue, RuntimeContext, utils } from '../system';
-import { Protobuf } from 'as-proto/assembly';
+import {tx, ErrLoadRuntimeCtxValue, NewMessageError, RuntimeContext} from '../system';
+import {Protobuf} from 'as-proto/assembly';
 
 export class TraceContext {
   private static _instance: TraceContext | null;
 
   private constructor() {}
 
-  get callTree(): EthCallStacks {
-    const response = RuntimeContext.get(DataSpaceType.TX_CALL_TREE);
+  callTree(value: Array<u64>): EthCallStacks {
+
+    const idx = tx.callStack.callIndex(value).toString();
+    const response = RuntimeContext.get(idx);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
     return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode);
   }
 
-  stateChanges(addr: string, variable: string, indices: Uint8Array[]): EthStateChanges {
-    const array = new Array<string>(2 + indices.length);
-    array[0] = addr;
-    array[1] = variable;
-    for (let i = 0; i < indices.length; i++) {
-      array[2 + i] = utils.uint8ArrayToHex(indices[i]);
-    }
-
-    const response = RuntimeContext.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response.data || !response.data!.value) {
-      throw ErrLoadRuntimeCtxValue;
+  stateChanges(addr: string, variable: string, indices: Array<Uint8Array>): EthStateChanges {
+    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).toString();
+    const response = RuntimeContext.get(statePath)
+    if (!response.result!.success) {
+      throw NewMessageError(response.result!.message);
     }
 
     return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
   }
 
-  stateChangeIndices(addr: string, variable: string, indices: Uint8Array[]): EthStateChangeIndices {
-    const array = new Array<string>(2 + indices.length);
-    array[0] = addr;
-    array[1] = variable;
-    for (let i = 0; i < indices.length; i++) {
-      array[2 + i] = utils.uint8ArrayToHex(indices[i]);
+  stateChangeIndices(addr: string, variable: string, indices:  Array<Uint8Array>): EthStateChangeIndices {
+    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).getIndices();
+    const response = RuntimeContext.get(statePath)
+    if (!response.result!.success) {
+      throw NewMessageError(response.result!.message);
     }
 
-    const response = RuntimeContext.get(DataSpaceType.TX_STATE_CHANGES, array);
-    if (!response.data || !response.data!.value) {
-      throw ErrLoadRuntimeCtxValue;
+    if (!response.result!.success) {
+      throw NewMessageError(response.result!.message);
     }
-
     return Protobuf.decode<EthStateChangeIndices>(
       response.data!.value,
       EthStateChangeIndices.decode,
@@ -73,7 +65,8 @@ export class TxContext {
   private constructor() {}
 
   get extProperties(): TxExtProperty {
-    const response = RuntimeContext.get(DataSpaceType.TX_EXT_PROPERTIES);
+    const key = tx.extProperties.toString()
+    const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -81,7 +74,8 @@ export class TxContext {
   }
 
   get content(): EthTransaction {
-    const response = RuntimeContext.get(DataSpaceType.TX_CONTENT);
+    const key = tx.content;
+    const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -89,7 +83,8 @@ export class TxContext {
   }
 
   get gasMeter(): GasMeter {
-    const response = RuntimeContext.get(DataSpaceType.TX_GAS_METER);
+    const key = tx.gasMeter;
+    const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -110,7 +105,8 @@ export class EthReceiptContext {
   private constructor() {}
 
   public get(): EthReceipt {
-    const response = RuntimeContext.get(DataSpaceType.TX_RECEIPT);
+    const key = tx.receipt;
+    const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
     }

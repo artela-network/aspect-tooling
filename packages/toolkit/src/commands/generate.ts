@@ -57,14 +57,20 @@ export default class Generate extends Command {
     }
 
     const inputAndOutputs: [string, string][] = [];
-    if (fs.statSync(sourceFilePath).isFile() && (!fs.existsSync(targetFilePath) || fs.statSync(targetFilePath).isFile())) {
+    if (
+      fs.statSync(sourceFilePath).isFile() &&
+      (!fs.existsSync(targetFilePath) || fs.statSync(targetFilePath).isFile())
+    ) {
       if (!sourceFilePath.endsWith('.json') || !targetFilePath.endsWith('.ts')) {
         this.log('Illegal input!');
         process.exit(0);
       } else {
         inputAndOutputs.push([sourceFilePath, targetFilePath]);
       }
-    } else if (fs.statSync(sourceFilePath).isDirectory() && fs.statSync(targetFilePath).isDirectory()) {
+    } else if (
+      fs.statSync(sourceFilePath).isDirectory() &&
+      fs.statSync(targetFilePath).isDirectory()
+    ) {
       for (const file of fs.readdirSync(sourceFilePath)) {
         if (!file.endsWith('_storage.json')) {
           continue;

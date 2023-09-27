@@ -1,32 +1,24 @@
-import { ABool, AString } from '../types';
+import { MessageUrlType } from '../types';
 import { MutableAspectValue } from './common';
-import { ErrUpdateAspectState } from './errors';
 import { utils } from './util-api';
+import { RuntimeContext } from './runtime-api';
 
-declare namespace __AspectStateApi__ {
-  function getAspectState(key: i32): i32;
-
-  function setAspectState(key: i32, value: i32): i32;
-
-  function removeAspectState(key: i32): i32;
-
-  function getProperty(key: i32): i32;
-}
-
+import { Protobuf } from 'as-proto';
+import {Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData} from '../proto';
+import {ErrUpdateAspectState, NewMessageError} from './errors';
+import {ToAny} from "../types/message-helper";
 export class AspectProperty {
   private constructor() {}
 
   public static get<T>(key: string): T | null {
-    const input = new AString();
-    input.set(key);
-    const inPtr = input.store();
-    const outPtr = __AspectStateApi__.getProperty(inPtr);
-    if (outPtr == 0) {
-      return null;
+    const sateChangeQuery = new StringData(key);
+    const query = ToAny<StringData>(MessageUrlType.SateChangeQuery,sateChangeQuery,StringData.encode);
+    const outPtr = RuntimeContext.query(QueryNameSpace.QueryAspectProperty, query);
+    if (!outPtr.result!.success) {
+      throw NewMessageError(outPtr.result!.message);
     }
-    const output = new AString();
-    output.load(outPtr);
-    return utils.fromString<T>(output.get());
+    const stringData = Protobuf.decode<StringData>(outPtr!.data!.value, StringData.decode);
+    return utils.fromString<T>(stringData.data);
   }
 }
 
@@ -44,52 +36,31 @@ export class StateValue<T> implements MutableAspectValue<T> {
   constructor(private readonly key: string) {}
 
   set<T>(value: T): bool {
-    const inputKey = new AString();
-    inputKey.set(this.key);
-    const inPtr = inputKey.store();
-    const data = utils.toString(value);
-    const inputValue = new AString();
-    inputValue.set(data);
-    const ptrValue = inputValue.store();
-    const outPtr = __AspectStateApi__.setAspectState(inPtr, ptrValue);
-    if (outPtr == 0) {
+    const data = utils.toString<T>(value);
+    if (this.key == '') {
       throw ErrUpdateAspectState;
     }
-    const output = new ABool();
-    output.load(outPtr);
-    return output.get();
+    return RuntimeContext.set(SetNameSpace.SetAspectState, this.key, data);
   }
 
   delete(): bool {
-    const inputKey = new AString();
-    inputKey.set(this.key);
-    const inPtr = inputKey.store();
-    const outPtr = __AspectStateApi__.removeAspectState(inPtr);
-    if (outPtr == 0) {
-      throw ErrUpdateAspectState;
-    }
-    const output = new ABool();
-    output.load(outPtr);
-    const success = output.get();
-    if (success) {
-      this.val = null;
-    }
-    return success;
+    const data = new StringData(this.key);
+    const encode = Protobuf.encode(data, StringData.encode);
+    const any = new Any(MessageUrlType.StringData, encode);
+
+    return RuntimeContext.remove(RemoveNameSpace.RemoveAspectState, any);
   }
 
   reload(): void {
-    const input = new AString();
-    input.set(this.key);
-    const inPtr = input.store();
-    const outPtr = __AspectStateApi__.getAspectState(inPtr);
-    if (outPtr == 0) {
-      this.val = null;
-      return;
+    const sateChangeQuery = new StringData(this.key);
+    const query = ToAny<StringData>(MessageUrlType.SateChangeQuery,sateChangeQuery,StringData.encode);
+    const response = RuntimeContext.query(QueryNameSpace.QueryAspectState, query);
+    if (!response.result!.success) {
+      throw NewMessageError(response.result!.message);
     }
-    const output = new AString();
-    output.load(outPtr);
-    const newVar = output.get();
-    this.val = utils.fromString<T>(newVar);
+    const value = response.data!.value;
+    const stringData = Protobuf.decode<StringData>(value, StringData.decode);
+    this.val = utils.fromString<T>(stringData.data);
   }
 
   unwrap(): T | null {

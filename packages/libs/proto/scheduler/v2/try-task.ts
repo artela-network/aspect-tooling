@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { TaskTx } from './task-tx';
+import { Writer, Reader } from "as-proto/assembly";
+import { TaskTx } from "./task-tx";
 
 export class TryTask {
   static encode(message: TryTask, writer: Writer): void {
