@@ -3,7 +3,8 @@ import {utils} from "./util-api";
 abstract class Node {
     public arr = new Array<string>();
 
-    protected constructor(key: string) {
+    protected constructor(key: string,arr:Array<string>=[]) {
+        this.addAll(arr);
         this.add(key);
     }
 
@@ -90,7 +91,7 @@ class TxKey extends Node {
     }
 
     get extProperties(): KeyNodeImpl {
-        return new KeyNodeImpl("extProperties")
+        return new KeyNodeImpl("extProperties",this.arr)
     }
 
     get content(): string {
@@ -99,7 +100,7 @@ class TxKey extends Node {
     }
 
     get context(): KeyNodeImpl {
-        return new KeyNodeImpl("context")
+        return new KeyNodeImpl("context",this.arr)
     }
 
     get receipt(): string {
@@ -113,11 +114,11 @@ class TxKey extends Node {
     }
 
     get stateChanges(): StateChangesNode {
-        return new StateChangesNode()
+        return new StateChangesNode(this.arr)
     }
 
     get callStack(): CallStackNode {
-        return new CallStackNode()
+        return new CallStackNode(this.arr)
     }
 
 }
@@ -125,8 +126,8 @@ class TxKey extends Node {
 class CallStackNode extends Node {
     private _callIndex: i64
 
-    constructor() {
-        super("callStack");
+    constructor(arr:Array<string>=[]) {
+        super("callStack",arr);
         this._callIndex = -1
     }
 
@@ -148,8 +149,8 @@ class StateChangesNode extends Node {
     private _variable: string;
     private _indices: Array<Uint8Array>;
 
-    constructor() {
-        super("stateChanges");
+    constructor(arr:Array<string>=[]) {
+        super("stateChanges",arr);
         this._account = ""
         this._variable = ""
         this._indices = []
@@ -187,8 +188,8 @@ class StateChangesNode extends Node {
 }
 
 class KeyNodeImpl extends Node {
-    constructor(parentPath: string) {
-        super(parentPath)
+    constructor(parentPath: string,arr :Array<string>=[]) {
+        super(parentPath,arr)
     }
 
     key(key: string): KeyNodeImpl {
