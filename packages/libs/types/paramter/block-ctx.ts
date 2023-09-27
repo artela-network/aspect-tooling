@@ -17,6 +17,12 @@ export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiab
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }
 
 export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
@@ -35,4 +41,10 @@ export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiable
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

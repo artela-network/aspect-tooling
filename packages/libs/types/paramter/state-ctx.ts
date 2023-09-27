@@ -29,4 +29,10 @@ export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
   get block(): BlockContext {
     return this._block;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

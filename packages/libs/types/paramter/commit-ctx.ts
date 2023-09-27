@@ -36,4 +36,10 @@ export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiableCtx
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

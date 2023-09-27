@@ -43,6 +43,14 @@ export class PreTxExecuteCtx
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __inherentCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }
 
 export class PostTxExecuteCtx
@@ -87,4 +95,12 @@ export class PostTxExecuteCtx
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __inherentCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

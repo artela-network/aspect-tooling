@@ -1,5 +1,13 @@
-export interface EvmCallableCtx {}
-export interface InherentCallableCtx {}
-export interface AspectStateModifiableCtx extends AspectStateReadonlyCtx {}
+export interface EvmCallableCtx {
+  __evmCallableImplemented(): void;
+}
+export interface InherentCallableCtx {
+  __inherentCallableImplemented(): void;
+}
+export interface AspectStateModifiableCtx extends AspectStateReadonlyCtx {
+  __modifiableAspectStateImplemented(): void;
+}
 
-export interface AspectStateReadonlyCtx {}
+export interface AspectStateReadonlyCtx {
+  __readonlyAspectStateImplemented(): void;
+}

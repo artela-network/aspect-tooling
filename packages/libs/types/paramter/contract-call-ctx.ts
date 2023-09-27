@@ -53,6 +53,12 @@ export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCal
   get env(): EnvContext {
     return this._env;
   }
+
+  __inherentCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }
 
 export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
@@ -92,4 +98,10 @@ export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCa
   get env(): EnvContext {
     return this._env;
   }
+
+  __inherentCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

@@ -23,4 +23,8 @@ export class FilterTxCtx implements AspectStateReadonlyCtx, EvmCallableCtx {
   get env(): EnvContext {
     return this._env;
   }
+
+  __evmCallableImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }
