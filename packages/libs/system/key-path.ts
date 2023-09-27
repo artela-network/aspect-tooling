@@ -84,7 +84,7 @@ class TxKey extends Key {
   }
 
   get content(): Key {
-    return new MappingKey('content', this.parts);
+    return new Key('content', this.parts);
   }
 
   get context(): MappingKey {
