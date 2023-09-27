@@ -1,5 +1,5 @@
 export const WasmIndexTmpl = `
-import {Entry, utils} from "@artela/aspect-libs";
+import {Entry, vm} from "@artela/aspect-libs";
 import {Aspect} from "./aspect/aspect";
 
 const aspect = new Aspect();
@@ -18,5 +18,5 @@ export function isTransactionLevel(): i32 {
 }
 
 export function allocate(size: i32): i32 {
-    return utils.alloc(size);
+    return vm.alloc(size);
 }`;
