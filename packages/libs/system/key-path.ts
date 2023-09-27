@@ -1,21 +1,22 @@
-import {CallStackQuery, SateChangeQuery} from "../proto";
-import {Protobuf} from "as-proto";
 import {utils} from "./util-api";
 
 abstract class Node {
     public arr = new Array<string>();
 
-    protected constructor(... key: string[]) {
-        this.arr = new Array<string>();
-        for (let i = 0; i < key.length; i++) {
-            this.add(key[i]);
-        }
+    protected constructor(key: string,arr:Array<string>=[]) {
+        this.addAll(arr);
+        this.add(key);
     }
 
-    protected add(... key: string[]) {
+    protected addAll(key: string[]) {
         for (let i = 0; i < key.length; i++) {
             this.arr.push(key[i]);
         }
+    }
+
+    protected add(key: string) {
+        this.arr.push(key);
+
     }
 
     public toString(): string {
@@ -90,7 +91,7 @@ class TxKey extends Node {
     }
 
     get extProperties(): KeyNodeImpl {
-        return new KeyNodeImpl("extProperties")
+        return new KeyNodeImpl("extProperties",this.arr)
     }
 
     get content(): string {
@@ -99,7 +100,7 @@ class TxKey extends Node {
     }
 
     get context(): KeyNodeImpl {
-        return new KeyNodeImpl("context")
+        return new KeyNodeImpl("context",this.arr)
     }
 
     get receipt(): string {
@@ -113,44 +114,48 @@ class TxKey extends Node {
     }
 
     get stateChanges(): StateChangesNode {
-        return new StateChangesNode()
+        return new StateChangesNode(this.arr)
     }
 
-    get callStack():CallStackNode{
-        return new CallStackNode()
+    get callStack(): CallStackNode {
+        return new CallStackNode(this.arr)
     }
 
 }
-class CallStackNode extends Node{
-    private  _callIndex: Array<u64>
-    constructor() {
-        super("callStack");
-        this._callIndex=[]
+
+class CallStackNode extends Node {
+    private _callIndex: i64
+
+    constructor(arr:Array<string>=[]) {
+        super("callStack",arr);
+        this._callIndex = -1
     }
-    callIndex(value: Array<u64>): CallStackNode {
+
+    callIndex(value: u64): CallStackNode {
         this._callIndex = value;
         return this
     }
 
     public toString(): string {
-        const stackQuery = new CallStackQuery(this._callIndex);
-        const queryCode = Protobuf.encode(stackQuery, CallStackQuery.encode);
-        const arrayToHex = utils.uint8ArrayToHex(queryCode);
-        super.add(arrayToHex)
+        if (this._callIndex != -1) {
+            super.add(this._callIndex.toString(10))
+        }
         return super.toString()
     }
 }
+
 class StateChangesNode extends Node {
     private _account: string;
     private _variable: string;
     private _indices: Array<Uint8Array>;
 
-    constructor() {
-        super("stateChanges");
+    constructor(arr:Array<string>=[]) {
+        super("stateChanges",arr);
         this._account = ""
         this._variable = ""
         this._indices = []
     }
+
     account(value: string): StateChangesNode {
         this._account = value;
         return this
@@ -165,33 +170,30 @@ class StateChangesNode extends Node {
         this._indices = value;
         return this
     }
+
     public getIndices(): string {
-        const sateChangeQuery = new SateChangeQuery(this._account, this._variable, this._indices);
-        const queryCode = Protobuf.encode(sateChangeQuery, SateChangeQuery.encode);
-        const arrayToHex = utils.uint8ArrayToHex(queryCode);
-        super.add(arrayToHex)
         super.add("indices")
-        return super.toString()
+        return this.toString()
     }
+
     public toString(): string {
-        const sateChangeQuery = new SateChangeQuery(this._account, this._variable, this._indices);
-        const queryCode = Protobuf.encode(sateChangeQuery, SateChangeQuery.encode);
-        const arrayToHex = utils.uint8ArrayToHex(queryCode);
-        super.add(arrayToHex)
+        super.add(this._account == "" ? Occupy : this._account)
+        super.add(this._variable == "" ? Occupy : this._variable)
+        for (let i = 0; i < this._indices.length; i++) {
+            super.add(utils.uint8ArrayToHex(this._indices[i]))
+        }
         return super.toString()
+
     }
 }
 
 class KeyNodeImpl extends Node {
-    constructor(parentPath: string) {
-        super()
-        super.add(parentPath)
+    constructor(parentPath: string,arr :Array<string>=[]) {
+        super(parentPath,arr)
     }
 
-    key(... key: string[]): Node {
-        for (let i = 0; i < key.length; i++) {
-            super.add(key[i]);
-        }
+    key(key: string): KeyNodeImpl {
+        super.add(key);
         return this;
     }
 }

@@ -15,8 +15,7 @@ export class TraceContext {
 
   private constructor() {}
 
-  callTree(value: Array<u64>): EthCallStacks {
-
+  callTree(value:i64=-1): EthCallStacks {
     const idx = tx.callStack.callIndex(value).toString();
     const response = RuntimeContext.get(idx);
     if (!response.data || !response.data!.value) {
