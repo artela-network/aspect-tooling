@@ -13,6 +13,10 @@ declare namespace __UtilApi__ {
 }
 
 export namespace vm {
+  export function alloc(size: i32): i32 {
+    return heap.alloc(size) as i32;
+  }
+
   export function require(condition: bool, message: string = ''): void {
     if (!condition) {
       revert(message);
@@ -54,10 +58,6 @@ export namespace utils {
       throw new Error('Invalid hex string');
     }
     return data;
-  }
-
-  export function alloc(size: i32): i32 {
-    return heap.alloc(size) as i32;
   }
 
   export function stringToUint8Array(s: string): Uint8Array {

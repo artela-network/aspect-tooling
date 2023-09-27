@@ -1,21 +1,15 @@
-import { AspectContext, StaticCaller } from '../../system';
+import { AspectContext, AspectStateReadonlyCtx, EvmCallableCtx } from '../../system';
 import { EnvContext, TxContext } from '../../context';
 
-export class FilterTxCtx {
+export class FilterTxCtx implements AspectStateReadonlyCtx, EvmCallableCtx {
   private readonly _aspectContext: AspectContext;
-  private readonly _staticCaller: StaticCaller;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor() {
     this._aspectContext = AspectContext.get();
-    this._staticCaller = StaticCaller.get();
     this._txContext = TxContext.get();
     this._env = EnvContext.get();
-  }
-
-  get evm(): StaticCaller {
-    return this._staticCaller;
   }
 
   get tx(): TxContext {

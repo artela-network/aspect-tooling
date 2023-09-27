@@ -1,16 +1,18 @@
 import { MessageUrlType } from '../types';
-import { MutableAspectValue } from './common';
+import { ImmutableAspectValue, MutableAspectValue } from './common';
 import { utils } from './util-api';
 import { RuntimeContext } from './runtime-api';
 
-import { Protobuf } from 'as-proto';
 import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../proto';
 import { ErrUpdateAspectState, NewMessageError } from './errors';
 import { ToAny } from '../types/message-helper';
-export class AspectProperty {
-  private constructor() {}
+import { Protobuf } from 'as-proto/assembly';
 
-  public static get<T>(key: string): T | null {
+export class AspectProperty {
+  private static _instance: AspectProperty | null;
+
+  private constructor() {}
+  public get<T>(key: string): T | null {
     const sateChangeQuery = new StringData(key);
     const query = ToAny<StringData>(
       MessageUrlType.SateChangeQuery,
@@ -24,36 +26,52 @@ export class AspectProperty {
     const stringData = Protobuf.decode<StringData>(outPtr!.data!.value, StringData.decode);
     return utils.fromString<T>(stringData.data);
   }
+
+  public static get(): AspectProperty {
+    if (!this._instance) {
+      this._instance = new AspectProperty();
+    }
+    return this._instance!;
+  }
 }
 
-export class AspectState {
+export class MutableAspectState {
+  private static _instance: MutableAspectState | null;
+
   private constructor() {}
 
-  public static get<T>(key: string): StateValue<T> {
-    return new StateValue<T>(key);
+  public get<T>(key: string): MutableStateValue<T> {
+    return new MutableStateValue<T>(key);
+  }
+
+  public static get(): MutableAspectState {
+    if (!this._instance) {
+      this._instance = new MutableAspectState();
+    }
+    return this._instance!;
   }
 }
 
-export class StateValue<T> implements MutableAspectValue<T> {
-  private val: T | null = null;
+export class ImmutableAspectState {
+  private static _instance: ImmutableAspectState | null;
 
-  constructor(private readonly key: string) {}
+  private constructor() {}
+  public get<T>(key: string): ImmutableStateValue<T> {
+    return new ImmutableStateValue<T>(key);
+  }
 
-  set<T>(value: T): bool {
-    const data = utils.toString<T>(value);
-    if (this.key == '') {
-      throw ErrUpdateAspectState;
+  public static get(): ImmutableAspectState {
+    if (!this._instance) {
+      this._instance = new ImmutableAspectState();
     }
-    return RuntimeContext.set(SetNameSpace.SetAspectState, this.key, data);
+    return this._instance!;
   }
+}
 
-  delete(): bool {
-    const data = new StringData(this.key);
-    const encode = Protobuf.encode(data, StringData.encode);
-    const any = new Any(MessageUrlType.StringData, encode);
+export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
+  protected val: T | null = null;
 
-    return RuntimeContext.remove(RemoveNameSpace.RemoveAspectState, any);
-  }
+  constructor(protected readonly key: string) {}
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
@@ -77,5 +95,23 @@ export class StateValue<T> implements MutableAspectValue<T> {
     }
 
     return this.val;
+  }
+}
+
+export class MutableStateValue<T> extends ImmutableStateValue<T> implements MutableAspectValue<T> {
+  set<T>(value: T): void {
+    const data = utils.toString<T>(value);
+    if (this.key == '') {
+      throw ErrUpdateAspectState;
+    }
+    RuntimeContext.set(SetNameSpace.SetAspectState, this.key, data);
+  }
+
+  delete(): void {
+    const data = new StringData(this.key);
+    const encode = Protobuf.encode(data, StringData.encode);
+    const any = new Any(MessageUrlType.StringData, encode);
+
+    RuntimeContext.remove(RemoveNameSpace.RemoveAspectState, any);
   }
 }

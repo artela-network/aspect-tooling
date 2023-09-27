@@ -17,6 +17,7 @@ module.exports = {
     {
       files: ['packages/libs/**'],
       rules: {
+        '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/prefer-optional-chain': 'off',
         '@typescript-eslint/consistent-type-assertions': 'off',

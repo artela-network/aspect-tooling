@@ -1,20 +1,20 @@
 import { utils } from './util-api';
 
 class Key {
-  protected parts = new Array<string>();
+  protected parts: string[] = new Array<string>();
 
   protected constructor(key: string, prefixes: Array<string> = []) {
     this.addAll(prefixes);
     this.add(key);
   }
 
-  protected addAll(key: string[]) {
+  protected addAll(key: string[]): void {
     for (let i = 0; i < key.length; i++) {
       this.parts.push(key[i]);
     }
   }
 
-  protected add(key: string) {
+  protected add(key: string): void {
     this.parts.push(key);
   }
 

@@ -1,11 +1,15 @@
 import { EthStackTransaction } from '../../proto';
 import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
-import { AspectContext, JustInTimeCaller, StateContext } from '../../system';
+import {
+  AspectContext,
+  AspectStateModifiableCtx,
+  InherentCallableCtx,
+  StateContext,
+} from '../../system';
 
-export class PreContractCallCtx {
+export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
   private readonly _innerTx: EthStackTransaction;
   private readonly _aspectContext: AspectContext;
-  private readonly _jitCall: JustInTimeCaller;
   private readonly _blockContext: BlockContext;
   private readonly _stateContext: StateContext;
   private readonly _traceContext: TraceContext;
@@ -15,7 +19,6 @@ export class PreContractCallCtx {
   constructor(innerTx: EthStackTransaction) {
     this._innerTx = innerTx;
     this._aspectContext = AspectContext.get();
-    this._jitCall = JustInTimeCaller.get();
     this._blockContext = BlockContext.get();
     this._stateContext = StateContext.get();
     this._traceContext = TraceContext.get();
@@ -47,18 +50,13 @@ export class PreContractCallCtx {
     return this._aspectContext;
   }
 
-  get jitCall(): JustInTimeCaller {
-    return this._jitCall;
-  }
-
   get env(): EnvContext {
     return this._env;
   }
 }
 
-export class PostContractCallCtx {
+export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
   private readonly _aspectContext: AspectContext = AspectContext.get();
-  private readonly _jitCall: JustInTimeCaller = JustInTimeCaller.get();
   private readonly _blockContext: BlockContext = BlockContext.get();
   private readonly _stateContext: StateContext = StateContext.get();
   private readonly _traceContext: TraceContext = TraceContext.get();
@@ -77,10 +75,6 @@ export class PostContractCallCtx {
 
   get currInnerTx(): EthStackTransaction {
     return this._currInnerTx;
-  }
-
-  get inherent(): JustInTimeCaller {
-    return this._jitCall;
   }
 
   get aspect(): AspectContext {

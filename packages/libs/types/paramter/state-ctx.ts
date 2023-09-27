@@ -1,20 +1,32 @@
-import { StaticCaller } from '../../system';
-import { ScheduleManager } from '../../components';
+import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { BlockContext, EnvContext, TxContext } from '../../context';
 
-export class OperationCtx {
-  private readonly _staticCaller: StaticCaller;
-  private readonly _schedule: ScheduleManager;
+export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
+  private readonly _aspect: AspectContext;
+  private readonly _tx: TxContext;
+  private readonly _env: EnvContext;
+  private readonly _block: BlockContext;
 
   constructor() {
-    this._staticCaller = StaticCaller.get();
-    this._schedule = ScheduleManager.get();
+    this._aspect = AspectContext.get();
+    this._tx = TxContext.get();
+    this._env = EnvContext.get();
+    this._block = BlockContext.get();
   }
 
-  get evm(): StaticCaller {
-    return this._staticCaller;
+  get tx(): TxContext {
+    return this._tx;
   }
 
-  get scheduler(): ScheduleManager {
-    return this._schedule;
+  get aspect(): AspectContext {
+    return this._aspect;
+  }
+
+  get env(): EnvContext {
+    return this._env;
+  }
+
+  get block(): BlockContext {
+    return this._block;
   }
 }

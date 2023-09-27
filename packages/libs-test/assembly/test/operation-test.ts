@@ -1,7 +1,7 @@
 // The entry file of your WebAssembly module.
 
 import {IAspectOperation, OperationCtx} from '@artela/aspect-libs/types';
-import {utils} from '@artela/aspect-libs/system';
+import {utils} from '@artela/aspect-libs';
 import {Entry} from '@artela/aspect-libs/types/aspect-entry';
 
 function AssertTrue(cond: bool, msg: string): void {
