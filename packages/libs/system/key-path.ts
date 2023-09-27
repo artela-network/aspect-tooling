@@ -1,4 +1,3 @@
-
 import {utils} from "./util-api";
 
 abstract class Node {
@@ -192,10 +191,8 @@ class KeyNodeImpl extends Node {
         super(parentPath)
     }
 
-    key(... key: string[]): Node {
-        for (let i = 0; i < key.length; i++) {
-            super.add(key[i]);
-        }
+    key(key: string): KeyNodeImpl {
+        super.add(key);
         return this;
     }
 }
