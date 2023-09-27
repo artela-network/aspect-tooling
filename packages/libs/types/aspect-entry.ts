@@ -23,7 +23,7 @@ import {
   StoreAspectResponse,
   StoreOutputBool,
 } from './message-helper';
-import { Any, AspectResponse, BoolData, BytesData, EthInnerTransaction, RunResult } from '../proto';
+import { Any, AspectResponse, BoolData, BytesData, RunResult } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
 
 export class Entry {
@@ -86,14 +86,7 @@ export class Entry {
       if (arg.currInnerTx == null) {
         out = ErrAspectResponse('currInnerTx is null');
       } else {
-        const ethInnerTransaction = new EthInnerTransaction(
-          arg.currInnerTx!.from,
-          arg.currInnerTx!.to,
-          arg.currInnerTx!.data,
-          arg.currInnerTx!.value,
-          arg.currInnerTx!.gas,
-        );
-        const ctx = new PreContractCallCtx(ethInnerTransaction);
+        const ctx = new PreContractCallCtx(arg.currInnerTx!);
         this.transactionAspect!.preContractCall(ctx);
         out = DefAspectResponse();
       }

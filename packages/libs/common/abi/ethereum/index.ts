@@ -1,6 +1,14 @@
 import { crypto, utils } from '../../../system';
 
 export namespace ethereum {
+  export function parseMethodSig(calldata: Uint8Array): string {
+    if (calldata.length < 4) {
+      return '';
+    }
+
+    return utils.uint8ArrayToHex(calldata.slice(0, 4));
+  }
+
   export function abiEncode(method: string, types: Type[]): string {
     let enc = '0x';
     if (method.length > 0) {

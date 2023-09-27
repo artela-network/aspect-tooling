@@ -1,9 +1,9 @@
-import { EthInnerTransaction, EthStackTransaction } from '../../proto';
+import { EthStackTransaction } from '../../proto';
 import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
 import { AspectContext, JustInTimeCaller, StateContext } from '../../system';
 
 export class PreContractCallCtx {
-  private readonly _innerTx: EthInnerTransaction;
+  private readonly _innerTx: EthStackTransaction;
   private readonly _aspectContext: AspectContext;
   private readonly _jitCall: JustInTimeCaller;
   private readonly _blockContext: BlockContext;
@@ -12,7 +12,7 @@ export class PreContractCallCtx {
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
-  constructor(innerTx: EthInnerTransaction) {
+  constructor(innerTx: EthStackTransaction) {
     this._innerTx = innerTx;
     this._aspectContext = AspectContext.get();
     this._jitCall = JustInTimeCaller.get();
@@ -31,7 +31,7 @@ export class PreContractCallCtx {
     return this._blockContext;
   }
 
-  get currInnerTx(): EthInnerTransaction | null {
+  get currInnerTx(): EthStackTransaction {
     return this._innerTx;
   }
 
