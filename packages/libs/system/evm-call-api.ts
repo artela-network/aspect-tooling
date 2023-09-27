@@ -1,6 +1,6 @@
 import {
+  EthMessage,
   EthMessageCallResult,
-  EthTransaction,
   JitInherentRequest,
   JitInherentResponse,
 } from '../proto';
@@ -18,8 +18,8 @@ export class StaticCaller {
 
   private constructor() {}
 
-  public staticCall(request: EthTransaction): EthMessageCallResult {
-    const encoded = Protobuf.encode(request, EthTransaction.encode);
+  public staticCall(request: EthMessage): EthMessageCallResult {
+    const encoded = Protobuf.encode(request, EthMessage.encode);
     const input = new AUint8Array();
     input.set(encoded);
     const inputPtr = input.store();

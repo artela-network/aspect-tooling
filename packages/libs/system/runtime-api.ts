@@ -14,7 +14,7 @@ import { MutableAspectValue } from './common';
 import { Protobuf } from 'as-proto/assembly';
 import { ErrLoadRuntimeCtxValue } from './errors';
 import { utils } from './util-api';
-import { CtxKey } from './ctx-key';
+import {tx} from "./key-path";
 
 declare namespace __RuntimeContextApi__ {
   function get(query: i32): i32;
@@ -139,7 +139,7 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
   }
 
   reload(): void {
-    const path = CtxKey.aspect.content.key(this.key).toString();
+    const path = tx.context.key(this.key).toString();
     const response = RuntimeContext.get(path);
     if (response.result!.success) {
       this.val = null;
