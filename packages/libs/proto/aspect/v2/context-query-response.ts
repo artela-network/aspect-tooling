@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { RunResult } from "./run-result";
-import { Any } from "../../google/protobuf/any";
+import { Writer, Reader } from 'as-proto/assembly';
+import { RunResult } from './run-result';
+import { Any } from '../../google/protobuf/any';
 
 export class ContextQueryResponse {
   static encode(message: ContextQueryResponse, writer: Writer): void {

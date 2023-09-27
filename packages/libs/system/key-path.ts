@@ -1,205 +1,167 @@
-import {utils} from "./util-api";
+import { utils } from './util-api';
 
-abstract class Node {
-    public arr = new Array<string>();
+class Key {
+  protected parts = new Array<string>();
 
-    protected constructor(key: string,arr:Array<string>=[]) {
-        this.addAll(arr);
-        this.add(key);
+  protected constructor(key: string, prefixes: Array<string> = []) {
+    this.addAll(prefixes);
+    this.add(key);
+  }
+
+  protected addAll(key: string[]) {
+    for (let i = 0; i < key.length; i++) {
+      this.parts.push(key[i]);
     }
+  }
 
-    protected addAll(key: string[]) {
-        for (let i = 0; i < key.length; i++) {
-            this.arr.push(key[i]);
-        }
+  protected add(key: string) {
+    this.parts.push(key);
+  }
+
+  public toString(): string {
+    if (this.parts.length == 0) {
+      return '';
     }
-
-    protected add(key: string) {
-        this.arr.push(key);
-
-    }
-
-    public toString(): string {
-        if (this.arr.length == 0) {
-            return '';
-        }
-        return this.arr.join('.');
-    }
+    return this.parts.join('.');
+  }
 }
 
-class BlockKey extends Node {
-    constructor() {
-        super("block");
-    }
+class BlockKey extends Key {
+  constructor() {
+    super('block');
+  }
 
-    get header(): string {
-        super.add("header")
-        return this.toString()
-    }
+  get header(): Key {
+    return new Key('header', this.parts);
+  }
 
-    get txs(): string {
-        super.add("txs")
-        return this.toString()
-    }
+  get txs(): Key {
+    return new Key('txs', this.parts);
+  }
 
-    get gasMeter(): string {
-        super.add("gasMeter")
-        return this.toString()
-    }
+  get gasMeter(): Key {
+    return new Key('gasMeter', this.parts);
+  }
 
-    get minGasPrice(): string {
-        super.add("minGasPrice")
-        return this.toString()
-    }
+  get minGasPrice(): Key {
+    return new Key('minGasPrice', this.parts);
+  }
 
-    get lastCommit(): string {
-        super.add("lastCommit")
-        return this.toString()
-    }
+  get lastCommit(): Key {
+    return new Key('lastCommit', this.parts);
+  }
 }
 
-class EnvKey extends Node {
-    constructor() {
-        super("env");
-    }
+class EnvKey extends Key {
+  constructor() {
+    super('env');
+  }
 
-    get consParams(): string {
-        super.add("consParams")
-        return this.toString()
-    }
+  get consensusParams(): Key {
+    return new Key('consensusParams', this.parts);
+  }
 
-    get chainConfig(): string {
-        super.add("chainConfig")
-        return this.toString()
-    }
+  get chainConfig(): Key {
+    return new Key('chainConfig', this.parts);
+  }
 
-    get evmParams(): string {
-        super.add("evmParams")
-        return this.toString()
-    }
+  get evmParams(): Key {
+    return new Key('evmParams', this.parts);
+  }
 
-    get baseInfo(): string {
-        super.add("baseInfo")
-        return this.toString()
-    }
-
+  get baseFee(): Key {
+    return new Key('baseFee', this.parts);
+  }
 }
 
-class TxKey extends Node {
-    constructor() {
-        super("tx");
-    }
+class TxKey extends Key {
+  constructor() {
+    super('tx');
+  }
 
-    get extProperties(): KeyNodeImpl {
-        return new KeyNodeImpl("extProperties",this.arr)
-    }
+  get extProperties(): MappingKey {
+    return new MappingKey('extProperties', this.parts);
+  }
 
-    get content(): string {
-        super.add("baseInfo")
-        return super.toString()
-    }
+  get content(): Key {
+    return new MappingKey('content', this.parts);
+  }
 
-    get context(): KeyNodeImpl {
-        return new KeyNodeImpl("context",this.arr)
-    }
+  get context(): MappingKey {
+    return new MappingKey('context', this.parts);
+  }
 
-    get receipt(): string {
-        super.add("receipt")
-        return super.toString()
-    }
+  get receipt(): Key {
+    return new Key('receipt', this.parts);
+  }
 
-    get gasMeter(): string {
-        super.add("gasMeter")
-        return super.toString()
-    }
+  get gasMeter(): Key {
+    return new Key('gasMeter', this.parts);
+  }
 
-    get stateChanges(): StateChangesNode {
-        return new StateChangesNode(this.arr)
-    }
+  get stateChanges(): StateChangeKey {
+    return new StateChangeKey(this.parts);
+  }
 
-    get callStack(): CallStackNode {
-        return new CallStackNode(this.arr)
-    }
-
+  get callTree(): CallTreeKey {
+    return new CallTreeKey(this.parts);
+  }
 }
 
-class CallStackNode extends Node {
-    private _callIndex: i64
+class CallTreeKey extends Key {
+  constructor(prefixes: Array<string> = []) {
+    super('callTree', prefixes);
+  }
 
-    constructor(arr:Array<string>=[]) {
-        super("callStack",arr);
-        this._callIndex = -1
-    }
-
-    callIndex(value: u64): CallStackNode {
-        this._callIndex = value;
-        return this
-    }
-
-    public toString(): string {
-        if (this._callIndex != -1) {
-            super.add(this._callIndex.toString(10))
-        }
-        return super.toString()
-    }
+  callIndex(value: u64): Key {
+    return new Key(value.toString(10), this.parts);
+  }
 }
 
-class StateChangesNode extends Node {
-    private _account: string;
-    private _variable: string;
-    private _indices: Array<Uint8Array>;
+class StateChangeKey extends Key {
+  constructor(prefixes: Array<string> = []) {
+    super('stateChanges', prefixes);
+  }
 
-    constructor(arr:Array<string>=[]) {
-        super("stateChanges",arr);
-        this._account = ""
-        this._variable = ""
-        this._indices = []
-    }
-
-    account(value: string): StateChangesNode {
-        this._account = value;
-        return this
-    }
-
-    variable(value: string): StateChangesNode {
-        this._variable = value;
-        return this
-    }
-
-    indices(value: Array<Uint8Array>): StateChangesNode {
-        this._indices = value;
-        return this
-    }
-
-    public getIndices(): string {
-        super.add("indices")
-        return this.toString()
-    }
-
-    public toString(): string {
-        super.add(this._account == "" ? Occupy : this._account)
-        super.add(this._variable == "" ? Occupy : this._variable)
-        for (let i = 0; i < this._indices.length; i++) {
-            super.add(utils.uint8ArrayToHex(this._indices[i]))
-        }
-        return super.toString()
-
-    }
+  account(accountHex: string): StateChangeAccountKey {
+    return new StateChangeAccountKey(accountHex, this.parts);
+  }
 }
 
-class KeyNodeImpl extends Node {
-    constructor(parentPath: string,arr :Array<string>=[]) {
-        super(parentPath,arr)
-    }
-
-    key(key: string): KeyNodeImpl {
-        super.add(key);
-        return this;
-    }
+class StateChangeAccountKey extends Key {
+  variable(stateVarName: string): StateChangeVariableKey {
+    return new StateChangeVariableKey(stateVarName, this.parts);
+  }
 }
 
-export const tx: TxKey = new TxKey()
-export const block: BlockKey = new BlockKey()
-export const env: EnvKey = new EnvKey()
+class StateChangeVariableKey extends Key {
+  indices(indices: Array<Uint8Array>): Key {
+    const strIndices = indices.map(i => utils.uint8ArrayToHex(i));
+    return new Key(strIndices.join('.'), this.parts);
+  }
+}
 
-export const Occupy = '#';
+class MappingKey extends Key {
+  constructor(parent: string, prefixes: Array<string> = []) {
+    super(parent, prefixes);
+  }
+
+  property(key: string): string {
+    super.add(key);
+    return super.toString();
+  }
+}
+
+export class ContextKey {
+  static get block(): BlockKey {
+    return new BlockKey();
+  }
+
+  static get tx(): TxKey {
+    return new TxKey();
+  }
+
+  static get env(): EnvKey {
+    return new EnvKey();
+  }
+}

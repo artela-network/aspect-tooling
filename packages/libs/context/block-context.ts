@@ -1,12 +1,6 @@
-import {
-  EthBlockHeader,
-  EthTxArray,
-  GasMeter,
-  LastCommitInfo,
-  MinGasPrice,
-} from '../proto';
+import { EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
-import {block, ErrLoadRuntimeCtxValue, RuntimeContext} from '../system';
+import { ContextKey, ErrLoadRuntimeCtxValue, RuntimeContext } from '../system';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
@@ -14,7 +8,7 @@ export class BlockContext {
   private constructor() {}
 
   get header(): EthBlockHeader {
-    const headerPath = block.header
+    const headerPath = ContextKey.block.header.toString();
     const response = RuntimeContext.get(headerPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -23,7 +17,7 @@ export class BlockContext {
   }
 
   get partialBody(): EthTxArray {
-    const bodyPath = block.txs;
+    const bodyPath = ContextKey.block.txs.toString();
     const response = RuntimeContext.get(bodyPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -32,7 +26,7 @@ export class BlockContext {
   }
 
   get gasMeter(): GasMeter {
-    const getKey = block.gasMeter;
+    const getKey = ContextKey.block.gasMeter.toString();
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -41,7 +35,7 @@ export class BlockContext {
   }
 
   get minGasPrice(): MinGasPrice {
-    const getKey = block.minGasPrice;
+    const getKey = ContextKey.block.minGasPrice.toString();
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -50,7 +44,7 @@ export class BlockContext {
   }
 
   get lastCommit(): LastCommitInfo {
-    const getKey = block.lastCommit;
+    const getKey = ContextKey.block.lastCommit.toString();
     const response = RuntimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;

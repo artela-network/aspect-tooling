@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
-import { Clique } from "./clique";
+import { Writer, Reader } from 'as-proto/assembly';
+import { Clique } from './clique';
 
 export class ChainConfig {
   static encode(message: ChainConfig, writer: Writer): void {
@@ -216,29 +216,29 @@ export class ChainConfig {
   clique: Clique | null;
 
   constructor(
-    chainId: string = "",
-    homesteadBlock: string = "",
-    daoForkBlock: string = "",
+    chainId: string = '',
+    homesteadBlock: string = '',
+    daoForkBlock: string = '',
     daoForkSupport: bool = false,
-    eip150Block: string = "",
-    eip150Hash: string = "",
-    eip155Block: string = "",
-    eip158Block: string = "",
-    byzantiumBlock: string = "",
-    constantinopleBlock: string = "",
-    petersburgBlock: string = "",
-    istanbulBlock: string = "",
-    muirGlacierBlock: string = "",
-    berlinBlock: string = "",
-    londonBlock: string = "",
-    arrowGlacierBlock: string = "",
-    grayGlacierBlock: string = "",
-    mergeNetsplitBlock: string = "",
-    shanghaiBlock: string = "",
-    cancunBlock: string = "",
-    terminalTotalDifficulty: string = "",
+    eip150Block: string = '',
+    eip150Hash: string = '',
+    eip155Block: string = '',
+    eip158Block: string = '',
+    byzantiumBlock: string = '',
+    constantinopleBlock: string = '',
+    petersburgBlock: string = '',
+    istanbulBlock: string = '',
+    muirGlacierBlock: string = '',
+    berlinBlock: string = '',
+    londonBlock: string = '',
+    arrowGlacierBlock: string = '',
+    grayGlacierBlock: string = '',
+    mergeNetsplitBlock: string = '',
+    shanghaiBlock: string = '',
+    cancunBlock: string = '',
+    terminalTotalDifficulty: string = '',
     terminalTotalDifficultyPassed: bool = false,
-    clique: Clique | null = null
+    clique: Clique | null = null,
   ) {
     this.chainId = chainId;
     this.homesteadBlock = homesteadBlock;

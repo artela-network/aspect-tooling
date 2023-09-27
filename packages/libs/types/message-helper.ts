@@ -6,7 +6,9 @@ import {
   RunResult,
   EthBlockAspect,
   EthTxAspect,
-  EthTransaction, SateChangeQuery, CallStackQuery,
+  EthTransaction,
+  SateChangeQuery,
+  CallStackQuery,
 } from '../proto';
 import { Writer } from 'as-proto/assembly/Writer';
 
@@ -96,7 +98,6 @@ export function ToAny<TMessage>(
 }
 
 export class MessageUrlType {
-
   static StringData: string = 'aspect.v2.StringData';
   static IntData: string = 'aspect.v2.IntData';
   static BoolData: string = 'aspect.v2.BoolData';

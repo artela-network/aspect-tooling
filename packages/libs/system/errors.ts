@@ -7,5 +7,5 @@ export const ErrUpdateAspectState = new Error('failed to update aspect state val
 export const ErrParseValueFail = new Error('unable to parse aspect value');
 
 export function NewMessageError(msg: string): Error {
-    return new Error(msg);
+  return new Error(msg);
 }

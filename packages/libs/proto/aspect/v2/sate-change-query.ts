@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.23.2
 
-import { Writer, Reader } from "as-proto/assembly";
+import { Writer, Reader } from 'as-proto/assembly';
 
 export class SateChangeQuery {
   static encode(message: SateChangeQuery, writer: Writer): void {
@@ -54,11 +54,7 @@ export class SateChangeQuery {
   stateVarName: string;
   indices: Array<Uint8Array>;
 
-  constructor(
-    account: string = "",
-    stateVarName: string = "",
-    indices: Array<Uint8Array> = []
-  ) {
+  constructor(account: string = '', stateVarName: string = '', indices: Array<Uint8Array> = []) {
     this.account = account;
     this.stateVarName = stateVarName;
     this.indices = indices;

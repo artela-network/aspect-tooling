@@ -7,16 +7,16 @@ import {
   GasMeter,
   TxExtProperty,
 } from '../proto';
-import {tx, ErrLoadRuntimeCtxValue, NewMessageError, RuntimeContext} from '../system';
-import {Protobuf} from 'as-proto/assembly';
+import { ContextKey, ErrLoadRuntimeCtxValue, NewMessageError, RuntimeContext } from '../system';
+import { Protobuf } from 'as-proto/assembly';
 
 export class TraceContext {
   private static _instance: TraceContext | null;
 
   private constructor() {}
 
-  callTree(value:i64=-1): EthCallStacks {
-    const idx = tx.callStack.callIndex(value).toString();
+  callTree(value: i64 = -1): EthCallStacks {
+    const idx = ContextKey.tx.callTree.callIndex(value).toString();
     const response = RuntimeContext.get(idx);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -25,8 +25,12 @@ export class TraceContext {
   }
 
   stateChanges(addr: string, variable: string, indices: Array<Uint8Array>): EthStateChanges {
-    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).toString();
-    const response = RuntimeContext.get(statePath)
+    const statePath = ContextKey.tx.stateChanges
+      .account(addr)
+      .variable(variable)
+      .indices(indices)
+      .toString();
+    const response = RuntimeContext.get(statePath);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
@@ -34,9 +38,17 @@ export class TraceContext {
     return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
   }
 
-  stateChangeIndices(addr: string, variable: string, indices:  Array<Uint8Array>): EthStateChangeIndices {
-    const statePath = tx.stateChanges.account(addr).variable(variable).indices(indices).getIndices();
-    const response = RuntimeContext.get(statePath)
+  stateChangeIndices(
+    addr: string,
+    variable: string,
+    indices: Array<Uint8Array>,
+  ): EthStateChangeIndices {
+    const statePath = ContextKey.tx.stateChanges
+      .account(addr)
+      .variable(variable)
+      .indices(indices)
+      .toString();
+    const response = RuntimeContext.get(statePath);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
@@ -64,7 +76,7 @@ export class TxContext {
   private constructor() {}
 
   get extProperties(): TxExtProperty {
-    const key = tx.extProperties.toString()
+    const key = ContextKey.tx.extProperties.toString();
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -73,7 +85,7 @@ export class TxContext {
   }
 
   get content(): EthTransaction {
-    const key = tx.content;
+    const key = ContextKey.tx.content.toString();
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -82,7 +94,7 @@ export class TxContext {
   }
 
   get gasMeter(): GasMeter {
-    const key = tx.gasMeter;
+    const key = ContextKey.tx.gasMeter.toString();
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;
@@ -104,7 +116,7 @@ export class EthReceiptContext {
   private constructor() {}
 
   public get(): EthReceipt {
-    const key = tx.receipt;
+    const key = ContextKey.tx.receipt.toString();
     const response = RuntimeContext.get(key);
     if (!response.data || !response.data!.value) {
       throw ErrLoadRuntimeCtxValue;

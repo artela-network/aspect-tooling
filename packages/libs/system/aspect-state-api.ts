@@ -4,15 +4,19 @@ import { utils } from './util-api';
 import { RuntimeContext } from './runtime-api';
 
 import { Protobuf } from 'as-proto';
-import {Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData} from '../proto';
-import {ErrUpdateAspectState, NewMessageError} from './errors';
-import {ToAny} from "../types/message-helper";
+import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../proto';
+import { ErrUpdateAspectState, NewMessageError } from './errors';
+import { ToAny } from '../types/message-helper';
 export class AspectProperty {
   private constructor() {}
 
   public static get<T>(key: string): T | null {
     const sateChangeQuery = new StringData(key);
-    const query = ToAny<StringData>(MessageUrlType.SateChangeQuery,sateChangeQuery,StringData.encode);
+    const query = ToAny<StringData>(
+      MessageUrlType.SateChangeQuery,
+      sateChangeQuery,
+      StringData.encode,
+    );
     const outPtr = RuntimeContext.query(QueryNameSpace.QueryAspectProperty, query);
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
@@ -53,7 +57,11 @@ export class StateValue<T> implements MutableAspectValue<T> {
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
-    const query = ToAny<StringData>(MessageUrlType.SateChangeQuery,sateChangeQuery,StringData.encode);
+    const query = ToAny<StringData>(
+      MessageUrlType.SateChangeQuery,
+      sateChangeQuery,
+      StringData.encode,
+    );
     const response = RuntimeContext.query(QueryNameSpace.QueryAspectState, query);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
