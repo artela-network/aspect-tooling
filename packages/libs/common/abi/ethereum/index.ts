@@ -16,7 +16,8 @@ export namespace ethereum {
   export function abiEncode(method: string, types: Type[]): string {
     let enc = '0x';
     if (method.length > 0) {
-      const methodWithArgTypes = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
+      const methodWithArgTypes =
+        method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
       enc += computeMethodSig(methodWithArgTypes);
     }
 

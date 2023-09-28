@@ -14,11 +14,7 @@ export class AspectProperty {
   private constructor() {}
   public get<T>(key: string): T | null {
     const sateChangeQuery = new StringData(key);
-    const query = ToAny<StringData>(
-      MessageUrlType.StringData,
-      sateChangeQuery,
-      StringData.encode,
-    );
+    const query = ToAny<StringData>(MessageUrlType.StringData, sateChangeQuery, StringData.encode);
     const outPtr = RuntimeContext.query(QueryNameSpace.QueryAspectProperty, query);
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
@@ -75,11 +71,7 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
-    const query = ToAny<StringData>(
-      MessageUrlType.StringData,
-      sateChangeQuery,
-      StringData.encode,
-    );
+    const query = ToAny<StringData>(MessageUrlType.StringData, sateChangeQuery, StringData.encode);
     const response = RuntimeContext.query(QueryNameSpace.QueryAspectState, query);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
