@@ -152,6 +152,8 @@ abstract class BaseComplexType extends BaseType {
     return '';
   }
 
+  abstract indexValue(): string;
+
   getClassName(prefix: string): string {
     return prefix;
   }
@@ -381,6 +383,22 @@ export class ASTArray extends BaseComplexType {
         `;
   }
 
+  indexValue(): string {
+    return `childrenIndexValue(index: u64): ethereum.Number {
+      return ethereum.Number.fromUint8Array(this.__children__[index]);
+    }`;
+  }
+
+  indexAccess(childClass: string): string {
+    return `
+            childChangeAt(index: u64): ${childClass} {
+                // @ts-ignore
+                return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
+                                         utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
+            }
+        `;
+  }
+
   generateClass(prefix: string, stateVarName: string): string {
     let res = '';
     const childClassName = this.elemType.getClassName(prefix + '_ArrayElement');
@@ -389,6 +407,8 @@ export class ASTArray extends BaseComplexType {
     res += this.constructorFunc(stateVarName);
     res += this.accessOperator(childClassName);
     res += this.parseKeyFunc();
+    res += this.indexValue();
+    res += this.indexAccess(childClassName);
     res += '}\n';
     return res;
   }
@@ -410,12 +430,53 @@ export class ASTMapping extends BaseComplexType {
   accessOperator(childClass: string): string {
     return `
             @operator("[]")
-            get(index: ${this.asType()}): ${childClass} {
+            get(key: ${this.asType()}): ${childClass} {
                 // @ts-ignore
                 return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
-                                         utils.arrayCopyPush(this.__properties__.indices, this.parseKey(index)));
+                                         utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)));
             }
         `;
+  }
+
+  indexAccess(childClass: string): string {
+    return `
+            childChangeAt(index: u64): ${childClass} {
+                // @ts-ignore
+                return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
+                                         utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
+            }
+        `;
+  }
+
+  indexValue(): string {
+    switch (this.keyType.typeId()) {
+      case ASTTypeId.Number:
+        return `childrenIndexValue(index: u64): ethereum.Number {
+          return ethereum.Number.fromUint8Array(this.__children__[index]);
+        }`;
+      case ASTTypeId.BytesN:
+        return `childrenIndexValue(index: u64): ethereum.BytesN {
+          return ethereum.BytesN.fromUint8Array(this.__children__[index]);
+        }`;
+      case ASTTypeId.Address:
+        return `childrenIndexValue(index: u64): ethereum.Address {
+          return ethereum.Address.fromUint8Array(this.__children__[index]);
+        }`;
+      case ASTTypeId.Boolean:
+        return `childrenIndexValue(index: u64): ethereum.Boolean {
+          return ethereum.Boolean.fromUint8Array(this.__children__[index]);
+        }`;
+      case ASTTypeId.Bytes:
+        return `childrenIndexValue(index: u64): ethereum.Bytes {
+          return ethereum.Bytes.fromUint8Array(this.__children__[index]);
+        }`;
+      case ASTTypeId.String:
+        return `childrenIndexValue(index: u64): ethereum.String {
+          return ethereum.String.fromUint8Array(this.__children__[index]);
+        }`;
+      default:
+        throw new Error('invalid mapping key type');
+    }
   }
 
   parseKeyFunc(): string {
@@ -430,6 +491,8 @@ export class ASTMapping extends BaseComplexType {
     res += this.constructorFunc(stateVarName);
     res += this.accessOperator(valueClass);
     res += this.parseKeyFunc();
+    res += this.indexValue();
+    res += this.indexAccess(valueClass);
     res += '}\n';
     return res;
   }
@@ -462,7 +525,6 @@ export class ASTStruct extends BaseComplexType {
   structConstructor(stateVarName: string, properties: [string, string][]): string {
     let res = `
         constructor(ctx: TraceContext, addr: string, indices: Uint8Array[] = []) {
-            super({ctx, account: addr, stateVar: '${stateVarName}', indices});
         `;
 
     for (let i = 0; i < properties.length; i++) {
@@ -473,6 +535,14 @@ export class ASTStruct extends BaseComplexType {
     }
 
     return res + '}\n';
+  }
+
+  classDef(prefix: string): string {
+    return `export class ${this.getClassName(prefix)} {\n`;
+  }
+
+  indexValue(): string {
+    throw new Error('Method not implemented.');
   }
 
   generateClass(prefix: string, stateVarName: string): string {
@@ -491,7 +561,6 @@ export class ASTStruct extends BaseComplexType {
       stateVarName,
       this.members.map((m, i) => [m[0], memberClassNames[i]]),
     );
-    res += this.parseKeyFunc();
     res += '}\n';
     return res;
   }

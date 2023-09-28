@@ -120,6 +120,10 @@ export namespace utils {
     return String.UTF8.encode(str);
   }
 
+  export function decodeUTF8(uint8Array: Uint8Array): string {
+    return String.UTF8.decode(uint8Array);
+  }
+
   export function parseCallMethod(data: Uint8Array): string {
     const s = uint8ArrayToHex(data);
     if (s.startsWith('0x')) {

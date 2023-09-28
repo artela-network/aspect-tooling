@@ -69,5 +69,9 @@ export abstract class StateKey<K> {
     }
   }
 
+  get childrenCount(): u64 {
+    return this.__children__.length;
+  }
+
   protected abstract parseKey(key: K): Uint8Array;
 }
