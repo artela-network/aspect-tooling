@@ -22,7 +22,7 @@ class Key {
     if (this.parts.length == 0) {
       return '';
     }
-    return this.parts.join('.');
+    return this.parts.join('^');
   }
 }
 
