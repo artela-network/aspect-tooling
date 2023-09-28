@@ -34,7 +34,7 @@ export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCal
     return this._blockContext;
   }
 
-  get currInnerTx(): EthStackTransaction {
+  get currentCall(): EthStackTransaction {
     return this._innerTx;
   }
 
@@ -79,7 +79,7 @@ export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCa
     return this._blockContext;
   }
 
-  get currInnerTx(): EthStackTransaction {
+  get currentCall(): EthStackTransaction {
     return this._currInnerTx;
   }
 
