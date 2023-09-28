@@ -15,7 +15,7 @@ export class AspectProperty {
   public get<T>(key: string): T | null {
     const sateChangeQuery = new StringData(key);
     const query = ToAny<StringData>(
-      MessageUrlType.SateChangeQuery,
+      MessageUrlType.StringData,
       sateChangeQuery,
       StringData.encode,
     );
@@ -76,7 +76,7 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
     const query = ToAny<StringData>(
-      MessageUrlType.SateChangeQuery,
+      MessageUrlType.StringData,
       sateChangeQuery,
       StringData.encode,
     );

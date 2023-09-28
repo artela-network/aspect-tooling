@@ -17,7 +17,7 @@ export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiableCtx
     this._env = EnvContext.get();
   }
 
-  get blockContext(): BlockContext {
+  get block(): BlockContext {
     return this._blockContext;
   }
 
