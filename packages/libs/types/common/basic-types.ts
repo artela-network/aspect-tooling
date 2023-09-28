@@ -62,7 +62,7 @@ export class AString {
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
-    String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr);
+    String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr, true);
     // it's weird that it doesn't work in the following way:
     // | let encoded = String.UTF8.encode(this.body);
     // | store<ArrayBuffer>(bodyPtr, encoded);
@@ -74,7 +74,7 @@ export class AString {
 
   constructor(body: string = '') {
     this.body = body;
-    this.head = new header(typeIndex.TypeString, body.length);
+    this.head = new header(typeIndex.TypeString, String.UTF16.byteLength(body));
   }
 }
 
