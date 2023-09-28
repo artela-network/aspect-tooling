@@ -9,11 +9,15 @@ export namespace ethereum {
     return utils.uint8ArrayToHex(calldata.slice(0, 4));
   }
 
+  export function computeMethodSig(method: string): string {
+    return utils.uint8ArrayToHex(crypto.keccak(utils.stringToUint8Array(method)).slice(0, 4));
+  }
+
   export function abiEncode(method: string, types: Type[]): string {
     let enc = '0x';
     if (method.length > 0) {
-      const methodSig = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
-      enc += utils.uint8ArrayToHex(crypto.keccak(utils.stringToUint8Array(methodSig)).slice(0, 4));
+      const methodWithArgTypes = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
+      enc += computeMethodSig(methodWithArgTypes);
     }
 
     let inputOffset: u64 = 0;
