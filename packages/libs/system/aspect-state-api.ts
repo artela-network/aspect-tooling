@@ -19,7 +19,7 @@ export class AspectProperty {
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
     }
-    const stringData = Protobuf.decode<StringData>(outPtr!.data!.value, StringData.decode);
+    const stringData = Protobuf.decode<StringData>(outPtr.data!.value, StringData.decode);
     return utils.fromString<T>(stringData.data);
   }
 
