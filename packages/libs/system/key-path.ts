@@ -136,7 +136,11 @@ class StateChangeAccountKey extends Key {
 
 class StateChangeVariableKey extends Key {
   indices(indices: Array<Uint8Array>): Key {
-    const strIndices = indices.map(i => utils.uint8ArrayToHex(i));
+    const strIndices=new Array<string>()
+    for (let i = 0; i < indices.length; i++) {
+      const uint8Array = utils.uint8ArrayToHex(indices[i]);
+      strIndices.push(uint8Array)
+    }
     return new Key(strIndices.join('.'), this.parts);
   }
 }
