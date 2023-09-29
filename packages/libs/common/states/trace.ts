@@ -1,5 +1,5 @@
-import { TraceCtx } from '../../system';
 import { EthStateChange } from '../../proto';
+import { TraceContext } from '../../context';
 
 export class State<T> {
   readonly account: string;
@@ -14,27 +14,18 @@ export class State<T> {
 }
 
 export abstract class StateChange<T> {
-  private readonly account: string;
-  private readonly stateVar: string;
-  private readonly ctx: TraceCtx;
-  private readonly changes: Array<State<T>>;
+  protected readonly changes: Array<State<T>>;
 
-  protected constructor(
-    ctx: TraceCtx,
-    account: string,
-    stateVar: string,
-    indices: Uint8Array[] = [],
-  ) {
-    this.ctx = ctx;
-    this.account = account;
-    this.stateVar = stateVar;
+  protected constructor(protected readonly properties: StateChangeProperties) {
     this.changes = new Array<State<T>>();
 
-    const changes = ctx.getStateChanges(account, stateVar, indices);
-    if (changes != null && changes.all != null) {
-      for (let i = 0; i < changes.all.length; i++) {
-        this.changes.push(this.unmarshalState(changes.all[i]));
-      }
+    const changes = this.properties.ctx.stateChanges(
+      this.properties.account,
+      this.properties.stateVar,
+      this.properties.indices,
+    );
+    for (let i = 0; i < changes.all.length; i++) {
+      this.changes.push(this.unmarshalState(changes.all[i]));
     }
   }
 
@@ -42,7 +33,7 @@ export abstract class StateChange<T> {
     return this.changes.length > 0 ? this.changes[0].value : null;
   }
 
-  public all(): Array<State<T>> | null {
+  public all(): Array<State<T>> {
     return this.changes;
   }
 
@@ -53,30 +44,33 @@ export abstract class StateChange<T> {
   public abstract unmarshalState(raw: EthStateChange): State<T>;
 }
 
+export class StateChangeProperties {
+  constructor(
+    readonly ctx: TraceContext,
+    readonly account: string,
+    readonly stateVar: string,
+    readonly indices: Uint8Array[] = [],
+  ) {}
+}
+
 export abstract class StateKey<K> {
-  readonly account: string;
-  readonly stateVar: string;
-  readonly prefixes: Uint8Array[];
-  readonly ctx: TraceCtx;
-  readonly children: Uint8Array[];
+  protected readonly __children__: Uint8Array[];
 
-  protected constructor(
-    ctx: TraceCtx,
-    account: string,
-    stateVar: string,
-    prefixes: Uint8Array[] = [],
-  ) {
-    this.ctx = ctx;
-    this.account = account;
-    this.stateVar = stateVar;
-    this.prefixes = prefixes;
-
-    const children = ctx.getStateChangeIndices(account, stateVar, prefixes);
+  protected constructor(protected readonly __properties__: StateChangeProperties) {
+    const children = __properties__.ctx.stateChangeIndices(
+      __properties__.account,
+      __properties__.stateVar,
+      __properties__.indices || [],
+    );
     if (children == null) {
-      this.children = [];
+      this.__children__ = [];
     } else {
-      this.children = children.indices;
+      this.__children__ = children.indices;
     }
+  }
+
+  get childrenCount(): u64 {
+    return this.__children__.length;
   }
 
   protected abstract parseKey(key: K): Uint8Array;

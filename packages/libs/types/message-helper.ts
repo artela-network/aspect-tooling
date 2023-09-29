@@ -7,6 +7,8 @@ import {
   EthBlockAspect,
   EthTxAspect,
   EthTransaction,
+  SateChangeQuery,
+  CallStackQuery,
 } from '../proto';
 import { Writer } from 'as-proto/assembly/Writer';
 
@@ -100,4 +102,6 @@ export class MessageUrlType {
   static IntData: string = 'aspect.v2.IntData';
   static BoolData: string = 'aspect.v2.BoolData';
   static BytesData: string = 'aspect.v2.BytesData';
+  static SateChangeQuery: string = 'aspect.v2.SateChangeQuery';
+  static CallStackQuery: string = 'aspect.v2.CallStackQuery';
 }

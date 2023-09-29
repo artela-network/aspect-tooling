@@ -1,8 +1,8 @@
 export {
-  Scheduler,
+  Schedule,
   PeriodicSchedule,
   AdHocSchedule,
   ScheduleTx,
-  Opts,
+  ScheduleOpts,
   ScheduleManager,
 } from './scheduler/schedule-service';

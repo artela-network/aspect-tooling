@@ -13,7 +13,11 @@ declare namespace __StateDbApi__ {
 }
 
 export class StateContext {
-  public getBalance(addr: string): string {
+  private static _instance: StateContext | null;
+
+  private constructor() {}
+
+  public balance(addr: string): string {
     const input = new AString();
     input.set(addr);
     const inPtr = input.store();
@@ -23,7 +27,7 @@ export class StateContext {
     return output.get();
   }
 
-  public getState(addr: string, hash: string): string {
+  public stateAt(addr: string, hash: string): string {
     const input = new AString();
     input.set(addr);
     const inPtr = input.store();
@@ -38,14 +42,14 @@ export class StateContext {
     return output.get();
   }
 
-  public getRefund(): i64 {
+  public refund(): i64 {
     const outPtr = __StateDbApi__.getRefund();
     const output = new AI64();
     output.load(outPtr);
     return output.get();
   }
 
-  public getCodeHash(addr: string): string {
+  public codeHash(addr: string): string {
     const input = new AString();
     input.set(addr);
     const inPtr = input.store();
@@ -56,7 +60,7 @@ export class StateContext {
     return output.get();
   }
 
-  public getNonce(addr: string): i64 {
+  public nonce(addr: string): i64 {
     const input = new AString();
     input.set(addr);
     const inPtr = input.store();
@@ -65,5 +69,12 @@ export class StateContext {
     const output = new AI64();
     output.load(outPtr);
     return output.get();
+  }
+
+  public static get(): StateContext {
+    if (!this._instance) {
+      this._instance = new StateContext();
+    }
+    return this._instance!;
   }
 }

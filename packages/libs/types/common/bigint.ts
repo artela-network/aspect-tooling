@@ -37,23 +37,14 @@ export class BigInt {
    */
   static from<T>(val: T): BigInt {
     if (val instanceof BigInt) return val;
-    // @ts-ignore
     if (val instanceof string) return BigInt.fromString(val);
-    // @ts-ignore
     if (val instanceof i8) return BigInt.fromInt16(<i16>val);
-    // @ts-ignore
     if (val instanceof u8) return BigInt.fromUInt16(<u16>val);
-    // @ts-ignore
     if (val instanceof i16) return BigInt.fromInt16(val);
-    // @ts-ignore
     if (val instanceof u16) return BigInt.fromUInt16(val);
-    // @ts-ignore
     if (val instanceof i32) return BigInt.fromInt32(val);
-    // @ts-ignore
     if (val instanceof u32) return BigInt.fromUInt32(val);
-    // @ts-ignore
     if (val instanceof i64) return BigInt.fromInt64(val);
-    // @ts-ignore
     if (val instanceof u64) return BigInt.fromUInt64(val);
 
     throw new TypeError('Unsupported generic type ' + nameof<T>(val));
@@ -64,7 +55,7 @@ export class BigInt {
       throw new RangeError('BigInt only reads strings of radix 2 through 16');
     }
     let i: i32 = 0;
-    let isNegative: boolean = false;
+    let isNegative = false;
     if (bigInteger.charAt(0) == '-') {
       i++;
       isNegative = true;
@@ -103,7 +94,7 @@ export class BigInt {
   static fromUInt16(val: u16): BigInt {
     const res = new BigInt(BigInt.precision, false);
     res.d[0] = (<u32>val) & BigInt.digitMask;
-    res.n = res.d[0] != 0 ? 1 : 0;
+    res.n = res.d[0] == 0 ? 0 : 1;
     return res;
   }
 
@@ -136,7 +127,7 @@ export class BigInt {
     const res = new BigInt(BigInt.precision, isNeg);
     const unsignedDigit: u16 = <u16>(isNeg ? -1 * val : val);
     res.d[0] = (<u32>unsignedDigit) & BigInt.digitMask;
-    res.n = res.d[0] != 0 ? 1 : 0;
+    res.n = res.d[0] == 0 ? 0 : 1;
     return res;
   }
 
@@ -361,13 +352,14 @@ export class BigInt {
     // opposite signs
     if (this.isNeg && !other.isNeg) {
       return -1;
-    } else if (!this.isNeg && other.isNeg) {
-      return 1;
-    } else if (this.isNeg) {
-      return other.magCompareTo(this);
-    } else {
-      return this.magCompareTo(other);
     }
+    if (!this.isNeg && other.isNeg) {
+      return 1;
+    }
+    if (this.isNeg) {
+      return other.magCompareTo(this);
+    }
+    return this.magCompareTo(other);
   }
 
   magCompareTo(other: BigInt): i32 {
@@ -376,7 +368,7 @@ export class BigInt {
     for (let i = this.n - 1; i >= 0; i--) {
       if (this.d[i] != other.d[i]) {
         if (this.d[i] < other.d[i]) return -1;
-        else return 1;
+        return 1;
       }
     }
     return 0;
@@ -389,11 +381,11 @@ export class BigInt {
     const addend: BigInt = BigInt.from(other);
     if (this.isNeg == addend.isNeg) {
       return this._add(addend, this.isNeg);
-    } else if (this.magCompareTo(addend) < 0) {
-      return addend._sub(this, addend.isNeg);
-    } else {
-      return this._sub(addend, this.isNeg);
     }
+    if (this.magCompareTo(addend) < 0) {
+      return addend._sub(this, addend.isNeg);
+    }
+    return this._sub(addend, this.isNeg);
   }
 
   // signed subtraction
@@ -401,11 +393,11 @@ export class BigInt {
     const subtrahend: BigInt = BigInt.from(other);
     if (this.isNeg != subtrahend.isNeg) {
       return this._add(subtrahend, this.isNeg);
-    } else if (this.magCompareTo(subtrahend) >= 0) {
-      return this._sub(subtrahend, this.isNeg);
-    } else {
-      return subtrahend._sub(this, !this.isNeg);
     }
+    if (this.magCompareTo(subtrahend) >= 0) {
+      return this._sub(subtrahend, this.isNeg);
+    }
+    return subtrahend._sub(this, !this.isNeg);
   }
 
   // unsigned addition
@@ -692,11 +684,10 @@ export class BigInt {
       const mask: u32 = <u32>((1 << remK) - 1);
       if ((this.d[digitShift] & mask) != 0) {
         return true;
-      } else {
-        for (let i = 0; i < digitShift; i++) {
-          if (this.d[i] != 0) {
-            return true;
-          }
+      }
+      for (let i = 0; i < digitShift; i++) {
+        if (this.d[i] != 0) {
+          return true;
         }
       }
     }
@@ -783,9 +774,7 @@ export class BigInt {
 
   pow<T>(val: T): BigInt {
     if (val instanceof BigInt) return this._powBigint(val);
-    // @ts-ignore
-    if (val instanceof string) return this._powBigInt(BigInt.from(val));
-    // @ts-ignore
+    if (val instanceof string) return this._powBigint(BigInt.from(val));
     if (isInteger(val)) return this._powInt(val);
     throw new TypeError('Unsupported generic type ' + nameof<T>(val));
   }
@@ -945,7 +934,6 @@ export class BigInt {
 
   log<T>(base: T): BigInt {
     if (base instanceof BigInt) return this._logBigint(base);
-    // @ts-ignore
     if (isInteger(base) || isFloat(base)) return this._logNumber(base);
     throw new TypeError('Unsupported generic type ' + nameof<T>(base));
   }
@@ -1072,7 +1060,8 @@ export class BigInt {
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
       return BigInt.fromUInt16(0);
-    } else if (cmp == 0) {
+    }
+    if (cmp == 0) {
       const q = BigInt.fromUInt16(1);
       q.isNeg = this.isNeg != other.isNeg;
       return q;
@@ -1091,7 +1080,8 @@ export class BigInt {
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
       return this.copy();
-    } else if (cmp == 0) {
+    }
+    if (cmp == 0) {
       return BigInt.fromUInt16(0);
     }
     const res: BigInt[] = this._divCore(other);
@@ -1109,7 +1099,8 @@ export class BigInt {
     const cmp: i32 = this.magCompareTo(other);
     if (cmp < 0) {
       return [BigInt.fromUInt16(0), this.copy()];
-    } else if (cmp == 0) {
+    }
+    if (cmp == 0) {
       const q = BigInt.fromUInt16(1);
       q.isNeg = this.isNeg != other.isNeg;
       return [q, BigInt.fromUInt16(0)];
@@ -1170,7 +1161,7 @@ export class BigInt {
   }
 
   mulInt(b: u32): BigInt {
-    if (b > 268435456) {
+    if (b > 268_435_456) {
       return this.mul(BigInt.fromUInt32(b));
     }
     const res = BigInt.fromDigits(this.d, this.isNeg, this.n, this.n + 1);
@@ -1188,7 +1179,7 @@ export class BigInt {
 
   // MUTATES
   private inplaceMulInt(b: u32): BigInt {
-    if (b > 268435456) {
+    if (b > 268_435_456) {
       return this.mul(BigInt.fromUInt32(b));
     }
     this.grow(this.n + 1);
@@ -1339,7 +1330,8 @@ export class BigInt {
     let b: BigInt = BigInt.from(other);
     if (!a.isNeg && !b.isNeg) {
       return BigInt._and(a, b);
-    } else if (a.isNeg && b.isNeg) {
+    }
+    if (a.isNeg && b.isNeg) {
       // (-x) & (-y) == ~(x-1) & ~(y-1) == ~((x-1) | (y-1))
       // == -(((x-1) | (y-1)) + 1)
       const a1 = a._subOne(false);
@@ -1363,23 +1355,24 @@ export class BigInt {
     let b: BigInt = BigInt.from(other);
     if (!a.isNeg && !b.isNeg) {
       return BigInt._or(a, b);
-    } else if (a.isNeg && b.isNeg) {
+    }
+
+    if (a.isNeg && b.isNeg) {
       // (-x) | (-y) == ~(x-1) | ~(y-1) == ~((x-1) & (y-1))
       // == -(((x-1) & (y-1)) + 1)
       const a1: BigInt = a._subOne(false);
       const b1: BigInt = b._subOne(false);
       return BigInt._and(a1, b1)._addOne(true);
-    } else {
-      // Assume that 'a' is the positive BigInt
-      if (a.isNeg) {
-        const temp: BigInt = a;
-        a = b;
-        b = temp;
-      }
-      // x | (-y) == x | ~(y-1) == ~((y-1) &~ x) == -(((y-1) ~& x) + 1)
-      const b1: BigInt = b._subOne(false);
-      return b1._andNot(a)._addOne(true);
     }
+    // Assume that 'a' is the positive BigInt
+    if (a.isNeg) {
+      const temp: BigInt = a;
+      a = b;
+      b = temp;
+    }
+    // x | (-y) == x | ~(y-1) == ~((y-1) &~ x) == -(((y-1) ~& x) + 1)
+    const b1: BigInt = b._subOne(false);
+    return b1._andNot(a)._addOne(true);
   }
 
   bitwiseXor<T>(other: T): BigInt {
@@ -1388,22 +1381,22 @@ export class BigInt {
     let b: BigInt = BigInt.from(other);
     if (!a.isNeg && !b.isNeg) {
       return BigInt._xor(a, b);
-    } else if (a.isNeg && b.isNeg) {
+    }
+    if (a.isNeg && b.isNeg) {
       // (-x) ^ (-y) == ~(x-1) ^ ~(y-1) == (x-1) ^ (y-1)
       const a1: BigInt = a._subOne(false);
       const b1: BigInt = b._subOne(false);
       return BigInt._xor(a1, b1);
-    } else {
-      // Assume that 'a' is the positive BigInt
-      if (a.isNeg) {
-        const temp: BigInt = a;
-        a = b;
-        b = temp;
-      }
-      // x ^ (-y) == x ^ ~(y-1) == ~(x ^ (y-1)) == -((x ^ (y-1)) + 1)
-      const b1: BigInt = b._subOne(false);
-      return BigInt._xor(a, b1)._addOne(true);
     }
+    // Assume that 'a' is the positive BigInt
+    if (a.isNeg) {
+      const temp: BigInt = a;
+      a = b;
+      b = temp;
+    }
+    // x ^ (-y) == x ^ ~(y-1) == ~(x ^ (y-1)) == -((x ^ (y-1)) + 1)
+    const b1: BigInt = b._subOne(false);
+    return BigInt._xor(a, b1)._addOne(true);
   }
 
   // unsigned bitwise AND

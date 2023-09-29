@@ -1,14 +1,24 @@
-import { CryptoProvider, UtilityProvider } from '../../../system';
+import { crypto, utils } from '../../../system';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ethereum {
+  export function parseMethodSig(calldata: Uint8Array): string {
+    if (calldata.length < 4) {
+      return '';
+    }
+
+    return utils.uint8ArrayToHex(calldata.slice(0, 4));
+  }
+
+  export function computeMethodSig(method: string): string {
+    return utils.uint8ArrayToHex(crypto.keccak(utils.stringToUint8Array(method)).slice(0, 4));
+  }
+
   export function abiEncode(method: string, types: Type[]): string {
     let enc = '0x';
     if (method.length > 0) {
-      const methodSig = method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
-      enc += UtilityProvider.uint8ArrayToHex(
-        CryptoProvider.keccak(UtilityProvider.stringToUint8Array(methodSig)).slice(0, 4),
-      );
+      const methodWithArgTypes =
+        method + '(' + types.map((t: Type) => t.typeName()).join(',') + ')';
+      enc += computeMethodSig(methodWithArgTypes);
     }
 
     let inputOffset: u64 = 0;
@@ -91,8 +101,8 @@ export namespace ethereum {
       return hex;
     }
 
-    protected static calcPaddedLen(hex: string): i32 {
-      return ((((hex.length >> 1) + 31) >> 5) << 5) as i32
+    protected static calcPaddedLen(length: u64): i32 {
+      return ((((length >> 1) + 31) >> 5) << 5) as i32;
     }
 
     protected static fromHex(
@@ -138,7 +148,7 @@ export namespace ethereum {
       let res = '';
       for (let i = 0; i < this.length; ++i) {
         let hex = this[i].toString(16);
-        hex = hex.length % 2 != 0 ? '0' + hex : hex;
+        hex = hex.length % 2 == 0 ? hex : '0' + hex;
         res += hex;
       }
 
@@ -146,7 +156,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -185,9 +195,9 @@ export namespace ethereum {
   export class Bytes extends ByteArray {
     protected readonly contentLen: u64;
 
-    protected constructor(str: string) {
-      super(ByteArray.calcPaddedLen(str));
-      this.contentLen = str.length >> 1;
+    protected constructor(length: u64) {
+      super(ByteArray.calcPaddedLen(length));
+      this.contentLen = length >> 1;
     }
 
     /**
@@ -197,7 +207,11 @@ export namespace ethereum {
      */
     static fromHexString(str: string): Bytes {
       str = this.validateAndTrimHex(str);
-      return changetype<Bytes>(this.fromHex(str, new Bytes(str)));
+      return changetype<Bytes>(this.fromHex(str, new Bytes(str.length)));
+    }
+
+    static fromUint8Array(arr: Uint8Array): Bytes {
+      return changetype<Bytes>(this.fromBuffer(arr, new Bytes(arr.length << 1)));
     }
 
     encodeHex(): string {
@@ -205,7 +219,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -227,15 +241,20 @@ export namespace ethereum {
   }
 
   export class String extends Bytes {
-    static fromString(str: string): String {
-      str = this.validateAndTrimHex(str);
-      return changetype<String>(
-        this.fromBuffer(UtilityProvider.encodeStringUTF8(str), new ethereum.String(str)),
+    static fromString(str: string): ethereum.String {
+      return changetype<ethereum.String>(
+        this.fromBuffer(utils.encodeStringUTF8(str), new ethereum.String(str.length)),
       );
     }
 
-    static fromUTF16String(str: string): String {
+    static fromUTF16String(str: string): ethereum.String {
       return this.fromString(str);
+    }
+
+    static fromUint8Array(arr: Uint8Array): ethereum.String {
+      return changetype<ethereum.String>(
+        this.fromBuffer(arr, new ethereum.String(arr.length << 1)),
+      );
     }
 
     public typeName(): string {
@@ -275,6 +294,11 @@ export namespace ethereum {
 
       str = this.validateAndTrimHex(str);
       return changetype<BytesN>(this.fromHex(str, new BytesN(size)));
+    }
+
+    static fromUint8Array(arr: Uint8Array, size: u8 = 32): BytesN {
+      assert(size <= 32 && size > 0, 'invalid byte size');
+      return changetype<BytesN>(this.fromBuffer(arr, new BytesN(size)));
     }
 
     public typeName(): string {
@@ -324,9 +348,17 @@ export namespace ethereum {
       return this.fromHexStringWithBuffer(str, new ethereum.Number(signed, bitSize));
     }
 
+    static fromUint8Array(arr: Uint8Array, signed: boolean = false, bitSize: u16 = 256): Number {
+      return this.fromUint8ArrayWithBuffer(arr, new ethereum.Number(signed, bitSize));
+    }
+
     protected static fromHexStringWithBuffer(str: string, buffer: Number): Number {
       str = this.validateAndTrimHex(str);
       return changetype<Number>(this.fromHex(str, buffer, true));
+    }
+
+    protected static fromUint8ArrayWithBuffer(arr: Uint8Array, buffer: Number): Number {
+      return changetype<Number>(this.fromBuffer(arr, buffer, true));
     }
 
     static fromI8(x: i8, bitSize: u16 = 256): Number {
@@ -430,6 +462,10 @@ export namespace ethereum {
       return changetype<Uint>(super.fromHexStringWithBuffer(str, new Uint()));
     }
 
+    static fromUint8Array(arr: Uint8Array): Uint {
+      return changetype<Uint>(this.fromUint8ArrayWithBuffer(arr, new Uint()));
+    }
+
     public typeName(): string {
       return 'uint';
     }
@@ -463,6 +499,10 @@ export namespace ethereum {
   export class Int extends Number {
     static fromHexString(str: string): Int {
       return changetype<Int>(super.fromHexStringWithBuffer(str, new Int(true)));
+    }
+
+    static fromUint8Array(arr: Uint8Array): Int {
+      return changetype<Int>(this.fromUint8ArrayWithBuffer(arr, new Int()));
     }
 
     public typeName(): string {
@@ -506,6 +546,10 @@ export namespace ethereum {
       return changetype<Address>(this.fromHexStringWithBuffer(str, new Address()));
     }
 
+    static fromUint8Array(arr: Uint8Array): Address {
+      return changetype<Address>(this.fromUint8ArrayWithBuffer(arr, new Address()));
+    }
+
     typeName(): string {
       return 'address';
     }
@@ -528,6 +572,11 @@ export namespace ethereum {
 
     static fromBoolean(x: boolean): Boolean {
       return new ethereum.Boolean(x);
+    }
+
+    static fromUint8Array(arr: Uint8Array): Boolean {
+      assert(arr.length == 32, 'invalid boolean uint8 array data');
+      return new ethereum.Boolean(arr[31] == 1);
     }
 
     typeKind(): TypeId {
@@ -611,7 +660,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -723,7 +772,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return UtilityProvider.hexToUint8Array(this.encodeHex());
+      return utils.hexToUint8Array(this.encodeHex());
     }
   }
 }

@@ -3,19 +3,18 @@ import { AString } from './';
 import { IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx } from '../types';
 import {
   FilterTxCtx,
-  OnBlockInitializeCtx,
-  PreTxExecuteCtx,
-  PreContractCallCtx,
-  PostContractCallCtx,
-  PostTxExecuteCtx,
-  PostTxCommitCtx,
   OnBlockFinalizeCtx,
+  OnBlockInitializeCtx,
+  PostContractCallCtx,
+  PostTxCommitCtx,
+  PostTxExecuteCtx,
+  PreContractCallCtx,
+  PreTxExecuteCtx,
 } from '.';
 import { PointCutType } from './aspect-interface';
 import {
   DefAspectResponse,
   ErrAspectResponse,
-  LoadEthBlockAspect,
   LoadEthTransaction,
   LoadEthTxAspect,
   LoadInputString,
@@ -24,28 +23,22 @@ import {
   StoreAspectResponse,
   StoreOutputBool,
 } from './message-helper';
-import { Any, AspectResponse, BoolData, BytesData, EthInnerTransaction, RunResult } from '../proto';
+import { Any, AspectResponse, BoolData, BytesData, RunResult } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
 
 export class Entry {
-  blockAspect: IAspectBlock | null;
-  transactionAspect: IAspectTransaction | null;
-  operationAspect: IAspectOperation | null;
+  private readonly blockAspect: IAspectBlock | null;
+  private readonly transactionAspect: IAspectTransaction | null;
+  private readonly operationAspect: IAspectOperation | null;
 
   constructor(
     blockAspect: IAspectBlock | null,
     transactionAspect: IAspectTransaction | null,
     operationAspect: IAspectOperation | null,
   ) {
-    if (blockAspect != null) {
-      this.blockAspect = blockAspect;
-    }
-    if (transactionAspect != null) {
-      this.transactionAspect = transactionAspect;
-    }
-    if (operationAspect != null) {
-      this.operationAspect = operationAspect;
-    }
+    this.blockAspect = blockAspect;
+    this.transactionAspect = transactionAspect;
+    this.operationAspect = operationAspect;
   }
 
   public isBlockLevel(): i32 {
@@ -80,15 +73,12 @@ export class Entry {
 
     let out: AspectResponse;
     if (method == PointCutType.ON_TX_RECEIVE_METHOD) {
-      const arg = LoadEthTxAspect(argPtr);
-      const ctx = new FilterTxCtx(arg.tx);
+      const ctx = new FilterTxCtx();
       const isFilter = this.transactionAspect!.filterTx(ctx);
       const boolData = new BoolData(isFilter);
       out = NewDataResponse(true, 'success', MessageUrlType.BoolData, boolData, BoolData.encode);
     } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {
-      const arg = LoadEthTxAspect(argPtr);
-
-      const ctx = new PreTxExecuteCtx(arg.tx);
+      const ctx = new PreTxExecuteCtx();
       this.transactionAspect!.preTxExecute(ctx);
       out = DefAspectResponse();
     } else if (method == PointCutType.PRE_CONTRACT_CALL_METHOD) {
@@ -96,60 +86,48 @@ export class Entry {
       if (arg.currInnerTx == null) {
         out = ErrAspectResponse('currInnerTx is null');
       } else {
-        const ethInnerTransaction = new EthInnerTransaction(
-          arg.currInnerTx!.from,
-          arg.currInnerTx!.to,
-          arg.currInnerTx!.data,
-          arg.currInnerTx!.value,
-          arg.currInnerTx!.gas,
-        );
-
-        const ctx = new PreContractCallCtx(arg.tx, ethInnerTransaction);
-
+        const ctx = new PreContractCallCtx(arg.currInnerTx!);
         this.transactionAspect!.preContractCall(ctx);
-
         out = DefAspectResponse();
       }
     } else if (method == PointCutType.POST_CONTRACT_CALL_METHOD) {
       const arg = LoadEthTxAspect(argPtr);
-
-      const ctx = new PostContractCallCtx(arg.tx, arg.currInnerTx);
-      this.transactionAspect!.postContractCall(ctx);
-      out = DefAspectResponse();
+      if (arg.currInnerTx == null) {
+        out = ErrAspectResponse('currInnerTx is null');
+      } else {
+        const ctx = new PostContractCallCtx(arg.currInnerTx!);
+        this.transactionAspect!.postContractCall(ctx);
+        out = DefAspectResponse();
+      }
     } else if (method == PointCutType.POST_TX_EXECUTE_METHOD) {
-      const arg = LoadEthTxAspect(argPtr);
-
-      const ctx = new PostTxExecuteCtx(arg.tx);
+      const ctx = new PostTxExecuteCtx();
       this.transactionAspect!.postTxExecute(ctx);
       out = DefAspectResponse();
     } else if (method == PointCutType.ON_TX_COMMIT_METHOD) {
       const arg = LoadEthTxAspect(argPtr);
-
-      const ctx = new PostTxCommitCtx(arg.tx);
-      this.transactionAspect!.postTxCommit(ctx);
-      out = DefAspectResponse();
+      if (arg.tx == null) {
+        out = ErrAspectResponse('tx is null');
+      } else {
+        const ctx = new PostTxCommitCtx(arg.tx!);
+        this.transactionAspect!.postTxCommit(ctx);
+        out = DefAspectResponse();
+      }
     } else if (method == PointCutType.OPERATION_METHOD) {
       const arg = LoadEthTransaction(argPtr);
-      const ctx = new OperationCtx(arg);
-      const ret = this.operationAspect!.operation(ctx);
-      if (ret == null || ret.length == 0) {
-        out = ErrAspectResponse('operation fail');
-      } else {
-        const bytesData = new BytesData(ret);
-        const encodeData = Protobuf.encode(bytesData, BytesData.encode);
-        const any = new Any(MessageUrlType.BytesData, encodeData);
-        const runResult = new RunResult(true, 'success');
-        out = new AspectResponse(runResult, MessageUrlType.BytesData, any);
-      }
+      const ctx = new OperationCtx();
+      const ret = this.operationAspect!.operation(ctx, arg.input);
+      const bytesData = new BytesData(ret);
+      const encodeData = Protobuf.encode(bytesData, BytesData.encode);
+      const any = new Any(MessageUrlType.BytesData, encodeData);
+      const runResult = new RunResult(true, 'success');
+      out = new AspectResponse(runResult, MessageUrlType.BytesData, any);
     } else if (method == PointCutType.ON_BLOCK_INITIALIZE_METHOD) {
       // block level aspect
-      const block = LoadEthBlockAspect(argPtr);
-      const ctx = new OnBlockInitializeCtx(block.header);
+      const ctx = new OnBlockInitializeCtx();
       this.blockAspect!.onBlockInitialize(ctx);
       out = DefAspectResponse();
     } else if (method == PointCutType.ON_BLOCK_FINALIZE_METHOD) {
-      const block = LoadEthBlockAspect(argPtr);
-      const ctx = new OnBlockFinalizeCtx(block.header);
+      const ctx = new OnBlockFinalizeCtx();
       this.blockAspect!.onBlockFinalize(ctx);
       out = DefAspectResponse();
     } else {

@@ -1,4 +1,4 @@
-import { UtilityProvider } from '../../system';
+import { vm } from '../../system';
 
 export enum typeIndex {
   Empty = 0,
@@ -58,11 +58,11 @@ export class AString {
   }
 
   public store(): i32 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = vm.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
-    String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr);
+    String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr, true);
     // it's weird that it doesn't work in the following way:
     // | let encoded = String.UTF8.encode(this.body);
     // | store<ArrayBuffer>(bodyPtr, encoded);
@@ -74,7 +74,7 @@ export class AString {
 
   constructor(body: string = '') {
     this.body = body;
-    this.head = new header(typeIndex.TypeString, body.length);
+    this.head = new header(typeIndex.TypeString, String.UTF16.byteLength(body));
   }
 }
 
@@ -100,7 +100,7 @@ export class AUint8Array {
   }
 
   public store(): i32 {
-    let ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = vm.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     let bodyPtr = ptr + this.head.len();
     for (let i = 0; i < this.head.dataLen; i++) {
@@ -132,14 +132,14 @@ export class ABool {
   public load(ptr: i32): void {
     this.head = new header(0, 0);
     this.head.load(ptr);
-    let bodyPtr = ptr + this.head.len();
-    this.body = u8(i32.load8_u(bodyPtr)) == 0 ? false : true;
+    const bodyPtr = ptr + this.head.len();
+    this.body = u8(i32.load8_u(bodyPtr)) != 0;
   }
 
   public store(): i32 {
-    let ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = vm.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
-    let bodyPtr = ptr + this.head.len();
+    const bodyPtr = ptr + this.head.len();
     memory.fill(bodyPtr, this.body ? 1 : 0, 1);
     return ptr;
   }
@@ -171,7 +171,7 @@ export class AI32 {
   }
 
   public store(): i32 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = vm.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i32.store(bodyPtr, this.body);
@@ -205,7 +205,7 @@ export class AI64 {
   }
 
   public store(): i64 {
-    const ptr = UtilityProvider.alloc(this.head.dataLen + this.head.len());
+    const ptr = vm.alloc(this.head.dataLen + this.head.len());
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i64.store(bodyPtr, this.body);

@@ -20,12 +20,8 @@ declare namespace __CryptoApi__ {
   function ecRecover(dataPtr: i32): i32;
 }
 
-enum Hasher {
-  Keccak,
-}
-
-class Crypto {
-  public keccak(data: Uint8Array): Uint8Array {
+export namespace crypto {
+  export function keccak(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.keccak(dataPtr);
     const resRaw = new AUint8Array();
@@ -33,7 +29,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public sha256(data: Uint8Array): Uint8Array {
+  export function sha256(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.sha256(dataPtr);
     const resRaw = new AUint8Array();
@@ -41,7 +37,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public base64Encode(data: Uint8Array): string {
+  export function base64Encode(data: Uint8Array): string {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.base64Encode(dataPtr);
     const resRaw = new AString();
@@ -49,7 +45,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public base64Decode(data: string): Uint8Array {
+  export function base64Decode(data: string): Uint8Array {
     const dataPtr = new AString(data).store();
     const resPtr = __CryptoApi__.base64Decode(dataPtr);
     const resRaw = new AUint8Array();
@@ -57,7 +53,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public base58Encode(data: Uint8Array): string {
+  export function base58Encode(data: Uint8Array): string {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.base58Encode(dataPtr);
     const resRaw = new AString();
@@ -65,7 +61,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public base58Decode(data: string): Uint8Array {
+  export function base58Decode(data: string): Uint8Array {
     const dataPtr = new AString(data).store();
     const resPtr = __CryptoApi__.base58Decode(dataPtr);
     const resRaw = new AUint8Array();
@@ -73,7 +69,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public ripemd160(data: Uint8Array): Uint8Array {
+  export function ripemd160(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.ripemd160(dataPtr);
     const resRaw = new AUint8Array();
@@ -81,7 +77,7 @@ class Crypto {
     return resRaw.body;
   }
 
-  public ecRecover(data: Uint8Array): Uint8Array {
+  export function ecRecover(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.ecRecover(dataPtr);
     const resRaw = new AUint8Array();
@@ -89,5 +85,3 @@ class Crypto {
     return resRaw.body;
   }
 }
-
-export const CryptoProvider = new Crypto();

@@ -10,17 +10,17 @@ import {
   PreTxExecuteCtx,
 } from '.';
 
-export interface IAspectBlock {
+export interface AspectBase {
   isOwner(sender: string): bool;
+}
 
+export interface IAspectBlock extends AspectBase {
   onBlockInitialize(ctx: OnBlockInitializeCtx): void;
 
   onBlockFinalize(ctx: OnBlockFinalizeCtx): void;
 }
 
-export interface IAspectTransaction {
-  isOwner(sender: string): bool;
-
+export interface IAspectTransaction extends AspectBase {
   onContractBinding(contractAddr: string): bool;
 
   filterTx(ctx: FilterTxCtx): bool;
@@ -37,7 +37,7 @@ export interface IAspectTransaction {
 }
 
 export interface IAspectOperation {
-  operation(ctx: OperationCtx): Uint8Array | null;
+  operation(ctx: OperationCtx, data: Uint8Array): Uint8Array;
 }
 
 export class PointCutType {

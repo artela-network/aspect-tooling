@@ -1,5 +1,5 @@
 // The entry file of your WebAssembly module.
-export const  AspectTmpl=`
+export const AspectTmpl = `
 import {
     FilterTxCtx,
     IAspectBlock,
@@ -73,7 +73,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     preTxExecute(ctx: PreTxExecuteCtx): void {
-        //todo
+        // Implement me...
     }
 
     /**
@@ -83,7 +83,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     preContractCall(ctx: PreContractCallCtx): void {
-        //todo
+        // Implement me...
     }
 
     /**
@@ -93,7 +93,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     postContractCall(ctx: PostContractCallCtx): void {
-        //todo
+        // Implement me...
     }
 
 
@@ -104,7 +104,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     postTxExecute(ctx: PostTxExecuteCtx): void {
-        //todo
+        // Implement me...
     }
 
     /**
@@ -114,7 +114,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     postTxCommit(ctx: PostTxCommitCtx): void {
-        //todo
+        // Implement me...
     }
 
 
@@ -125,7 +125,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     onBlockFinalize(ctx: OnBlockFinalizeCtx): void {
-        //todo
+        // Implement me...
     }
 
 
@@ -136,7 +136,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @return result of Aspect execution
      */
     onBlockInitialize(ctx: OnBlockInitializeCtx): void {
-        //todo
+        // Implement me...
     }
 
 
@@ -146,9 +146,9 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @param ctx  tx input
      * @return result of operation execution
      */
-    operation(ctx: OperationCtx): Uint8Array | null {
-        //todo
-        return null
+    operation(ctx: OperationCtx): Uint8Array {
+        // Implement me...
+        return new Uint8Array(0);
     }
 }
-`
+`;

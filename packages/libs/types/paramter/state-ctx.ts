@@ -1,29 +1,38 @@
-import {EthTransaction} from '../../proto';
-import {StaticCaller} from '../../system';
-import {ScheduleManager} from "../../components";
+import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { BlockContext, EnvContext, TxContext } from '../../context';
 
-export class OperationCtx {
-    private _input: Uint8Array | null;
-    private _staticCaller: StaticCaller;
-    private _schedule: ScheduleManager;
+export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
+  private readonly _aspect: AspectContext;
+  private readonly _tx: TxContext;
+  private readonly _env: EnvContext;
+  private readonly _block: BlockContext;
 
-    constructor(tx: EthTransaction | null) {
-        if (tx != null) {
-            this._input = tx.input;
-        }
-        this._staticCaller = new StaticCaller();
-        this._schedule = new ScheduleManager();
-    }
+  constructor() {
+    this._aspect = AspectContext.get();
+    this._tx = TxContext.get();
+    this._env = EnvContext.get();
+    this._block = BlockContext.get();
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get tx(): TxContext {
+    return this._tx;
+  }
 
-    get input(): Uint8Array | null {
-        return this._input;
-    }
+  get aspect(): AspectContext {
+    return this._aspect;
+  }
 
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
+  get env(): EnvContext {
+    return this._env;
+  }
+
+  get block(): BlockContext {
+    return this._block;
+  }
+
+  __evmCallableImplemented(): void {}
+
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }

@@ -1,66 +1,62 @@
-import {EthBlockHeader} from '../../proto';
-import {StaticCaller} from '../../system';
-import {ScheduleManager} from '../../components';
-import {BlockContext} from '../../context';
+import { BlockContext, EnvContext } from '../../context';
+import { AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { ScheduleManager } from '../../components';
 
-export class OnBlockInitializeCtx {
-    private _blockHeader: EthBlockHeader | null;
-    private _staticCaller: StaticCaller;
-    private _blockContext: BlockContext;
-    private _schedule: ScheduleManager;
+export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
+  private readonly _blockContext: BlockContext;
+  private readonly _env: EnvContext;
+  private readonly _schedule: ScheduleManager;
 
-    constructor(blockHeader: EthBlockHeader | null) {
-        this._blockHeader = blockHeader;
-        this._staticCaller = new StaticCaller();
-        this._blockContext = new BlockContext();
-        this._schedule = new ScheduleManager();
-    }
+  constructor() {
+    this._blockContext = BlockContext.get();
+    this._env = EnvContext.get();
+    this._schedule = ScheduleManager.get();
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    get blockHeader(): EthBlockHeader | null {
-        return this._blockHeader;
-    }
+  get env(): EnvContext {
+    return this._env;
+  }
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get schedule(): ScheduleManager {
+    return this._schedule;
+  }
 
+  __evmCallableImplemented(): void {}
 
+  __modifiableAspectStateImplemented(): void {}
+
+  __readonlyAspectStateImplemented(): void {}
 }
 
-export class OnBlockFinalizeCtx {
-    private _blockHeader: EthBlockHeader | null;
-    private _schedule: ScheduleManager;
-    private _staticCaller: StaticCaller;
-    private _blockContext: BlockContext;
+export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
+  private readonly _blockContext: BlockContext;
+  private readonly _env: EnvContext;
+  private readonly _schedule: ScheduleManager;
 
-    constructor(blockHeader: EthBlockHeader | null) {
-        this._blockHeader = blockHeader;
-        this._schedule = new ScheduleManager();
-        this._staticCaller = new StaticCaller();
-        this._blockContext = new BlockContext();
-    }
+  constructor() {
+    this._blockContext = BlockContext.get();
+    this._env = EnvContext.get();
+    this._schedule = ScheduleManager.get();
+  }
 
-    get blockHeader(): EthBlockHeader | null {
-        return this._blockHeader;
-    }
+  get block(): BlockContext {
+    return this._blockContext;
+  }
 
-    get blockContext(): BlockContext {
-        return this._blockContext;
-    }
+  get env(): EnvContext {
+    return this._env;
+  }
+  get schedule(): ScheduleManager {
+    return this._schedule;
+  }
 
+  __evmCallableImplemented(): void {}
 
-    get schedule(): ScheduleManager {
-        return this._schedule;
-    }
+  __modifiableAspectStateImplemented(): void {}
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  __readonlyAspectStateImplemented(): void {}
 }

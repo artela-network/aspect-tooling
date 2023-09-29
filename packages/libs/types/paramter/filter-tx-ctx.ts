@@ -1,34 +1,31 @@
-import {EthTransaction} from '../../proto';
-import {AspectContext, StaticCaller} from '../../system';
-import {TxContext} from "../../context";
+import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { EnvContext, TxContext } from '../../context';
 
-export class FilterTxCtx {
-    private _tx: EthTransaction | null;
+export class FilterTxCtx implements AspectStateModifiableCtx, EvmCallableCtx {
+  private readonly _aspectContext: AspectContext;
+  private readonly _txContext: TxContext;
+  private readonly _env: EnvContext;
 
-    private _aspectContext: AspectContext;
-    private _staticCaller: StaticCaller;
-    private _txContext: TxContext;
+  constructor() {
+    this._aspectContext = AspectContext.get();
+    this._txContext = TxContext.get();
+    this._env = EnvContext.get();
+  }
 
-    constructor(tx: EthTransaction | null) {
-        this._tx = tx;
-        this._aspectContext = new AspectContext();
-        this._staticCaller = new StaticCaller();
-        this._txContext = new TxContext();
-    }
+  __readonlyAspectStateImplemented(): void {}
 
-    get staticCaller(): StaticCaller {
-        return this._staticCaller;
-    }
+  get tx(): TxContext {
+    return this._txContext;
+  }
 
-    get txContext(): TxContext {
-        return this._txContext;
-    }
+  get aspect(): AspectContext {
+    return this._aspectContext;
+  }
 
-    get tx(): EthTransaction {
-        return this._tx!;
-    }
+  get env(): EnvContext {
+    return this._env;
+  }
+  __evmCallableImplemented(): void {}
 
-    get aspectContext(): AspectContext {
-        return this._aspectContext;
-    }
+  __modifiableAspectStateImplemented(): void {}
 }
