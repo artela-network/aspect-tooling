@@ -129,9 +129,12 @@ export class AspectContext {
 }
 
 export class TransientStorageValue<T> implements MutableAspectValue<T> {
-  private val: T | null = null;
+  private val: T;
+  private loaded: boolean = false;
 
-  constructor(private readonly key: string, private readonly aspectId: string = '') {}
+  constructor(private readonly key: string, private readonly aspectId: string = '') {
+    this.val = utils.fromString<T>('');
+  }
 
   set<T>(value: T): bool {
     const dataStr = utils.toString(value);
@@ -142,17 +145,17 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
     const path = ContextKey.tx.context.property(this.key).toString();
     const response = RuntimeContext.get(path);
     if (response.result!.success) {
-      this.val = null;
-      return;
+      throw ErrLoadRuntimeCtxValue;
     }
 
     this.val = utils.fromString<T>(
       Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
     );
+    this.loaded = true;
   }
 
-  unwrap(): T | null {
-    if (this.val == null) {
+  unwrap(): T {
+    if (!this.loaded) {
       this.reload();
     }
 

@@ -12,7 +12,7 @@ export class AspectProperty {
   private static _instance: AspectProperty | null;
 
   private constructor() {}
-  public get<T>(key: string): T | null {
+  public get<T>(key: string): T {
     const sateChangeQuery = new StringData(key);
     const query = ToAny<StringData>(MessageUrlType.StringData, sateChangeQuery, StringData.encode);
     const outPtr = RuntimeContext.query(QueryNameSpace.QueryAspectProperty, query);
@@ -65,9 +65,12 @@ export class ImmutableAspectState {
 }
 
 export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
-  protected val: T | null = null;
+  protected val: T;
+  private loaded: boolean = false;
 
-  constructor(protected readonly key: string) {}
+  constructor(protected readonly key: string) {
+    this.val = utils.fromString<T>('');
+  }
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
@@ -79,10 +82,11 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
     const value = response.data!.value;
     const stringData = Protobuf.decode<StringData>(value, StringData.decode);
     this.val = utils.fromString<T>(stringData.data);
+    this.loaded = true;
   }
 
-  unwrap(): T | null {
-    if (this.val == null) {
+  unwrap(): T {
+    if (!this.loaded) {
       this.reload();
     }
 

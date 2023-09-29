@@ -155,21 +155,18 @@ export namespace utils {
     return valueStr;
   }
 
-  export function fromString<T>(value: string): T | null {
-    if (!value) {
-      return null;
-    }
-    if (idof<T>() == idof<string>()) return changetype<T>(value);
-    if (idof<T>() == idof<bool>()) return changetype<T>(value ? '1' : '0');
+  export function fromString<T>(value: string): T {
+    if (isBoolean<T>()) return changetype<T>(value ? '1' : '0');
+    if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 1) return u8.parse(value, 10) as T;
+    if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 1) return i8.parse(value, 10) as T;
+    if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 2) return u16.parse(value, 10) as T;
+    if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 2) return i16.parse(value, 10) as T;
+    if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 4) return u32.parse(value, 10) as T;
+    if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 4) return i32.parse(value, 10) as T;
+    if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 8) return u64.parse(value, 10) as T;
+    if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 8) return i64.parse(value, 10) as T;
     if (idof<T>() == idof<BigInt>()) return changetype<T>(BigInt.fromString(value));
-    if (idof<T>() == idof<i8>()) return changetype<T>(<i8>BigInt.fromString(value).toInt32());
-    if (idof<T>() == idof<u8>()) return changetype<T>(<u8>BigInt.fromString(value).toUInt32());
-    if (idof<T>() == idof<i16>()) return changetype<T>(<i16>BigInt.fromString(value).toInt32());
-    if (idof<T>() == idof<u16>()) return changetype<T>(<u16>BigInt.fromString(value).toUInt32());
-    if (idof<T>() == idof<i32>()) return changetype<T>(BigInt.fromString(value).toInt32());
-    if (idof<T>() == idof<u32>()) return changetype<T>(BigInt.fromString(value).toUInt32());
-    if (idof<T>() == idof<i64>()) return changetype<T>(<i64>BigInt.fromString(value).toInt64());
-    if (idof<T>() == idof<u64>()) return changetype<T>(<u64>BigInt.fromString(value).toUInt64());
+    if (idof<T>() == idof<string>()) return changetype<T>(value);
 
     throw ErrParseValueFail;
   }
