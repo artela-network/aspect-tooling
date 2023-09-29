@@ -122,7 +122,7 @@ abstract class BaseType implements ASTType {
   constructorFunc(stateVarName: string): string {
     return `
         constructor(ctx: TraceContext, addr: string, indices: Uint8Array[] = []) {
-            super({ctx, account: addr, stateVar: '${stateVarName}', indices});
+            super(new StateChangeProperties(ctx, addr, '${stateVarName}', indices));
         }
         `;
   }
