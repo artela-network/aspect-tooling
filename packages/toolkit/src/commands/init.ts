@@ -12,8 +12,8 @@ import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
-const toolVersion = '^0.0.35';
-const libVersion = '^0.0.19';
+const toolVersion = '^0.0.36';
+const libVersion = '^0.0.20';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';

@@ -146,7 +146,7 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
      * @param ctx  tx input
      * @return result of operation execution
      */
-    operation(ctx: OperationCtx): Uint8Array {
+    operation(ctx: OperationCtx, data: Uint8Array): Uint8Array{
         // Implement me...
         return new Uint8Array(0);
     }
