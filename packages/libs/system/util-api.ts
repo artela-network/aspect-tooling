@@ -156,7 +156,7 @@ export namespace utils {
   }
 
   export function fromString<T>(value: string): T {
-    if (isBoolean<T>()) return changetype<T>(value ? '1' : '0');
+    if (isBoolean<T>()) return changetype<T>(value == '1');
     if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 1) return u8.parse(value, 10) as T;
     if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 1) return i8.parse(value, 10) as T;
     if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 2) return u16.parse(value, 10) as T;

@@ -19,8 +19,11 @@ export class AspectProperty {
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
     }
-    const stringData = Protobuf.decode<StringData>(outPtr.data!.value, StringData.decode);
-    return utils.fromString<T>(stringData.data);
+    return utils.fromString<T>(
+      outPtr.data == null
+        ? ''
+        : Protobuf.decode<StringData>(outPtr.data!.value, StringData.decode).data,
+    );
   }
 
   public static get(): AspectProperty {
@@ -79,9 +82,11 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
-    const value = response.data!.value;
-    const stringData = Protobuf.decode<StringData>(value, StringData.decode);
-    this.val = utils.fromString<T>(stringData.data);
+    this.val = utils.fromString<T>(
+      response.data == null
+        ? ''
+        : Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
+    );
     this.loaded = true;
   }
 

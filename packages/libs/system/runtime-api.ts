@@ -149,7 +149,9 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
     }
 
     this.val = utils.fromString<T>(
-      Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
+      response.data == null
+        ? ''
+        : Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
     );
     this.loaded = true;
   }

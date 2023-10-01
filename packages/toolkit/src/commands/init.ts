@@ -12,8 +12,8 @@ import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
-const toolVersion = '^0.0.36';
-const libVersion = '^0.0.20';
+const toolVersion = '^0.0.37';
+const libVersion = '^0.0.21';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -126,7 +126,7 @@ export default class Init extends Command {
 
   ensureTsconfigJson(rootDir: string) {
     const tsconfigFile = path.join(rootDir, 'tsconfig.json');
-    const tsconfigBase = 'assemblyscript/std/assembly';
+    const tsconfigBase = 'assemblyscript/std/assembly.json';
 
     //  this.log("- Making sure that 'tsconfig.json' is set up...");
     if (fs.existsSync(tsconfigFile)) {
