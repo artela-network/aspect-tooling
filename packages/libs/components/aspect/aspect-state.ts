@@ -1,12 +1,11 @@
-import { MessageUrlType } from '../types';
-import { ImmutableAspectValue, MutableAspectValue } from './common';
-import { utils } from './util-api';
-import { RuntimeContext } from './runtime-api';
+import { ImmutableAspectValue, MutableAspectValue } from './aspect-state-interface';
 
-import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../proto';
-import { ErrUpdateAspectState, NewMessageError } from './errors';
-import { ToAny } from '../types/message-helper';
+import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../../proto';
+import {ErrUpdateAspectState, NewMessageError, MessageUtil, convertUtil} from '../../common';
 import { Protobuf } from 'as-proto/assembly';
+import {RuntimeContextApi} from "../../hostapi";
+const runtimeContext = RuntimeContextApi.instance();
+const messageUtil = MessageUtil.instance();
 
 export class AspectProperty {
   private static _instance: AspectProperty | null;
@@ -14,19 +13,19 @@ export class AspectProperty {
   private constructor() {}
   public get<T>(key: string): T {
     const sateChangeQuery = new StringData(key);
-    const query = ToAny<StringData>(MessageUrlType.StringData, sateChangeQuery, StringData.encode);
-    const outPtr = RuntimeContext.query(QueryNameSpace.QueryAspectProperty, query);
+    const query = messageUtil.ToAny<StringData>(messageUtil.StringData, sateChangeQuery, StringData.encode);
+    const outPtr =runtimeContext.query(QueryNameSpace.QueryAspectProperty, query);
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
     }
-    return utils.fromString<T>(
+    return  convertUtil.fromString<T>(
       outPtr.data == null
         ? ''
         : Protobuf.decode<StringData>(outPtr.data!.value, StringData.decode).data,
     );
   }
 
-  public static get(): AspectProperty {
+  public static instance(): AspectProperty {
     if (!this._instance) {
       this._instance = new AspectProperty();
     }
@@ -43,7 +42,7 @@ export class MutableAspectState {
     return new MutableStateValue<T>(key);
   }
 
-  public static get(): MutableAspectState {
+  public static instance(): MutableAspectState {
     if (!this._instance) {
       this._instance = new MutableAspectState();
     }
@@ -59,7 +58,7 @@ export class ImmutableAspectState {
     return new ImmutableStateValue<T>(key);
   }
 
-  public static get(): ImmutableAspectState {
+  public static instance(): ImmutableAspectState {
     if (!this._instance) {
       this._instance = new ImmutableAspectState();
     }
@@ -72,17 +71,17 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
   private loaded: boolean = false;
 
   constructor(protected readonly key: string) {
-    this.val = utils.fromString<T>('');
+    this.val = convertUtil.fromString<T>('');
   }
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
-    const query = ToAny<StringData>(MessageUrlType.StringData, sateChangeQuery, StringData.encode);
-    const response = RuntimeContext.query(QueryNameSpace.QueryAspectState, query);
+    const query = messageUtil.ToAny<StringData>(messageUtil.StringData, sateChangeQuery, StringData.encode);
+    const response = runtimeContext.query(QueryNameSpace.QueryAspectState, query);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
-    this.val = utils.fromString<T>(
+    this.val = convertUtil.fromString<T>(
       response.data == null
         ? ''
         : Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
@@ -101,18 +100,18 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
 
 export class MutableStateValue<T> extends ImmutableStateValue<T> implements MutableAspectValue<T> {
   set<T>(value: T): void {
-    const data = utils.toString<T>(value);
+    const data = convertUtil.toString<T>(value);
     if (this.key == '') {
       throw ErrUpdateAspectState;
     }
-    RuntimeContext.set(SetNameSpace.SetAspectState, this.key, data);
+    runtimeContext.set(SetNameSpace.SetAspectState, this.key, data);
   }
 
   delete(): void {
     const data = new StringData(this.key);
     const encode = Protobuf.encode(data, StringData.encode);
-    const any = new Any(MessageUrlType.StringData, encode);
+    const any = new Any(messageUtil.StringData, encode);
 
-    RuntimeContext.remove(RemoveNameSpace.RemoveAspectState, any);
+    runtimeContext.remove(RemoveNameSpace.RemoveAspectState, any);
   }
 }

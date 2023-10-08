@@ -1,42 +1,34 @@
 // The entry file of your WebAssembly module.
 
-import { IAspectBlock, OnBlockFinalizeCtx, OnBlockInitializeCtx } from '@artela/aspect-libs/types';
-import { UtilityProvider } from '@artela/aspect-libs/system';
-import { Entry } from '@artela/aspect-libs/types/aspect-entry';
+import { IAspectBlock, OnBlockFinalizeCtx, OnBlockInitializeCtx,sys,Entry } from '@artela/aspect-libs';
 
-function AssertTrue(cond: bool, msg: string): void {
-  if (!cond) {
-    UtilityProvider.revert(msg);
-  }
-}
+
 
 class AspectTest implements IAspectBlock {
-  onBlockInitialize(ctx: OnBlockInitializeCtx): void {
-    AssertTrue(ctx.blockHeader != null, 'onBlockInitialize blockHeader is empty');
-    AssertTrue(ctx.schedule != null, 'onBlockInitialize scheduleManager is empty');
-    AssertTrue(ctx.blockContext != null, 'onBlockInitialize blockContext is empty');
-    AssertTrue(ctx.staticCaller != null, 'onBlockInitialize staticCaller is empty');
-  }
+    onBlockInitialize(ctx: OnBlockInitializeCtx): void {
+        sys.vm.require(ctx.block != null, 'onBlockInitialize blockHeader is empty');
+        sys.vm.require(ctx.schedule != null, 'onBlockInitialize scheduleManager is empty');
+        sys.vm.require(ctx.env != null, 'onBlockInitialize blockContext is empty');
+    }
 
-  onBlockFinalize(ctx: OnBlockFinalizeCtx): void {
-    AssertTrue(ctx.blockHeader != null, 'onBlockFinalize blockHeader is empty');
-    AssertTrue(ctx.schedule != null, 'onBlockFinalize scheduleManager is empty');
-    AssertTrue(ctx.blockContext != null, 'onBlockFinalize blockContext is empty');
-    AssertTrue(ctx.staticCaller != null, 'onBlockFinalize staticCaller is empty');
-  }
+    onBlockFinalize(ctx: OnBlockFinalizeCtx): void {
+        sys.vm.require(ctx.block != null, 'onBlockInitialize blockHeader is empty');
+        sys.vm.require(ctx.schedule != null, 'onBlockInitialize scheduleManager is empty');
+        sys.vm.require(ctx.env != null, 'onBlockInitialize blockContext is empty');
+    }
 
-  isOwner(sender: string): bool {
-    AssertTrue(sender != null, 'isOwner sender is empty');
-    return true;
-  }
+    isOwner(sender: string): bool {
+        sys.vm.require(sender != null, 'isOwner sender is empty');
+        return true;
+    }
 }
 
 export function execute(methodPtr: i32, argPtr: i32): i32 {
-  const aspect = new AspectTest();
-  const entry = new Entry(aspect, null, null);
-  return entry.execute(methodPtr, argPtr);
+    const aspect = new AspectTest();
+    const entry = new Entry(aspect, null, null);
+    return entry.execute(methodPtr, argPtr);
 }
 
 export function allocate(size: i32): i32 {
-  return UtilityProvider.alloc(size);
+    return sys.vm.alloc(size);
 }

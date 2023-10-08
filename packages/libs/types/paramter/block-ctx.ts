@@ -1,5 +1,5 @@
-import { BlockContext, EnvContext } from '../../context';
-import { AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { BlockContext, EnvContext } from '../../components/context';
+import { AspectStateModifiableCtx, EvmCallableCtx } from '../../common';
 import { ScheduleManager } from '../../components';
 
 export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
@@ -8,9 +8,9 @@ export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiab
   private readonly _schedule: ScheduleManager;
 
   constructor() {
-    this._blockContext = BlockContext.get();
-    this._env = EnvContext.get();
-    this._schedule = ScheduleManager.get();
+    this._blockContext = BlockContext.instance();
+    this._env = EnvContext.instance();
+    this._schedule = ScheduleManager.instance();
   }
 
   get block(): BlockContext {
@@ -38,9 +38,9 @@ export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiable
   private readonly _schedule: ScheduleManager;
 
   constructor() {
-    this._blockContext = BlockContext.get();
-    this._env = EnvContext.get();
-    this._schedule = ScheduleManager.get();
+    this._blockContext = BlockContext.instance();
+    this._env = EnvContext.instance();
+    this._schedule = ScheduleManager.instance();
   }
 
   get block(): BlockContext {

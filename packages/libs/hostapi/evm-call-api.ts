@@ -1,11 +1,11 @@
+import { Protobuf } from 'as-proto/assembly';
+import { AUint8Array } from '../common';
 import {
   EthMessage,
   EthMessageCallResult,
   JitInherentRequest,
   JitInherentResponse,
 } from '../proto';
-import { Protobuf } from 'as-proto/assembly';
-import { AUint8Array } from '../types';
 
 declare namespace __EvmCallApi__ {
   function staticCall(request: i32): i32;
@@ -13,10 +13,17 @@ declare namespace __EvmCallApi__ {
   function jitCall(request: i32): i32;
 }
 
-export class StaticCaller {
-  private static _instance: StaticCaller | null;
+export class EvmCallApi {
+  private static _instance: EvmCallApi | null = null;
 
   private constructor() {}
+
+  public static instance(): EvmCallApi {
+    if (!this._instance) {
+      this._instance = new EvmCallApi();
+    }
+    return this._instance!;
+  }
 
   public staticCall(request: EthMessage): EthMessageCallResult {
     const encoded = Protobuf.encode(request, EthMessage.encode);
@@ -29,20 +36,7 @@ export class StaticCaller {
     return Protobuf.decode<EthMessageCallResult>(bytes.get(), EthMessageCallResult.decode);
   }
 
-  public static get(): StaticCaller {
-    if (!this._instance) {
-      this._instance = new StaticCaller();
-    }
-    return this._instance!;
-  }
-}
-
-export class JustInTimeCaller {
-  private static _instance: JustInTimeCaller | null;
-
-  private constructor() {}
-
-  public submit(request: JitInherentRequest): JitInherentResponse {
+  public jitCall(request: JitInherentRequest): JitInherentResponse {
     const encoded = Protobuf.encode(request, JitInherentRequest.encode);
     const input = new AUint8Array();
     input.set(encoded);
@@ -51,12 +45,5 @@ export class JustInTimeCaller {
     const bytes = new AUint8Array();
     bytes.load(ret);
     return Protobuf.decode<JitInherentResponse>(bytes.get(), JitInherentResponse.decode);
-  }
-
-  public static get(): JustInTimeCaller {
-    if (!this._instance) {
-      this._instance = new JustInTimeCaller();
-    }
-    return this._instance!;
   }
 }

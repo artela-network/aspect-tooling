@@ -1,4 +1,4 @@
-import { utils } from './util-api';
+import { convertUtil } from './helper/convert';
 
 class Key {
   protected parts: string[] = new Array<string>();
@@ -138,7 +138,8 @@ class StateChangeVariableKey extends Key {
   indices(indices: Array<Uint8Array>): Key {
     const strIndices = new Array<string>();
     for (let i = 0; i < indices.length; i++) {
-      const uint8Array = utils.uint8ArrayToHex(indices[i]);
+      const uint8Array = convertUtil.uint8ArrayToHex(indices[i]);
+
       strIndices.push(uint8Array);
     }
     return new Key(strIndices.join('.'), this.parts);

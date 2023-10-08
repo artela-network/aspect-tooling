@@ -820,9 +820,9 @@ export class BigInt {
     const digitsNeeded: i32 = this.n + this.n + 1;
     if (digitsNeeded < BigInt.maxComba) {
       return this._squareComba();
-    } else {
-      return this._baseSquare();
     }
+      return this._baseSquare();
+
   }
 
   private _baseSquare(): BigInt {

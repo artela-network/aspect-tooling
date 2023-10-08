@@ -1,6 +1,7 @@
-import { BlockContext, EnvContext, EthReceiptContext } from '../../context';
+import { BlockContext, EnvContext, EthReceiptContext } from '../../components/context';
 import { EthTransaction } from '../../proto';
-import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
+import { AspectStateModifiableCtx, EvmCallableCtx } from '../../common';
+import {AspectContext} from "../../components/aspect";
 
 export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiableCtx {
   private readonly _tx: EthTransaction;
@@ -11,10 +12,10 @@ export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiableCtx
 
   constructor(tx: EthTransaction) {
     this._tx = tx;
-    this._aspectContext = AspectContext.get();
-    this._receipt = EthReceiptContext.get();
-    this._blockContext = BlockContext.get();
-    this._env = EnvContext.get();
+    this._aspectContext = AspectContext.instance();
+    this._receipt = EthReceiptContext.instance();
+    this._blockContext = BlockContext.instance();
+    this._env = EnvContext.instance();
   }
 
   get block(): BlockContext {

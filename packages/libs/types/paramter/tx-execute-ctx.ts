@@ -1,34 +1,31 @@
-import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
-import {
-  AspectContext,
-  AspectStateModifiableCtx,
-  EvmCallableCtx,
-  InherentCallableCtx,
-  StateContext,
-} from '../../system';
+import {BlockContext, EnvContext, TraceContext, TxContext} from '../../components/context';
+import {AspectStateModifiableCtx, EvmCallableCtx, InherentCallableCtx,} from '../../common';
+import {AspectContext} from "../../components/aspect";
+import {StateDbApi} from "../../hostapi";
+
 
 export class PreTxExecuteCtx
   implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiableCtx
 {
   private readonly _aspectContext: AspectContext;
-  private readonly _stateContext: StateContext;
+  private readonly _stateContext: StateDbApi;
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor() {
-    this._aspectContext = AspectContext.get();
-    this._stateContext = StateContext.get();
-    this._blockContext = BlockContext.get();
-    this._txContext = TxContext.get();
-    this._env = EnvContext.get();
+    this._aspectContext = AspectContext.instance();
+    this._stateContext = StateDbApi.instance();
+    this._blockContext = BlockContext.instance();
+    this._txContext = TxContext.instance();
+    this._env = EnvContext.instance();
   }
 
   get tx(): TxContext {
     return this._txContext;
   }
 
-  get stateDB(): StateContext {
+  get stateDB(): StateDbApi {
     return this._stateContext;
   }
 
@@ -57,26 +54,26 @@ export class PostTxExecuteCtx
   implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiableCtx
 {
   private readonly _aspectContext: AspectContext;
-  private readonly _stateContext: StateContext;
+  private readonly _stateContext: StateDbApi;
   private readonly _traceContext: TraceContext;
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor() {
-    this._aspectContext = AspectContext.get();
-    this._stateContext = StateContext.get();
-    this._traceContext = TraceContext.get();
-    this._blockContext = BlockContext.get();
-    this._txContext = TxContext.get();
-    this._env = EnvContext.get();
+    this._aspectContext = AspectContext.instance();
+    this._stateContext = StateDbApi.instance();
+    this._traceContext = TraceContext.instance();
+    this._blockContext = BlockContext.instance();
+    this._txContext = TxContext.instance();
+    this._env = EnvContext.instance();
   }
 
   get tx(): TxContext {
     return this._txContext;
   }
 
-  get stateDB(): StateContext {
+  get stateDB(): StateDbApi {
     return this._stateContext;
   }
 

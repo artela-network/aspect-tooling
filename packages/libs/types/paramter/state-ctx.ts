@@ -1,5 +1,6 @@
-import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
-import { BlockContext, EnvContext, TxContext } from '../../context';
+import {AspectStateModifiableCtx, EvmCallableCtx} from '../../common';
+import {BlockContext, EnvContext, TxContext} from '../../components/context';
+import {AspectContext} from "../../components/aspect";
 
 export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
   private readonly _aspect: AspectContext;
@@ -8,10 +9,10 @@ export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
   private readonly _block: BlockContext;
 
   constructor() {
-    this._aspect = AspectContext.get();
-    this._tx = TxContext.get();
-    this._env = EnvContext.get();
-    this._block = BlockContext.get();
+    this._aspect = AspectContext.instance();
+    this._tx = TxContext.instance();
+    this._env = EnvContext.instance();
+    this._block = BlockContext.instance();
   }
 
   get tx(): TxContext {

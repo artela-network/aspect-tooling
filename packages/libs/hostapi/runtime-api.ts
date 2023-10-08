@@ -1,3 +1,5 @@
+import { Protobuf } from 'as-proto/assembly';
+import { ABool, AString, AUint8Array, ErrLoadRuntimeCtxValue } from '../common';
 import {
   Any,
   ContextQueryRequest,
@@ -7,14 +9,7 @@ import {
   QueryNameSpace,
   RemoveNameSpace,
   SetNameSpace,
-  StringData,
 } from '../proto';
-import { ABool, AString, AUint8Array } from '../types';
-import { MutableAspectValue } from './common';
-import { Protobuf } from 'as-proto/assembly';
-import { ErrLoadRuntimeCtxValue } from './errors';
-import { utils } from './util-api';
-import { ContextKey } from './key-path';
 
 declare namespace __RuntimeContextApi__ {
   function get(query: i32): i32;
@@ -28,11 +23,19 @@ declare namespace __RuntimeContextApi__ {
   function aspectId(): i32;
 }
 
-export class RuntimeContext {
-  public static query(
-    nameSpace: QueryNameSpace = 0,
-    query: Any | null = null,
-  ): ContextQueryResponse {
+export class RuntimeContextApi {
+  private static _instance: RuntimeContextApi | null;
+
+  private constructor() {}
+
+  public static instance(): RuntimeContextApi {
+    if (!this._instance) {
+      this._instance = new RuntimeContextApi();
+    }
+    return this._instance!;
+  }
+
+  public query(nameSpace: QueryNameSpace = 0, query: Any | null = null): ContextQueryResponse {
     const contextQueryRequest = new ContextQueryRequest(nameSpace, query);
     const encoded = Protobuf.encode(contextQueryRequest, ContextQueryRequest.encode);
     const input = new AUint8Array();
@@ -47,7 +50,7 @@ export class RuntimeContext {
     return Protobuf.decode<ContextQueryResponse>(bytes.get(), ContextQueryResponse.decode);
   }
 
-  public static remove(nameSpace: RemoveNameSpace = 0, query: Any | null = null): bool {
+  public remove(nameSpace: RemoveNameSpace = 0, query: Any | null = null): bool {
     const contextQueryRequest = new ContextRemoveRequest(nameSpace, query);
     const encoded = Protobuf.encode(contextQueryRequest, ContextRemoveRequest.encode);
     const input = new AUint8Array();
@@ -62,7 +65,7 @@ export class RuntimeContext {
     return bytes.get();
   }
 
-  public static set(dataSpace: SetNameSpace, key: string, value: string): bool {
+  public set(dataSpace: SetNameSpace, key: string, value: string): bool {
     const contextQueryRequest = new ContextSetRequest(dataSpace, key, value);
     const encoded = Protobuf.encode(contextQueryRequest, ContextSetRequest.encode);
     const input = new AUint8Array();
@@ -77,7 +80,7 @@ export class RuntimeContext {
     return bytes.get();
   }
 
-  public static get(key: string): ContextQueryResponse {
+  public get(key: string): ContextQueryResponse {
     const inputKey = new AString();
     inputKey.set(key);
     const inPtr = inputKey.store();
@@ -90,7 +93,7 @@ export class RuntimeContext {
     return Protobuf.decode<ContextQueryResponse>(bytes.get(), ContextQueryResponse.decode);
   }
 
-  public static aspectId(): string {
+  public aspectId(): string {
     const ret = __RuntimeContextApi__.aspectId();
     if (ret == 0) {
       throw ErrLoadRuntimeCtxValue;
@@ -98,69 +101,5 @@ export class RuntimeContext {
     const bytes = new AString();
     bytes.load(ret);
     return bytes.get();
-  }
-}
-
-export class AspectContext {
-  private static _instance: AspectContext | null;
-
-  private constructor() {}
-
-  public transientStorage<T>(key: string, aspectId: string = ''): TransientStorageValue<T> {
-    return new TransientStorageValue(key, aspectId);
-  }
-
-  get id(): string {
-    const outPtr = __RuntimeContextApi__.aspectId();
-    if (outPtr == 0) {
-      throw ErrLoadRuntimeCtxValue;
-    }
-    const output = new AString();
-    output.load(outPtr);
-    return output.get();
-  }
-
-  public static get(): AspectContext {
-    if (!this._instance) {
-      this._instance = new AspectContext();
-    }
-    return this._instance!;
-  }
-}
-
-export class TransientStorageValue<T> implements MutableAspectValue<T> {
-  private val: T;
-  private loaded: boolean = false;
-
-  constructor(private readonly key: string, private readonly aspectId: string = '') {
-    this.val = utils.fromString<T>('');
-  }
-
-  set<T>(value: T): bool {
-    const dataStr = utils.toString(value);
-    return RuntimeContext.set(SetNameSpace.SetAspectContext, this.key, dataStr);
-  }
-
-  reload(): void {
-    const path = ContextKey.tx.context.property(this.key).toString();
-    const response = RuntimeContext.get(path);
-    if (response.result!.success) {
-      throw ErrLoadRuntimeCtxValue;
-    }
-
-    this.val = utils.fromString<T>(
-      response.data == null
-        ? ''
-        : Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
-    );
-    this.loaded = true;
-  }
-
-  unwrap(): T {
-    if (!this.loaded) {
-      this.reload();
-    }
-
-    return this.val;
   }
 }

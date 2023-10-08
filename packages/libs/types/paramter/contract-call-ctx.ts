@@ -1,29 +1,26 @@
-import { EthStackTransaction } from '../../proto';
-import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
-import {
-  AspectContext,
-  AspectStateModifiableCtx,
-  InherentCallableCtx,
-  StateContext,
-} from '../../system';
+import {EthStackTransaction} from '../../proto';
+import {BlockContext, EnvContext, TraceContext, TxContext} from '../../components/context';
+import {AspectStateModifiableCtx, InherentCallableCtx,} from '../../common';
+import {AspectContext} from "../../components/aspect";
+import {StateDbApi} from "../../hostapi";
 
 export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
   private readonly _innerTx: EthStackTransaction;
   private readonly _aspectContext: AspectContext;
   private readonly _blockContext: BlockContext;
-  private readonly _stateContext: StateContext;
+  private readonly _stateContext: StateDbApi;
   private readonly _traceContext: TraceContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor(innerTx: EthStackTransaction) {
     this._innerTx = innerTx;
-    this._aspectContext = AspectContext.get();
-    this._blockContext = BlockContext.get();
-    this._stateContext = StateContext.get();
-    this._traceContext = TraceContext.get();
-    this._txContext = TxContext.get();
-    this._env = EnvContext.get();
+    this._aspectContext = AspectContext.instance();
+    this._blockContext = BlockContext.instance();
+    this._stateContext = StateDbApi.instance();
+    this._traceContext = TraceContext.instance();
+    this._txContext = TxContext.instance();
+    this._env = EnvContext.instance();
   }
 
   get tx(): TxContext {
@@ -38,7 +35,7 @@ export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCal
     return this._innerTx;
   }
 
-  get stateDB(): StateContext {
+  get stateDB(): StateDbApi {
     return this._stateContext;
   }
 
@@ -62,12 +59,12 @@ export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCal
 }
 
 export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
-  private readonly _aspectContext: AspectContext = AspectContext.get();
-  private readonly _blockContext: BlockContext = BlockContext.get();
-  private readonly _stateContext: StateContext = StateContext.get();
-  private readonly _traceContext: TraceContext = TraceContext.get();
-  private readonly _txContext: TxContext = TxContext.get();
-  private readonly _env: EnvContext = EnvContext.get();
+  private readonly _aspectContext: AspectContext = AspectContext.instance();
+  private readonly _blockContext: BlockContext = BlockContext.instance();
+  private readonly _stateContext: StateDbApi = StateDbApi.instance();
+  private readonly _traceContext: TraceContext = TraceContext.instance();
+  private readonly _txContext: TxContext = TxContext.instance();
+  private readonly _env: EnvContext = EnvContext.instance();
 
   constructor(private readonly _currInnerTx: EthStackTransaction) {}
 
@@ -87,7 +84,7 @@ export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCa
     return this._aspectContext;
   }
 
-  get stateDB(): StateContext {
+  get stateDB(): StateDbApi {
     return this._stateContext;
   }
 

@@ -1,7 +1,9 @@
-import { EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice } from '../proto';
-import { Protobuf } from 'as-proto/assembly';
-import { ContextKey, ErrLoadRuntimeCtxValue, RuntimeContext } from '../system';
+import {EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice} from '../../proto';
+import {Protobuf} from 'as-proto/assembly';
+import {ContextKey, ErrLoadRuntimeCtxValue} from '../../common';
+import {RuntimeContextApi} from "../../hostapi";
 
+const runtimeContext = RuntimeContextApi.instance();
 export class BlockContext {
   private static _instance: BlockContext | null;
 
@@ -9,7 +11,7 @@ export class BlockContext {
 
   get header(): EthBlockHeader {
     const headerPath = ContextKey.block.header.toString();
-    const response = RuntimeContext.get(headerPath);
+    const response = runtimeContext.get(headerPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -18,7 +20,7 @@ export class BlockContext {
 
   get partialBody(): EthTxArray {
     const bodyPath = ContextKey.block.txs.toString();
-    const response = RuntimeContext.get(bodyPath);
+    const response = runtimeContext.get(bodyPath);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -27,7 +29,7 @@ export class BlockContext {
 
   get gasMeter(): GasMeter {
     const getKey = ContextKey.block.gasMeter.toString();
-    const response = RuntimeContext.get(getKey);
+    const response = runtimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -36,7 +38,7 @@ export class BlockContext {
 
   get minGasPrice(): MinGasPrice {
     const getKey = ContextKey.block.minGasPrice.toString();
-    const response = RuntimeContext.get(getKey);
+    const response = runtimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
@@ -45,14 +47,14 @@ export class BlockContext {
 
   get lastCommit(): LastCommitInfo {
     const getKey = ContextKey.block.lastCommit.toString();
-    const response = RuntimeContext.get(getKey);
+    const response = runtimeContext.get(getKey);
     if (!response.data || !response.data.value) {
       throw ErrLoadRuntimeCtxValue;
     }
     return Protobuf.decode<LastCommitInfo>(response.data.value, LastCommitInfo.decode);
   }
 
-  public static get(): BlockContext {
+  public static instance(): BlockContext {
     if (this._instance == null) {
       this._instance = new BlockContext();
     }

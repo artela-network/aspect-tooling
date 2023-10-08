@@ -1,13 +1,13 @@
-import { ScheduleMsg } from '../proto';
-import { ABool, AUint8Array } from '../types';
 import { Protobuf } from 'as-proto/assembly';
+import { ABool, AUint8Array } from '../common';
+import { ScheduleMsg } from '../proto';
 
 declare namespace __ScheduleApi__ {
   function submit(sch: i32): i32;
 }
 
-export class Scheduler {
-  private static _instance: Scheduler | null;
+export class ScheduleApi {
+  private static _instance: ScheduleApi | null;
 
   private constructor() {}
 
@@ -22,9 +22,9 @@ export class Scheduler {
     return output.get();
   }
 
-  public static get(): Scheduler {
+  public static instance(): ScheduleApi {
     if (!this._instance) {
-      this._instance = new Scheduler();
+      this._instance = new ScheduleApi();
     }
     return this._instance!;
   }

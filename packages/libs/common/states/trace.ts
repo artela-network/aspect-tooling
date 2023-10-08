@@ -1,5 +1,5 @@
 import { EthStateChange } from '../../proto';
-import { TraceContext } from '../../context';
+import { TraceContext } from '../../components/context';
 
 export class State<T> {
   readonly account: string;

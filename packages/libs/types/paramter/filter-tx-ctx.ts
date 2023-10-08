@@ -1,5 +1,7 @@
-import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
-import { EnvContext, TxContext } from '../../context';
+import {AspectStateModifiableCtx, EvmCallableCtx} from '../../common';
+import {EnvContext, TxContext} from '../../components/context';
+import {AspectContext} from "../../components/aspect";
+
 
 export class FilterTxCtx implements AspectStateModifiableCtx, EvmCallableCtx {
   private readonly _aspectContext: AspectContext;
@@ -7,9 +9,9 @@ export class FilterTxCtx implements AspectStateModifiableCtx, EvmCallableCtx {
   private readonly _env: EnvContext;
 
   constructor() {
-    this._aspectContext = AspectContext.get();
-    this._txContext = TxContext.get();
-    this._env = EnvContext.get();
+    this._aspectContext = AspectContext.instance();
+    this._txContext = TxContext.instance();
+    this._env = EnvContext.instance();
   }
 
   __readonlyAspectStateImplemented(): void {}

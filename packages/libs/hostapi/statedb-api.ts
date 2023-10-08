@@ -1,4 +1,4 @@
-import { AI64, AString } from '../types';
+import { AI64, AString } from '../common';
 
 declare namespace __StateDbApi__ {
   function getBalance(addr: i32): i32;
@@ -12,8 +12,8 @@ declare namespace __StateDbApi__ {
   function getNonce(addr: i32): i32;
 }
 
-export class StateContext {
-  private static _instance: StateContext | null;
+export class StateDbApi {
+  private static _instance: StateDbApi | null;
 
   private constructor() {}
 
@@ -71,9 +71,9 @@ export class StateContext {
     return output.get();
   }
 
-  public static get(): StateContext {
+  public static instance(): StateDbApi {
     if (!this._instance) {
-      this._instance = new StateContext();
+      this._instance = new StateDbApi();
     }
     return this._instance!;
   }
