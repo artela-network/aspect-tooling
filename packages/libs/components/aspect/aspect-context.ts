@@ -1,4 +1,4 @@
-import {ContextKey, ErrLoadRuntimeCtxValue, utils} from "../../common";
+import {ContextKey, ErrLoadRuntimeCtxValue,convertUtil as utils} from "../../common";
 import {MutableAspectValue} from "./aspect-state-interface";
 import {SetNameSpace, StringData} from "../../proto";
 import {Protobuf} from "as-proto/assembly";
