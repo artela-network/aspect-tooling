@@ -11,7 +11,8 @@ import {
   PostTxCommitCtx,
   PostTxExecuteCtx,
   PreContractCallCtx,
-  PreTxExecuteCtx, sys,
+  PreTxExecuteCtx,
+  sys,
 } from "@artela/aspect-libs";
 
 class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
@@ -48,7 +49,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
     let callCount = ctx.aspect.transientStorage<u64>(contextKey).unwrap();
     // If the call count large than 1, mark the transaction as failed.
     if (callCount > 1) {
-      vm.revert( "multiple inner tx calls");
+      sys.vm.revert("multiple inner tx calls");
     }
   }
 

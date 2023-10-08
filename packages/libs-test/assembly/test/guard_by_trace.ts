@@ -13,7 +13,7 @@ import {
     PreContractCallCtx,
     PreTxExecuteCtx, sys,
 } from "@artela/aspect-libs";
-import {HoneyPotState} from "./honeypot_storage";
+import {HoneyPotState} from "./honeypot-storage";
 
 class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
 
