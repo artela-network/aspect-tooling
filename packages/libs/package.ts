@@ -1,9 +1,8 @@
-
 import {CryptoApi, EvmCallApi, RuntimeContextApi, ScheduleApi, StateDbApi, UtilApi} from "./hostapi";
 import {AspectProperty, ImmutableAspectState, MutableAspectState} from "./components/aspect";
 import {EthMessage, EthMessageCallResult, JitInherentRequest, JitInherentResponse} from "./proto";
 import {BlockContext, EnvContext, EthReceiptContext, TraceContext, TxContext} from "./components/context";
-import {ContextKey, ethereum as Ethereum, MessageUtil, convertUtil as Utils} from "./common";
+import {ContextKey, convertUtil as Utils, ethereum as Ethereum, MessageUtil} from "./common";
 
 const util = UtilApi.instance();
 export namespace sys {
@@ -33,13 +32,17 @@ export namespace sys {
         export const ethereum = Ethereum;
 
     }
+    export const crypto = CryptoApi.instance();
+
     export namespace hostApi {
-        export const crypto = CryptoApi.instance();
+
         export const evmCall = EvmCallApi.instance();
         export const runtimeContext = RuntimeContextApi.instance();
         export const schedule = ScheduleApi.instance();
-        export const stateDb = StateDbApi.instance();
-        export const util = UtilApi.instance();
+
+        // export const crypto = CryptoApi.instance();
+        // export const stateDb = StateDbApi.instance();
+        // export const util = UtilApi.instance();
     }
     export namespace aspect {
         export const readonlyState = ImmutableAspectState.instance();
