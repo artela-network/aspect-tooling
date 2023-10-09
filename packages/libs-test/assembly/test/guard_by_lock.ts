@@ -57,6 +57,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
     }
 
     postContractCall(ctx: PostContractCallCtx): void {
+
         // 1.Get reentrant lock key of current contract.
         const curContract = ctx.currentCall.to.toString();
         const reentKey = this._CONTEXT_KEY.replace("{InnerTxToAddr}", curContract);

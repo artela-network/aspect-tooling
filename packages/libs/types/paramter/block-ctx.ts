@@ -1,8 +1,8 @@
 import { BlockContext, EnvContext } from '../../components/context';
-import { AspectStateModifiableCtx, EvmCallableCtx } from '../../common';
+import { AspectStateModifiable, EvmCallableCtx } from '../../common';
 import { ScheduleManager } from '../../components';
 
-export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
+export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiable {
   private readonly _blockContext: BlockContext;
   private readonly _env: EnvContext;
   private readonly _schedule: ScheduleManager;
@@ -32,7 +32,7 @@ export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiab
   __readonlyAspectStateImplemented(): void {}
 }
 
-export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
+export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiable {
   private readonly _blockContext: BlockContext;
   private readonly _env: EnvContext;
   private readonly _schedule: ScheduleManager;

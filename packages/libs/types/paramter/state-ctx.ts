@@ -1,8 +1,8 @@
-import {AspectStateModifiableCtx, EvmCallableCtx} from '../../common';
+import {AspectStateModifiable, EvmCallableCtx} from '../../common';
 import {BlockContext, EnvContext, TxContext} from '../../components/context';
 import {AspectContext} from "../../components/aspect";
 
-export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
+export class OperationCtx implements AspectStateModifiable, EvmCallableCtx {
   private readonly _aspect: AspectContext;
   private readonly _tx: TxContext;
   private readonly _env: EnvContext;

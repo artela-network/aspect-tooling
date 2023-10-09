@@ -1,9 +1,18 @@
-import { ImmutableAspectValue, MutableAspectValue } from './aspect-state-interface';
+import {ImmutableAspectValue, MutableAspectValue} from './aspect-state-interface';
 
-import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../../proto';
-import {ErrUpdateAspectState, NewMessageError, MessageUtil, convertUtil} from '../../common';
-import { Protobuf } from 'as-proto/assembly';
+import {Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData} from '../../proto';
+import {
+  AspectStateModifiable,
+  AspectStateReadonly,
+  convertUtil,
+  ErrUpdateAspectState,
+  MessageUtil,
+  NewMessageError,
+  NotAuthorizedFail
+} from '../../common';
+import {Protobuf} from 'as-proto/assembly';
 import {RuntimeContextApi} from "../../hostapi";
+
 const runtimeContext = RuntimeContextApi.instance();
 const messageUtil = MessageUtil.instance();
 
@@ -42,7 +51,10 @@ export class MutableAspectState {
     return new MutableStateValue<T>(key);
   }
 
-  public static instance(): MutableAspectState {
+  public static instance(ctx: AspectStateModifiable): MutableAspectState {
+    if (ctx == null) {
+      throw NotAuthorizedFail;
+    }
     if (!this._instance) {
       this._instance = new MutableAspectState();
     }
@@ -58,7 +70,10 @@ export class ImmutableAspectState {
     return new ImmutableStateValue<T>(key);
   }
 
-  public static instance(): ImmutableAspectState {
+  public static instance(ctx: AspectStateReadonly): ImmutableAspectState {
+    if (ctx == null) {
+      throw NotAuthorizedFail;
+    }
     if (!this._instance) {
       this._instance = new ImmutableAspectState();
     }

@@ -1,11 +1,19 @@
-import { convertUtil } from './helper/convert';
+import {convertUtil} from './helper/convert';
+import {ErrLoadRuntimeCtxValue} from "./errors";
+import {RuntimeContextApi} from "../hostapi";
 
-class Key {
+export interface ResultUnwrap<T> {
+  decode(u: Uint8Array): T
+}
+
+export class Key<T> {
   protected parts: string[] = new Array<string>();
+  protected resultUnwrap: ResultUnwrap<T>|null;
 
-  protected constructor(key: string, prefixes: Array<string> = []) {
+  protected constructor(key: string, prefixes: Array<string> = [], convert: ResultUnwrap<T>|null=null) {
     this.addAll(prefixes);
     this.add(key);
+    this.resultUnwrap = convert;
   }
 
   protected addAll(key: string[]): void {
@@ -18,6 +26,14 @@ class Key {
     this.parts.push(key);
   }
 
+  public unwrap(): T {
+    const runtimeContext = RuntimeContextApi.instance();
+    const response = runtimeContext.get(this.toString());
+    if (!response.data || !response.data.value) {
+      throw ErrLoadRuntimeCtxValue;
+    }
+    return this.resultUnwrap!.decode(response.data.value)
+  }
   public toString(): string {
     if (this.parts.length == 0) {
       return '';
@@ -26,33 +42,8 @@ class Key {
   }
 }
 
-class BlockKey extends Key {
-  constructor() {
-    super('block');
-  }
 
-  get header(): Key {
-    return new Key('header', this.parts);
-  }
-
-  get txs(): Key {
-    return new Key('txs', this.parts);
-  }
-
-  get gasMeter(): Key {
-    return new Key('gasMeter', this.parts);
-  }
-
-  get minGasPrice(): Key {
-    return new Key('minGasPrice', this.parts);
-  }
-
-  get lastCommit(): Key {
-    return new Key('lastCommit', this.parts);
-  }
-}
-
-class EnvKey extends Key {
+class EnvKey extends Key<any> {
   constructor() {
     super('env');
   }
@@ -157,16 +148,16 @@ class MappingKey extends Key {
   }
 }
 
-export class ContextKey {
-  static get block(): BlockKey {
-    return new BlockKey();
-  }
-
-  static get tx(): TxKey {
-    return new TxKey();
-  }
-
-  static get env(): EnvKey {
-    return new EnvKey();
-  }
-}
+// export class ContextKey {
+//   static get block(): BlockKey {
+//     return new BlockKey();
+//   }
+//
+//   static get tx(): TxKey {
+//     return new TxKey();
+//   }
+//
+//   static get env(): EnvKey {
+//     return new EnvKey();
+//   }
+// }

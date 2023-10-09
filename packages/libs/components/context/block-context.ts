@@ -2,6 +2,7 @@ import {EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice} from 
 import {Protobuf} from 'as-proto/assembly';
 import {ContextKey, ErrLoadRuntimeCtxValue} from '../../common';
 import {RuntimeContextApi} from "../../hostapi";
+import {BlockKey} from "../../common/key-block";
 
 const runtimeContext = RuntimeContextApi.instance();
 export class BlockContext {
@@ -9,14 +10,17 @@ export class BlockContext {
 
   private constructor() {}
 
-  get header(): EthBlockHeader {
-    const headerPath = ContextKey.block.header.toString();
-    const response = runtimeContext.get(headerPath);
-    if (!response.data || !response.data.value) {
-      throw ErrLoadRuntimeCtxValue;
-    }
-    return Protobuf.decode<EthBlockHeader>(response.data.value, EthBlockHeader.decode);
-  }
+  public  header= new BlockKey().header
+
+
+  // get header(): EthBlockHeader {
+  //   const headerPath = ContextKey.block.header.toString();
+  //   const response = runtimeContext.get(headerPath);
+  //   if (!response.data || !response.data.value) {
+  //     throw ErrLoadRuntimeCtxValue;
+  //   }
+  //   return Protobuf.decode<EthBlockHeader>(response.data.value, EthBlockHeader.decode);
+  // }
 
   get partialBody(): EthTxArray {
     const bodyPath = ContextKey.block.txs.toString();
@@ -35,6 +39,7 @@ export class BlockContext {
     }
     return Protobuf.decode<GasMeter>(response.data.value, GasMeter.decode);
   }
+
 
   get minGasPrice(): MinGasPrice {
     const getKey = ContextKey.block.minGasPrice.toString();

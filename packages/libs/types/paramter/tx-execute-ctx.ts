@@ -1,31 +1,53 @@
-import {BlockContext, EnvContext, TraceContext, TxContext} from '../../components/context';
-import {AspectStateModifiableCtx, EvmCallableCtx, InherentCallableCtx,} from '../../common';
-import {AspectContext} from "../../components/aspect";
-import {StateDbApi} from "../../hostapi";
-
+import {
+  AspectStateModifiable,
+  EvmCallableCtx,
+  InherentCallableCtx,
+  StateQueryAble,
+  StaticCallAble,
+} from '../../common';
+import {
+  AspectContext,
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  StateQuery,
+  StaticCaller,
+  TxContext
+} from "../../components";
 
 export class PreTxExecuteCtx
-  implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiableCtx
+    implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiable, StaticCallAble, StateQueryAble
 {
   private readonly _aspectContext: AspectContext;
-  private readonly _stateContext: StateDbApi;
+
+  private readonly _aspectProperty: AspectProperty;
+  private readonly _mutableAspectState: MutableAspectState
+  private readonly _staticCall: StaticCaller;
+  private readonly _stateContext: StateQuery;
+
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor() {
     this._aspectContext = AspectContext.instance();
-    this._stateContext = StateDbApi.instance();
+    this._aspectProperty = AspectProperty.instance();
+    this._mutableAspectState = MutableAspectState.instance(this);
+    this._staticCall = StaticCaller.instance(this);
+    this._stateContext = StateQuery.instance(this);
+
     this._blockContext = BlockContext.instance();
     this._txContext = TxContext.instance();
     this._env = EnvContext.instance();
   }
 
+
   get tx(): TxContext {
     return this._txContext;
   }
 
-  get stateDB(): StateDbApi {
+  get stateDB(): StateQuery {
     return this._stateContext;
   }
 
@@ -41,6 +63,23 @@ export class PreTxExecuteCtx
     return this._env;
   }
 
+  get property(): AspectProperty {
+    return this._aspectProperty;
+  }
+
+  get mutableState(): MutableAspectState {
+    return this._mutableAspectState;
+  }
+
+  get staticCall(): StaticCaller {
+    return this._staticCall;
+  }
+
+  __stateQueryableImplemented(): void {
+  }
+
+  __staticCallableImplemented(): void {
+  }
   __evmCallableImplemented(): void {}
 
   __inherentCallableImplemented(): void {}
@@ -51,34 +90,38 @@ export class PreTxExecuteCtx
 }
 
 export class PostTxExecuteCtx
-  implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiableCtx
+    implements EvmCallableCtx, InherentCallableCtx, AspectStateModifiable, StaticCallAble, StateQueryAble
 {
   private readonly _aspectContext: AspectContext;
-  private readonly _stateContext: StateDbApi;
-  private readonly _traceContext: TraceContext;
+
+  private readonly _aspectProperty: AspectProperty;
+  private readonly _mutableAspectState: MutableAspectState
+  private readonly _staticCall: StaticCaller;
+  private readonly _stateContext: StateQuery;
+
   private readonly _blockContext: BlockContext;
   private readonly _txContext: TxContext;
   private readonly _env: EnvContext;
 
   constructor() {
     this._aspectContext = AspectContext.instance();
-    this._stateContext = StateDbApi.instance();
-    this._traceContext = TraceContext.instance();
+    this._aspectProperty = AspectProperty.instance();
+    this._mutableAspectState = MutableAspectState.instance(this);
+    this._staticCall = StaticCaller.instance(this);
+    this._stateContext = StateQuery.instance(this);
+
     this._blockContext = BlockContext.instance();
     this._txContext = TxContext.instance();
     this._env = EnvContext.instance();
   }
 
+
   get tx(): TxContext {
     return this._txContext;
   }
 
-  get stateDB(): StateDbApi {
+  get stateDB(): StateQuery {
     return this._stateContext;
-  }
-
-  get trace(): TraceContext {
-    return this._traceContext;
   }
 
   get block(): BlockContext {
@@ -93,6 +136,23 @@ export class PostTxExecuteCtx
     return this._env;
   }
 
+  get property(): AspectProperty {
+    return this._aspectProperty;
+  }
+
+  get mutableState(): MutableAspectState {
+    return this._mutableAspectState;
+  }
+
+  get staticCall(): StaticCaller {
+    return this._staticCall;
+  }
+
+  __stateQueryableImplemented(): void {
+  }
+
+  __staticCallableImplemented(): void {
+  }
   __evmCallableImplemented(): void {}
 
   __inherentCallableImplemented(): void {}

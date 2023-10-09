@@ -6,12 +6,22 @@ export interface EvmCallableCtx {
 export interface InherentCallableCtx {
   __inherentCallableImplemented(): void;
 }
-export interface AspectStateModifiableCtx extends AspectStateReadonlyCtx {
+export interface AspectStateModifiable extends AspectStateReadonly {
   __modifiableAspectStateImplemented(): void;
 }
 
-export interface AspectStateReadonlyCtx {
+export interface AspectStateReadonly {
   __readonlyAspectStateImplemented(): void;
+}
+export interface StaticCallAble {
+  __staticCallableImplemented(): void;
+}
+export interface JustInTimeCallAble {
+  __justInTimeCallableImplemented(): void;
+}
+
+export interface StateQueryAble {
+  __stateQueryableImplemented(): void;
 }
 
 export interface TraceQuery {

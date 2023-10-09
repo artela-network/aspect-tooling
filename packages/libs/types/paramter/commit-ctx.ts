@@ -1,9 +1,9 @@
 import { BlockContext, EnvContext, EthReceiptContext } from '../../components/context';
 import { EthTransaction } from '../../proto';
-import { AspectStateModifiableCtx, EvmCallableCtx } from '../../common';
+import { AspectStateModifiable, EvmCallableCtx } from '../../common';
 import {AspectContext} from "../../components/aspect";
 
-export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiableCtx {
+export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiable {
   private readonly _tx: EthTransaction;
   private readonly _receipt: EthReceiptContext;
   private readonly _aspectContext: AspectContext;

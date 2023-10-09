@@ -14,67 +14,86 @@ import {
 
 class AspectTest implements IAspectTransaction {
     filterTx(ctx: FilterTxCtx): bool {
-        sys.vm.require(ctx.tx != null, 'FilterTxCtx tx is empty');
-        sys.vm.require(ctx.aspect != null, 'FilterTxCtx context is empty');
+        ctx.readonlyState.get<string>("k2")
+        sys.aspect.readonlyState(ctx).get<string>("k1")
+
+        ctx.staticCall.submit()
+        ctx.tx.nonce
+        ctx.property.get()
 
         return true;
     }
 
 
     isOwner(sender: string): bool {
-        sys.vm.require(sender != null, 'isOwner sender is empty');
+        sys.common.require(sender != null, 'isOwner sender is empty');
         return true;
     }
 
     onContractBinding(contractAddr: string): bool {
-        sys.vm.require(contractAddr != null, 'onContractBinding contractAddr is empty');
+        sys.common.require(contractAddr != null, 'onContractBinding contractAddr is empty');
         return true;
     }
 
 
 
     postTxCommit(ctx: PostTxCommitCtx): void {
-        sys.vm.require(ctx.tx != null, 'postTxCommit tx is empty');
-        sys.vm.require(ctx.receipt != null, 'postTxCommit receipt is empty');
-        sys.vm.require(ctx.aspect != null, 'postTxCommit context is empty');
-        sys.vm.require(ctx.block != null, 'postTxCommit staticCaller is empty');
-        sys.vm.require(ctx.env != null, 'postTxCommit evmTxContext is empty');
+
+        sys.common.require(ctx.tx != null, 'postTxCommit tx is empty');
+        sys.common.require(ctx.receipt != null, 'postTxCommit receipt is empty');
+        sys.common.require(ctx.aspect != null, 'postTxCommit context is empty');
+        sys.common.require(ctx.block != null, 'postTxCommit staticCaller is empty');
+        sys.common.require(ctx.env != null, 'postTxCommit evmTxContext is empty');
 
 
     }
 
     postTxExecute(ctx: PostTxExecuteCtx): void {
-        sys.vm.require(ctx.tx != null, 'PostTxExecuteCtx tx is empty');
-        sys.vm.require(ctx.aspect != null, 'PostTxExecuteCtx aspect is empty');
-        sys.vm.require(ctx.stateDB != null, 'PostTxExecuteCtx stateDB is empty');
-        sys.vm.require(ctx.trace != null, 'PostTxExecuteCtx trace is empty');
-        sys.vm.require(ctx.block != null, 'PostTxExecuteCtx block is empty');
-        sys.vm.require(ctx.env != null, 'PostTxExecuteCtx env is empty');
+        sys.common.require(ctx.tx != null, 'PostTxExecuteCtx tx is empty');
+        sys.common.require(ctx.aspect != null, 'PostTxExecuteCtx aspect is empty');
+        sys.common.require(ctx.stateDB != null, 'PostTxExecuteCtx stateDB is empty');
+        sys.common.require(ctx.trace != null, 'PostTxExecuteCtx trace is empty');
+        sys.common.require(ctx.block != null, 'PostTxExecuteCtx block is empty');
+        sys.common.require(ctx.env != null, 'PostTxExecuteCtx env is empty');
     }
 
     preContractCall(ctx: PreContractCallCtx): void {
-        sys.vm.require(ctx.tx != null, 'preContractCall tx is empty');
-        sys.vm.require(ctx.currentCall != null, 'preContractCall receipt is empty');
-        sys.vm.require(ctx.aspect != null, 'preContractCall context is empty');
-        sys.vm.require(ctx.block != null, 'preContractCall staticCaller is empty');
-        sys.vm.require(ctx.stateDB != null, 'preContractCall justInTimeCaller is empty');
-        sys.vm.require(ctx.trace != null, 'preContractCall justInTimeCaller is empty');
-        sys.vm.require(ctx.env != null, 'preContractCall justInTimeCaller is empty');
+
+        var findCall = ctx.trace.findCall(1);
+        var findCall1 = sys.context.tx.trace.findCall(1);
+        sys.hostApi.runtimeContext
+
+
+        sys.common.require(ctx.tx != null, 'preContractCall tx is empty');
+        sys.common.require(ctx.currentCall != null, 'preContractCall receipt is empty');
+        sys.common.require(ctx.aspect != null, 'preContractCall context is empty');
+        sys.common.require(ctx.block != null, 'preContractCall staticCaller is empty');
+        sys.common.require(ctx.stateDB != null, 'preContractCall justInTimeCaller is empty');
+        sys.common.require(ctx.trace != null, 'preContractCall justInTimeCaller is empty');
+        sys.common.require(ctx.env != null, 'preContractCall justInTimeCaller is empty');
 
     }
     postContractCall(ctx: PostContractCallCtx): void {
-        sys.vm.require(ctx.tx != null, 'postContractCall tx is empty');
-        sys.vm.require(ctx.currentCall != null, 'postContractCall currentCall is empty');
-        sys.vm.require(ctx.aspect != null, 'postContractCall aspect is empty');
-        sys.vm.require(ctx.block != null, 'postContractCall block is empty');
-        sys.vm.require(ctx.stateDB != null, 'postContractCall stateDB is empty');
-        sys.vm.require(ctx.trace != null, 'postContractCall trace is empty');
-        sys.vm.require(ctx.env != null, 'postContractCall env is empty');
+        ctx.aspect.transientStorage("k1").set<string>("v1")
+
+       let gas= ctx.block.header.unwrap()
+        sys.common.require(ctx.tx != null, 'postContractCall tx is empty');
+        sys.common.require(ctx.currentCall != null, 'postContractCall currentCall is empty');
+        sys.common.require(ctx.aspect != null, 'postContractCall aspect is empty');
+        sys.common.require(ctx.block != null, 'postContractCall block is empty');
+        sys.common.require(ctx.stateDB != null, 'postContractCall stateDB is empty');
+        sys.common.require(ctx.trace != null, 'postContractCall trace is empty');
+        sys.common.require(ctx.env != null, 'postContractCall env is empty');
     }
 
     preTxExecute(ctx: PreTxExecuteCtx): void {
-        sys.vm.require(ctx.tx != null, 'preTxExecute tx is empty');
-        sys.vm.require(ctx.aspect != null, 'preTxExecute context is empty');
+
+        var unwrap = ctx.block.header.unwrap()
+        var s = ctx.block.header.gasUsed.unwrap();
+        var ethBlockHeader = ctx.block.header.unwrap();
+
+        sys.common.require(ctx.tx != null, 'preTxExecute tx is empty');
+        sys.common.require(ctx.aspect != null, 'preTxExecute context is empty');
     }
 
 }

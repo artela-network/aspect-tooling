@@ -1,33 +1,41 @@
-import {AspectStateModifiableCtx, EvmCallableCtx} from '../../common';
-import {EnvContext, TxContext} from '../../components/context';
-import {AspectContext} from "../../components/aspect";
+import {AspectStateModifiable, EvmCallableCtx, StaticCallAble} from '../../common';
+import { AspectProperty,  ImmutableAspectState, StaticCaller} from "../../components";
+import {EthTransaction} from "../../proto";
 
+export class FilterTxCtx implements AspectStateModifiable, EvmCallableCtx,StaticCallAble {
+  private readonly _tx: EthTransaction;
+  private readonly _aspectProperty: AspectProperty;
+  private readonly _immutableAspectState: ImmutableAspectState
+  private readonly _staticCall: StaticCaller;
 
-export class FilterTxCtx implements AspectStateModifiableCtx, EvmCallableCtx {
-  private readonly _aspectContext: AspectContext;
-  private readonly _txContext: TxContext;
-  private readonly _env: EnvContext;
+  constructor(tx: EthTransaction) {
+    this._aspectProperty = AspectProperty.instance();
+    this._tx = tx;
+    this._immutableAspectState = ImmutableAspectState.instance(this);
+    this._staticCall = StaticCaller.instance(this);
+  }
+  get tx(): EthTransaction {
+    return this._tx;
+  }
 
-  constructor() {
-    this._aspectContext = AspectContext.instance();
-    this._txContext = TxContext.instance();
-    this._env = EnvContext.instance();
+  get property(): AspectProperty {
+    return this._aspectProperty;
+  }
+
+  get readonlyState(): ImmutableAspectState {
+    return this._immutableAspectState;
+  }
+
+  get staticCall(): StaticCaller {
+    return this._staticCall;
   }
 
   __readonlyAspectStateImplemented(): void {}
 
-  get tx(): TxContext {
-    return this._txContext;
-  }
-
-  get aspect(): AspectContext {
-    return this._aspectContext;
-  }
-
-  get env(): EnvContext {
-    return this._env;
-  }
   __evmCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
+
+  __staticCallableImplemented(): void {
+  }
 }

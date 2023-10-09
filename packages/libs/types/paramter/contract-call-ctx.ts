@@ -1,10 +1,10 @@
 import {EthStackTransaction} from '../../proto';
 import {BlockContext, EnvContext, TraceContext, TxContext} from '../../components/context';
-import {AspectStateModifiableCtx, InherentCallableCtx,} from '../../common';
+import {AspectStateModifiable, InherentCallableCtx,} from '../../common';
 import {AspectContext} from "../../components/aspect";
 import {StateDbApi} from "../../hostapi";
 
-export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
+export class PreContractCallCtx implements AspectStateModifiable, InherentCallableCtx {
   private readonly _innerTx: EthStackTransaction;
   private readonly _aspectContext: AspectContext;
   private readonly _blockContext: BlockContext;
@@ -58,7 +58,7 @@ export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCal
   __readonlyAspectStateImplemented(): void {}
 }
 
-export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
+export class PostContractCallCtx implements AspectStateModifiable, InherentCallableCtx {
   private readonly _aspectContext: AspectContext = AspectContext.instance();
   private readonly _blockContext: BlockContext = BlockContext.instance();
   private readonly _stateContext: StateDbApi = StateDbApi.instance();
