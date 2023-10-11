@@ -338,7 +338,7 @@ export class ASTString extends BaseType {
   unmarshalStateFunc(): string {
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            return new State(raw.account, sys.common.utils.uint8ArrayToString(raw.value), raw.callIndex);
+            return new State(raw.account, sys.utils.uint8ArrayToString(raw.value), raw.callIndex);
         }
         `;
   }
@@ -346,7 +346,7 @@ export class ASTString extends BaseType {
   parseKeyFunc(): string {
     return `
             protected parseKey(key: ${this.asType()}): Uint8Array {
-                return sys.common.utils.stringToUint8Array(key);
+                return sys.utils.stringToUint8Array(key);
             }
         `;
   }
@@ -370,7 +370,7 @@ export class ASTArray extends BaseComplexType {
             @operator("[]")
             get(index: u64): ${childClass} {
                 return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
-                                         sys.common.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(index)));
+                                         sys.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(index)));
             }
         `;
   }
@@ -394,7 +394,7 @@ export class ASTArray extends BaseComplexType {
             childChangeAt(index: u64): ${childClass} {
                 // @ts-ignore
                 return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
-                                         sys.common.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
+                                         sys.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
             }
         `;
   }
@@ -433,7 +433,7 @@ export class ASTMapping extends BaseComplexType {
             get(key: ${this.asType()}): ${childClass} {
                 // @ts-ignore
                 return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
-                                         sys.common.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)));
+                                         sys.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)));
             }
         `;
   }
@@ -443,7 +443,7 @@ export class ASTMapping extends BaseComplexType {
             childChangeAt(index: u64): ${childClass} {
                 // @ts-ignore
                 return new ${childClass}(this.__properties__.ctx, this.__properties__.account, 
-                                         sys.common.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
+                                         sys.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]));
             }
         `;
   }
@@ -530,7 +530,7 @@ export class ASTStruct extends BaseComplexType {
     for (let i = 0; i < properties.length; i++) {
       res += `
             this.${properties[i][0]} = new ${properties[i][1]}(ctx, addr,
-             sys.common.utils.arrayCopyPush(indices, sys.common.utils.stringToUint8Array('${properties[i][0]}')));
+             sys.utils.arrayCopyPush(indices, sys.utils.stringToUint8Array('${properties[i][0]}')));
             `;
     }
 
