@@ -46,7 +46,7 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
     reload(): void {
         const path = ContextKey.tx.context.property(this.key).toString();
         const response = runtimeContext.get(path);
-        if (response.result!.success) {
+        if (!response.result!.success) {
             throw ErrLoadRuntimeCtxValue;
         }
 

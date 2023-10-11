@@ -62,11 +62,7 @@ export namespace sys {
         export function readonlyState(ctx: AspectStateReadonly): ImmutableAspectState {
             return ImmutableAspectState.instance(ctx);
         }
-
-        export function property(): AspectProperty {
-            return AspectProperty.instance();
-        }
-
+        export const property= AspectProperty.instance();
     }
     export namespace evm {
         export function staticCall(ctx: StaticCallAble): StaticCaller {

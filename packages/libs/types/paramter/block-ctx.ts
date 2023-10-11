@@ -1,7 +1,14 @@
-import {AspectStateModifiable, BlockContextAble, EnvContextAble, StaticCallAble} from '../../common';
-import {AspectProperty, BlockContext, EnvContext, MutableAspectState, StaticCaller} from '../../components';
+import {AspectStateModifiable, BlockContextAble, EnvContextAble, ScheduleAble, StaticCallAble} from '../../common';
+import {
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  ScheduleManager,
+  StaticCaller
+} from '../../components';
 
-export class OnBlockInitializeCtx implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble {
+export class OnBlockInitializeCtx implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble,ScheduleAble {
   constructor() {
   }
 
@@ -23,6 +30,9 @@ export class OnBlockInitializeCtx implements AspectStateModifiable, StaticCallAb
   get staticCall(): StaticCaller {
     return StaticCaller.instance(this);
   }
+  get schedule(): ScheduleManager {
+    return ScheduleManager.instance(this);
+  }
 
   __blockContextImplemented(): void {
   }
@@ -35,9 +45,11 @@ export class OnBlockInitializeCtx implements AspectStateModifiable, StaticCallAb
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+  __scheduleImplemented(): void {
+  }
 }
 
-export class OnBlockFinalizeCtx implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble {
+export class OnBlockFinalizeCtx implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble,ScheduleAble {
   constructor() {
   }
 
@@ -59,7 +71,9 @@ export class OnBlockFinalizeCtx implements AspectStateModifiable, StaticCallAble
   get staticCall(): StaticCaller {
     return StaticCaller.instance(this);
   }
-
+  get schedule(): ScheduleManager {
+    return ScheduleManager.instance(this);
+  }
   __blockContextImplemented(): void {
   }
   __envContextImplemented(): void {
@@ -71,4 +85,7 @@ export class OnBlockFinalizeCtx implements AspectStateModifiable, StaticCallAble
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __scheduleImplemented(): void {
+  }
 }
