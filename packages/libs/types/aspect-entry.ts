@@ -71,11 +71,11 @@ export class Entry {
         const isFilter = this.transactionAspect!.filterTx(ctx);
         const boolData = new BoolData(isFilter);
         out = messageUtil.NewDataResponse(
-            true,
-            'success',
-            messageUtil.BoolData,
-            boolData,
-            BoolData.encode,
+          true,
+          'success',
+          messageUtil.BoolData,
+          boolData,
+          BoolData.encode,
         );
       }
     } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {

@@ -1,41 +1,44 @@
-import {BlockHeaderKey, EthTxArrayKey, GasMeterKey, LastCommitKey, MinGasPriceKey} from "../../common/key-block";
-import {BlockContextAble, ContextKey, NotAuthorizedFail} from "../../common";
-
+import {
+  BlockHeaderKey,
+  EthTxArrayKey,
+  GasMeterKey,
+  LastCommitKey,
+  MinGasPriceKey,
+} from '../../common/key-block';
+import { BlockContextAble, ContextKey, NotAuthorizedFail } from '../../common';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
 
-
-  private constructor() {
-  }
+  private constructor() {}
 
   get header(): BlockHeaderKey {
-    return ContextKey.block.header
+    return ContextKey.block.header;
   }
 
-//EthTxArray
+  //EthTxArray
   get partialBody(): EthTxArrayKey {
-    return ContextKey.block.txs
+    return ContextKey.block.txs;
   }
 
-//GasMeter
+  //GasMeter
   get gasMeter(): GasMeterKey {
-    return ContextKey.block.gasMeter
+    return ContextKey.block.gasMeter;
   }
 
-//MinGasPrice
+  //MinGasPrice
   get minGasPrice(): MinGasPriceKey {
-    return ContextKey.block.minGasPrice
+    return ContextKey.block.minGasPrice;
   }
 
-//LastCommitInfo
+  //LastCommitInfo
   get lastCommit(): LastCommitKey {
-    return ContextKey.block.lastCommit
+    return ContextKey.block.lastCommit;
   }
 
   public static instance(ctx: BlockContextAble): BlockContext {
     if (ctx == null) {
-      throw NotAuthorizedFail
+      throw NotAuthorizedFail;
     }
     if (this._instance == null) {
       this._instance = new BlockContext();

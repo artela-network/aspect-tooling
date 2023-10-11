@@ -821,8 +821,7 @@ export class BigInt {
     if (digitsNeeded < BigInt.maxComba) {
       return this._squareComba();
     }
-      return this._baseSquare();
-
+    return this._baseSquare();
   }
 
   private _baseSquare(): BigInt {

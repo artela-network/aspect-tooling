@@ -1,8 +1,8 @@
 export {
-    Schedule,
-    PeriodicSchedule,
-    AdHocSchedule,
-    ScheduleTx,
-    ScheduleOpts,
-    ScheduleManager,
+  Schedule,
+  PeriodicSchedule,
+  AdHocSchedule,
+  ScheduleTx,
+  ScheduleOpts,
+  ScheduleManager,
 } from './schedule-service';

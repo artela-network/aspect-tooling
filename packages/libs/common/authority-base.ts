@@ -1,4 +1,9 @@
-import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges} from "../proto";
+import {
+  EthCallStacks,
+  EthStackTransaction,
+  EthStateChangeIndices,
+  EthStateChanges,
+} from '../proto';
 
 export interface ScheduleAble {
   __scheduleImplemented(): void;
@@ -48,8 +53,8 @@ export interface TraceQuery {
   stateChanges(addr: string, variable: string, indices: Array<Uint8Array>): EthStateChanges;
 
   stateChangeIndices(
-      addr: string,
-      variable: string,
-      indices: Array<Uint8Array>,
+    addr: string,
+    variable: string,
+    indices: Array<Uint8Array>,
   ): EthStateChangeIndices;
 }

@@ -1,6 +1,6 @@
-import {ImmutableAspectValue, MutableAspectValue} from './aspect-state-interface';
+import { ImmutableAspectValue, MutableAspectValue } from './aspect-state-interface';
 
-import {Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData} from '../../proto';
+import { Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData } from '../../proto';
 import {
   AspectStateModifiable,
   AspectStateReadonly,
@@ -8,26 +8,30 @@ import {
   ErrUpdateAspectState,
   MessageUtil,
   NewMessageError,
-  NotAuthorizedFail
+  NotAuthorizedFail,
 } from '../../common';
-import {Protobuf} from 'as-proto/assembly';
-import {RuntimeContextApi} from "../../hostapi";
+import { Protobuf } from 'as-proto/assembly';
+import { RuntimeContextApi } from '../../hostapi';
 
 const runtimeContext = RuntimeContextApi.instance();
 const messageUtil = MessageUtil.instance();
-const convertUtil=new ConvertUtil();
+const convertUtil = new ConvertUtil();
 export class AspectProperty {
   private static _instance: AspectProperty | null;
 
   private constructor() {}
   public get<T>(key: string): T {
     const sateChangeQuery = new StringData(key);
-    const query = messageUtil.ToAny<StringData>(messageUtil.StringData, sateChangeQuery, StringData.encode);
-    const outPtr =runtimeContext.query(QueryNameSpace.QueryAspectProperty, query);
+    const query = messageUtil.ToAny<StringData>(
+      messageUtil.StringData,
+      sateChangeQuery,
+      StringData.encode,
+    );
+    const outPtr = runtimeContext.query(QueryNameSpace.QueryAspectProperty, query);
     if (!outPtr.result!.success) {
       throw NewMessageError(outPtr.result!.message);
     }
-    return  convertUtil.fromString<T>(
+    return convertUtil.fromString<T>(
       outPtr.data == null
         ? ''
         : Protobuf.decode<StringData>(outPtr.data!.value, StringData.decode).data,
@@ -91,7 +95,11 @@ export class ImmutableStateValue<T> implements ImmutableAspectValue<T> {
 
   reload(): void {
     const sateChangeQuery = new StringData(this.key);
-    const query = messageUtil.ToAny<StringData>(messageUtil.StringData, sateChangeQuery, StringData.encode);
+    const query = messageUtil.ToAny<StringData>(
+      messageUtil.StringData,
+      sateChangeQuery,
+      StringData.encode,
+    );
     const response = runtimeContext.query(QueryNameSpace.QueryAspectState, query);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);

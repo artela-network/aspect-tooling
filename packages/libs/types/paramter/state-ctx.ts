@@ -4,7 +4,7 @@ import {
   EnvContextAble,
   ScheduleAble,
   StaticCallAble,
-  TxContextAble
+  TxContextAble,
 } from '../../common';
 import {
   AspectProperty,
@@ -13,14 +13,19 @@ import {
   MutableAspectState,
   ScheduleManager,
   StaticCaller,
-  TxContext
+  Tx,
 } from '../../components';
 
-
-export class OperationCtx implements AspectStateModifiable, StaticCallAble, ScheduleAble, BlockContextAble, EnvContextAble, TxContextAble {
-
-  constructor() {
-  }
+export class OperationCtx
+  implements
+    AspectStateModifiable,
+    StaticCallAble,
+    ScheduleAble,
+    BlockContextAble,
+    EnvContextAble,
+    TxContextAble
+{
+  constructor() {}
 
   get property(): AspectProperty {
     return AspectProperty.instance();
@@ -35,10 +40,10 @@ export class OperationCtx implements AspectStateModifiable, StaticCallAble, Sche
   }
 
   get staticCall(): StaticCaller {
-    return StaticCaller.instance(this)
+    return StaticCaller.instance(this);
   }
-  get tx(): TxContext {
-    return TxContext.instance(this)
+  get tx(): Tx {
+    return Tx.instance(this);
   }
   get env(): EnvContext {
     return EnvContext.instance(this);
@@ -47,24 +52,17 @@ export class OperationCtx implements AspectStateModifiable, StaticCallAble, Sche
     return BlockContext.instance(this);
   }
 
-  __blockContextImplemented(): void {
-  }
+  __blockContextImplemented(): void {}
 
-  __envContextImplemented(): void {
-  }
+  __envContextImplemented(): void {}
 
-  __modifiableAspectStateImplemented(): void {
-  }
+  __modifiableAspectStateImplemented(): void {}
 
-  __readonlyAspectStateImplemented(): void {
-  }
+  __readonlyAspectStateImplemented(): void {}
 
-  __scheduleImplemented(): void {
-  }
+  __scheduleImplemented(): void {}
 
-  __staticCallableImplemented(): void {
-  }
+  __staticCallableImplemented(): void {}
 
-  __txContextImplemented(): void {
-  }
+  __txContextImplemented(): void {}
 }

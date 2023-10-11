@@ -1,7 +1,6 @@
-import {AspectStateReadonly, StaticCallAble} from '../../common';
-import {AspectProperty, ImmutableAspectState, StaticCaller} from "../../components";
-import {EthTransaction} from "../../proto";
-
+import { AspectStateReadonly, StaticCallAble } from '../../common';
+import { AspectProperty, ImmutableAspectState, StaticCaller } from '../../components';
+import { EthTransaction } from '../../proto';
 
 export class FilterTxCtx implements AspectStateReadonly, StaticCallAble {
   private readonly _tx: EthTransaction;
@@ -25,12 +24,7 @@ export class FilterTxCtx implements AspectStateReadonly, StaticCallAble {
     return StaticCaller.instance(this);
   }
 
-  __readonlyAspectStateImplemented(): void {
-  }
+  __readonlyAspectStateImplemented(): void {}
 
-  __staticCallableImplemented(): void {
-  }
-
+  __staticCallableImplemented(): void {}
 }
-
-

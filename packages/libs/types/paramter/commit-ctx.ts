@@ -4,7 +4,7 @@ import {
   EnvContextAble,
   ReceiptContextAble,
   StaticCallAble,
-  TxContextAble
+  TxContextAble,
 } from '../../common';
 import {
   AspectContext,
@@ -14,13 +14,19 @@ import {
   MutableAspectState,
   ReceiptContext,
   StaticCaller,
-  TxContext
-} from "../../components";
+  Tx,
+} from '../../components';
 
 export class PostTxCommitCtx
-    implements AspectStateModifiable, TxContextAble, ReceiptContextAble, BlockContextAble, EnvContextAble, StaticCallAble {
-  constructor() {
-  }
+  implements
+    AspectStateModifiable,
+    TxContextAble,
+    ReceiptContextAble,
+    BlockContextAble,
+    EnvContextAble,
+    StaticCallAble
+{
+  constructor() {}
 
   get mutableState(): MutableAspectState {
     return MutableAspectState.instance(this);
@@ -37,36 +43,31 @@ export class PostTxCommitCtx
     return BlockContext.instance(this);
   }
 
-  get tx(): TxContext {
-    return TxContext.instance(this);
+  get tx(): Tx {
+    return Tx.instance(this);
   }
 
   get receipt(): ReceiptContext {
-    return ReceiptContext.instance(this)
+    return ReceiptContext.instance(this);
   }
   get aspect(): AspectContext {
-    return AspectContext.instance()
+    return AspectContext.instance();
   }
   get env(): EnvContext {
-    return EnvContext.instance(this)
+    return EnvContext.instance(this);
   }
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
 
-  __blockContextImplemented(): void {
-  }
+  __blockContextImplemented(): void {}
 
-  __envContextImplemented(): void {
-  }
+  __envContextImplemented(): void {}
 
-  __receiptContextImplemented(): void {
-  }
+  __receiptContextImplemented(): void {}
 
-  __staticCallableImplemented(): void {
-  }
+  __staticCallableImplemented(): void {}
 
-  __txContextImplemented(): void {
-  }
+  __txContextImplemented(): void {}
 }

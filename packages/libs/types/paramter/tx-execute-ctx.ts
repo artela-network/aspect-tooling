@@ -16,17 +16,22 @@ import {
   StateContext,
   StaticCaller,
   TraceContext,
-  TxContext
-} from "../../components";
+  Tx,
+} from '../../components';
 
 export class PreTxExecuteCtx
-    implements AspectStateModifiable, StaticCallAble, StateContextAble, BlockContextAble, TxContextAble, EnvContextAble
+  implements
+    AspectStateModifiable,
+    StaticCallAble,
+    StateContextAble,
+    BlockContextAble,
+    TxContextAble,
+    EnvContextAble
 {
-  constructor() {
-  }
+  constructor() {}
 
-  get tx(): TxContext {
-    return TxContext.instance(this);
+  get tx(): Tx {
+    return Tx.instance(this);
   }
 
   get stateDB(): StateContext {
@@ -57,37 +62,37 @@ export class PreTxExecuteCtx
     return StaticCaller.instance(this);
   }
 
-  __blockContextImplemented(): void {
-  }
-  __stateQueryableImplemented(): void {
-  }
+  __blockContextImplemented(): void {}
+  __stateQueryableImplemented(): void {}
 
-  __staticCallableImplemented(): void {
-  }
-
+  __staticCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
 
-  __envContextImplemented(): void {
-  }
+  __envContextImplemented(): void {}
 
-  __txContextImplemented(): void {
-  }
+  __txContextImplemented(): void {}
 }
 
 export class PostTxExecuteCtx
-    implements TraceContextAble, AspectStateModifiable, StaticCallAble, StateContextAble, BlockContextAble, TxContextAble, EnvContextAble
+  implements
+    TraceContextAble,
+    AspectStateModifiable,
+    StaticCallAble,
+    StateContextAble,
+    BlockContextAble,
+    TxContextAble,
+    EnvContextAble
 {
-  constructor() {
-  }
+  constructor() {}
 
   get trace(): TraceContext {
     return TraceContext.instance(this);
   }
-  get tx(): TxContext {
-    return TxContext.instance(this);
+  get tx(): Tx {
+    return Tx.instance(this);
   }
 
   get stateDB(): StateContext {
@@ -118,25 +123,18 @@ export class PostTxExecuteCtx
     return StaticCaller.instance(this);
   }
 
-  __blockContextImplemented(): void {
-  }
-  __stateQueryableImplemented(): void {
-  }
+  __blockContextImplemented(): void {}
+  __stateQueryableImplemented(): void {}
 
-  __staticCallableImplemented(): void {
-  }
+  __staticCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
 
-  __envContextImplemented(): void {
-  }
+  __envContextImplemented(): void {}
 
-  __txContextImplemented(): void {
-  }
+  __txContextImplemented(): void {}
 
-  __traceContextImplemented(): void {
-  }
-
+  __traceContextImplemented(): void {}
 }
