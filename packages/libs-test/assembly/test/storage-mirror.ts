@@ -67,7 +67,7 @@ export class StorageMirror implements IAspectTransaction, IAspectBlock {
             );
 
             const response = sys.evm.jitSend(request);
-            sys.vm.require(response.success, 'failed to call JIT');
+            sys.common.require(response.success, 'failed to call JIT');
         }
     }
 

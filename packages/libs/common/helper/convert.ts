@@ -2,16 +2,16 @@ import {ErrParseValueFail} from "../errors";
 import {UtilApi} from "../../hostapi";
 import {BigInt} from "../wraptypes/bigint";
 import {ethereum} from "../abi";
-export namespace convertUtil {
-    export function uint8ArrayToHex(data: Uint8Array): string {
+export class ConvertUtil {
+    public uint8ArrayToHex(data: Uint8Array): string {
         return UtilApi.instance().uint8ArrayToHex(data)
     }
 
-    export function hexToUint8Array(s: string): Uint8Array {
+    public hexToUint8Array(s: string): Uint8Array {
         return UtilApi.instance().hexToUint8Array(s)
     }
 
-    export function stringToUint8Array(s: string): Uint8Array {
+    public stringToUint8Array(s: string): Uint8Array {
         const buffer = String.UTF8.encode(s);
         if (buffer.byteLength === 0) {
             return new Uint8Array(0);
@@ -19,16 +19,16 @@ export namespace convertUtil {
         return Uint8Array.wrap(buffer, 0, s.length);
     }
 
-    export function uint8ArrayToAddress(data: Uint8Array): ethereum.Address {
+    public uint8ArrayToAddress(data: Uint8Array): ethereum.Address {
         const hex = String.UTF8.decode(data.buffer, false);
         return ethereum.Address.fromHexString(hex);
     }
 
-    export function uint8ArrayToString(arr: Uint8Array): string {
+    public uint8ArrayToString(arr: Uint8Array): string {
         return String.UTF8.decode(arr.buffer, false);
     }
 
-    export function uint8ArrayToBool(data: Uint8Array): bool {
+    public uint8ArrayToBool(data: Uint8Array): bool {
         for (let i = 0; i < data.length; i++) {
             if (data[i] != 0) {
                 return true;
@@ -37,14 +37,14 @@ export namespace convertUtil {
         return false;
     }
 
-    export function boolToUint8Array(b: bool): Uint8Array {
+    public boolToUint8Array(b: bool): Uint8Array {
         const result = new Uint8Array(1);
         result[0] = b ? 1 : 0;
 
         return result;
     }
 
-    export function arrayCopyPush<T>(a: Array<T>, elem: T): Array<T> {
+    public arrayCopyPush<T>(a: Array<T>, elem: T): Array<T> {
         const res = new Array<T>(a.length + 1);
         for (let i = 0; i < a.length; i++) {
             res[i] = a[i];
@@ -53,7 +53,7 @@ export namespace convertUtil {
         return res;
     }
 
-    export function concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
+    public concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
         const result = new Uint8Array(a.length + b.length);
 
         for (let i = 0; i < a.length; i++) {
@@ -67,23 +67,23 @@ export namespace convertUtil {
         return result;
     }
 
-    export function encodeStringUTF8(str: string): ArrayBuffer {
+    public encodeStringUTF8(str: string): ArrayBuffer {
         return String.UTF8.encode(str);
     }
 
-    export function decodeUTF8(uint8Array: Uint8Array): string {
+    public decodeUTF8(uint8Array: Uint8Array): string {
         return String.UTF8.decode(uint8Array);
     }
 
-    export function parseCallMethod(data: Uint8Array): string {
-        const s = uint8ArrayToHex(data);
+    public parseCallMethod(data: Uint8Array): string {
+        const s = this.uint8ArrayToHex(data);
         if (s.startsWith('0x')) {
             return s.substring(0, 10);
         }
         return '0x' + s.substring(0, 8);
     }
 
-    export function toString<T>(value: T): string {
+    public toString<T>(value: T): string {
         if (!value) {
             return '';
         }
@@ -106,7 +106,7 @@ export namespace convertUtil {
         return valueStr;
     }
 
-    export function fromString<T>(value: string): T {
+    public fromString<T>(value: string): T {
         if (isBoolean<T>()) return changetype<T>(value == '1');
         if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 1) return u8.parse(value, 10) as T;
         if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 1) return i8.parse(value, 10) as T;
@@ -122,3 +122,4 @@ export namespace convertUtil {
         throw ErrParseValueFail;
     }
 }
+

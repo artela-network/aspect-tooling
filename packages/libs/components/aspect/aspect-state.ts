@@ -4,7 +4,7 @@ import {Any, QueryNameSpace, RemoveNameSpace, SetNameSpace, StringData} from '..
 import {
   AspectStateModifiable,
   AspectStateReadonly,
-  convertUtil,
+  ConvertUtil,
   ErrUpdateAspectState,
   MessageUtil,
   NewMessageError,
@@ -15,7 +15,7 @@ import {RuntimeContextApi} from "../../hostapi";
 
 const runtimeContext = RuntimeContextApi.instance();
 const messageUtil = MessageUtil.instance();
-
+const convertUtil=new ConvertUtil();
 export class AspectProperty {
   private static _instance: AspectProperty | null;
 

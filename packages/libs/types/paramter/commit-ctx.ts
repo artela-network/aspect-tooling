@@ -1,46 +1,72 @@
-import { BlockContext, EnvContext, EthReceiptContext } from '../../components/context';
-import { EthTransaction } from '../../proto';
-import { AspectStateModifiable, EvmCallableCtx } from '../../common';
-import {AspectContext} from "../../components/aspect";
+import {
+  AspectStateModifiable,
+  BlockContextAble,
+  EnvContextAble,
+  ReceiptContextAble,
+  StaticCallAble,
+  TxContextAble
+} from '../../common';
+import {
+  AspectContext,
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  ReceiptContext,
+  StaticCaller,
+  TxContext
+} from "../../components";
 
-export class PostTxCommitCtx implements EvmCallableCtx, AspectStateModifiable {
-  private readonly _tx: EthTransaction;
-  private readonly _receipt: EthReceiptContext;
-  private readonly _aspectContext: AspectContext;
-  private readonly _blockContext: BlockContext;
-  private readonly _env: EnvContext;
-
-  constructor(tx: EthTransaction) {
-    this._tx = tx;
-    this._aspectContext = AspectContext.instance();
-    this._receipt = EthReceiptContext.instance();
-    this._blockContext = BlockContext.instance();
-    this._env = EnvContext.instance();
+export class PostTxCommitCtx
+    implements AspectStateModifiable, TxContextAble, ReceiptContextAble, BlockContextAble, EnvContextAble, StaticCallAble {
+  constructor() {
   }
 
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
+  }
+
+  get property(): AspectProperty {
+    return AspectProperty.instance();
+  }
+
+  get staticCall(): StaticCaller {
+    return StaticCaller.instance(this);
+  }
   get block(): BlockContext {
-    return this._blockContext;
+    return BlockContext.instance(this);
   }
 
-  get tx(): EthTransaction {
-    return this._tx;
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
 
-  get receipt(): EthReceiptContext {
-    return this._receipt;
+  get receipt(): ReceiptContext {
+    return ReceiptContext.instance(this)
   }
-
   get aspect(): AspectContext {
-    return this._aspectContext;
+    return AspectContext.instance()
   }
-
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this)
   }
-
-  __evmCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __blockContextImplemented(): void {
+  }
+
+  __envContextImplemented(): void {
+  }
+
+  __receiptContextImplemented(): void {
+  }
+
+  __staticCallableImplemented(): void {
+  }
+
+  __txContextImplemented(): void {
+  }
 }

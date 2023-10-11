@@ -1,42 +1,50 @@
 import {CryptoApi, EvmCallApi, RuntimeContextApi, ScheduleApi, StateDbApi, UtilApi} from "./hostapi";
-import {AspectProperty, ImmutableAspectState, MutableAspectState} from "./components/aspect";
-import {EthMessage, EthMessageCallResult, JitInherentRequest, JitInherentResponse} from "./proto";
-import {BlockContext, EnvContext, EthReceiptContext, TraceContext, TxContext} from "./components/context";
+import {
+    AspectProperty,
+    BlockContext,
+    EnvContext,
+    ImmutableAspectState,
+    JustInTimeCaller,
+    MutableAspectState,
+    ReceiptContext,
+    StateContext,
+    StaticCaller,
+    TraceContext,
+    TxContext
+} from "./components";
 import {
     AspectStateModifiable,
     AspectStateReadonly,
-    ContextKey,
-    convertUtil as Utils,
-    ethereum as Ethereum, JustInTimeCallAble,
-    MessageUtil, StateQueryAble, StaticCallAble
+    BlockContextAble,
+    ConvertUtil,
+    EnvContextAble,
+    JustInTimeCallAble,
+    ReceiptContextAble,
+    StateContextAble,
+    StaticCallAble,
+    TraceContextAble,
+    TxContextAble,
 } from "./common";
-import {JustInTimeCaller, StateQuery, StaticCaller} from "./components";
 
-const util = UtilApi.instance();
 export namespace sys {
-
+    export const crypto = CryptoApi.instance();
     export namespace common {
-        export const ctxKey = new ContextKey();
-        export const utils = Utils;
-        export const messageUtil = MessageUtil.instance();
-        export const ethereum = Ethereum;
+        export const utils = new ConvertUtil()
         export function alloc(size: i32): i32 {
             return heap.alloc(size) as i32;
         }
         export function require(condition: bool, message: string = ''): void {
             if (!condition) {
-                util.revert(message);
+                UtilApi.instance().revert(message);
             }
         }
         export function revert(message: string): void {
-            util.revert(message)
+            UtilApi.instance().revert(message)
         }
         export function log(data: string): void {
-            util.log(data)
+            UtilApi.instance().log(data)
         }
     }
-    export const crypto = CryptoApi.instance();
-
     export namespace hostApi {
 
         export const evmCall = EvmCallApi.instance();
@@ -60,7 +68,6 @@ export namespace sys {
         }
 
     }
-
     export namespace evm {
         export function staticCall(ctx: StaticCallAble): StaticCaller {
             return StaticCaller.instance(ctx);
@@ -68,18 +75,30 @@ export namespace sys {
         export function jitCall(ctx: JustInTimeCallAble): JustInTimeCaller {
             return JustInTimeCaller.instance(ctx);
         }
-        export function stateDB(ctx: StateQueryAble): StateQuery {
-            return StateQuery.instance(ctx);
+
+        export function stateDB(ctx: StateContextAble): StateContext {
+            return StateContext.instance(ctx);
         }
     }
     export namespace context {
-        export const env = EnvContext.instance()
-        export const block = BlockContext.instance()
+        export function env(ctx: EnvContextAble): EnvContext {
+            return EnvContext.instance(ctx)
+        }
 
-        export namespace tx {
-            export const baseInfo = TxContext.instance()
-            export const receipt = EthReceiptContext.instance()
-            export const trace = TraceContext.instance()
+        export function block(ctx: BlockContextAble): BlockContext {
+            return BlockContext.instance(ctx)
+        }
+
+        export function tx(ctx: TxContextAble): TxContext {
+            return TxContext.instance(ctx)
+        }
+
+        export function receipt(ctx: ReceiptContextAble): ReceiptContext {
+            return ReceiptContext.instance(ctx)
+        }
+
+        export function trace(ctx: TraceContextAble): TraceContext {
+            return TraceContext.instance(ctx)
         }
     }
 }

@@ -63,16 +63,21 @@ export class Entry {
 
     let out: AspectResponse;
     if (method == PointCutType.ON_TX_RECEIVE_METHOD) {
-      const ctx = new FilterTxCtx();
-      const isFilter = this.transactionAspect!.filterTx(ctx);
-      const boolData = new BoolData(isFilter);
-      out = messageUtil.NewDataResponse(
-        true,
-        'success',
-        messageUtil.BoolData,
-        boolData,
-        BoolData.encode,
-      );
+      const arg = messageUtil.LoadEthTxAspect(argPtr);
+      if (arg.tx == null) {
+        out = messageUtil.ErrAspectResponse('tx is null');
+      } else {
+        const ctx = new FilterTxCtx(arg.tx!);
+        const isFilter = this.transactionAspect!.filterTx(ctx);
+        const boolData = new BoolData(isFilter);
+        out = messageUtil.NewDataResponse(
+            true,
+            'success',
+            messageUtil.BoolData,
+            boolData,
+            BoolData.encode,
+        );
+      }
     } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {
       const ctx = new PreTxExecuteCtx();
       this.transactionAspect!.preTxExecute(ctx);
@@ -104,7 +109,7 @@ export class Entry {
       if (arg.tx == null) {
         out = messageUtil.ErrAspectResponse('tx is null');
       } else {
-        const ctx = new PostTxCommitCtx(arg.tx!);
+        const ctx = new PostTxCommitCtx();
         this.transactionAspect!.postTxCommit(ctx);
         out = messageUtil.DefAspectResponse();
       }

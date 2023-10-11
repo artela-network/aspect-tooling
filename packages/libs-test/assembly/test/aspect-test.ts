@@ -1,6 +1,7 @@
 // The entry file of your WebAssembly module.
 
 import {
+    Entry,
     FilterTxCtx,
     IAspectTransaction,
     PostContractCallCtx,
@@ -8,18 +9,18 @@ import {
     PostTxExecuteCtx,
     PreContractCallCtx,
     PreTxExecuteCtx,
-    Entry, sys,
+    sys,
 } from '@artela/aspect-libs';
 
 
 class AspectTest implements IAspectTransaction {
     filterTx(ctx: FilterTxCtx): bool {
-        ctx.readonlyState.get<string>("k2")
-        sys.aspect.readonlyState(ctx).get<string>("k1")
+        /*    ctx.readonlyState.get<string>("k2")
+         sys.aspect.readonlyState(ctx).get<string>("k1")
 
-        ctx.staticCall.submit()
-        ctx.tx.nonce
-        ctx.property.get()
+      ctx.staticCall.submit()
+         ctx.tx.nonce
+         ctx.property.get()*/
 
         return true;
     }
@@ -60,7 +61,7 @@ class AspectTest implements IAspectTransaction {
     preContractCall(ctx: PreContractCallCtx): void {
 
         var findCall = ctx.trace.findCall(1);
-        var findCall1 = sys.context.tx.trace.findCall(1);
+        var findCall1 = sys.context.trace(ctx).findCall(1);
         sys.hostApi.runtimeContext
 
 
@@ -74,7 +75,7 @@ class AspectTest implements IAspectTransaction {
 
     }
     postContractCall(ctx: PostContractCallCtx): void {
-        ctx.aspect.transientStorage("k1").set<string>("v1")
+        ctx.aspect.transientStorage<string>("k1").set<string>("v1")
 
        let gas= ctx.block.header.unwrap()
         sys.common.require(ctx.tx != null, 'postContractCall tx is empty');
@@ -88,9 +89,8 @@ class AspectTest implements IAspectTransaction {
 
     preTxExecute(ctx: PreTxExecuteCtx): void {
 
-        var unwrap = ctx.block.header.unwrap()
-        var s = ctx.block.header.gasUsed.unwrap();
-        var ethBlockHeader = ctx.block.header.unwrap();
+        const ethBlockHeader = ctx.block.header.unwrap();
+        const number = ctx.block.header.gasUsed.unwrap();
 
         sys.common.require(ctx.tx != null, 'preTxExecute tx is empty');
         sys.common.require(ctx.aspect != null, 'preTxExecute context is empty');
@@ -105,5 +105,5 @@ export function execute(methodPtr: i32, argPtr: i32): i32 {
 }
 
 export function allocate(size: i32): i32 {
-    return sys.vm.alloc(size);
+    return sys.common.alloc(size);
 }

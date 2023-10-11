@@ -1,8 +1,8 @@
 import {StateDbApi} from "../../hostapi";
-import {NotAuthorizedFail, StateQueryAble} from "../../common";
+import {NotAuthorizedFail, StateContextAble} from "../../common";
 
 
-export class StateQuery {
+export class StateContext {
     private stateDbApi: StateDbApi;
 
     private constructor() {
@@ -29,14 +29,14 @@ export class StateQuery {
         return this.stateDbApi.nonce(addr)
     }
 
-    private static _instance: StateQuery | null;
+    private static _instance: StateContext | null;
 
-    public static instance(ctx: StateQueryAble): StateQuery {
+    public static instance(ctx: StateContextAble): StateContext {
         if (ctx == null) {
             throw NotAuthorizedFail
         }
         if (!this._instance) {
-            this._instance = new StateQuery();
+            this._instance = new StateContext();
         }
         return this._instance!;
     }

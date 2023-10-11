@@ -1,10 +1,7 @@
 import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges} from "../proto";
 
-export interface EvmCallableCtx {
-  __evmCallableImplemented(): void;
-}
-export interface InherentCallableCtx {
-  __inherentCallableImplemented(): void;
+export interface ScheduleAble {
+  __scheduleImplemented(): void;
 }
 export interface AspectStateModifiable extends AspectStateReadonly {
   __modifiableAspectStateImplemented(): void;
@@ -20,10 +17,29 @@ export interface JustInTimeCallAble {
   __justInTimeCallableImplemented(): void;
 }
 
-export interface StateQueryAble {
+export interface StateContextAble {
   __stateQueryableImplemented(): void;
 }
 
+export interface BlockContextAble {
+  __blockContextImplemented(): void;
+}
+
+export interface TxContextAble {
+  __txContextImplemented(): void;
+}
+
+export interface EnvContextAble {
+  __envContextImplemented(): void;
+}
+
+export interface ReceiptContextAble {
+  __receiptContextImplemented(): void;
+}
+
+export interface TraceContextAble {
+  __traceContextImplemented(): void;
+}
 export interface TraceQuery {
   findCall(index: u64): EthStackTransaction | null;
 

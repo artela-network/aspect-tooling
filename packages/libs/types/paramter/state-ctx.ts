@@ -1,39 +1,70 @@
-import {AspectStateModifiable, EvmCallableCtx} from '../../common';
-import {BlockContext, EnvContext, TxContext} from '../../components/context';
-import {AspectContext} from "../../components/aspect";
+import {
+  AspectStateModifiable,
+  BlockContextAble,
+  EnvContextAble,
+  ScheduleAble,
+  StaticCallAble,
+  TxContextAble
+} from '../../common';
+import {
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  ScheduleManager,
+  StaticCaller,
+  TxContext
+} from '../../components';
 
-export class OperationCtx implements AspectStateModifiable, EvmCallableCtx {
-  private readonly _aspect: AspectContext;
-  private readonly _tx: TxContext;
-  private readonly _env: EnvContext;
-  private readonly _block: BlockContext;
+
+export class OperationCtx implements AspectStateModifiable, StaticCallAble, ScheduleAble, BlockContextAble, EnvContextAble, TxContextAble {
 
   constructor() {
-    this._aspect = AspectContext.instance();
-    this._tx = TxContext.instance();
-    this._env = EnvContext.instance();
-    this._block = BlockContext.instance();
   }
 
+  get property(): AspectProperty {
+    return AspectProperty.instance();
+  }
+
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
+  }
+
+  get schedule(): ScheduleManager {
+    return ScheduleManager.instance(this);
+  }
+
+  get staticCall(): StaticCaller {
+    return StaticCaller.instance(this)
+  }
   get tx(): TxContext {
-    return this._tx;
+    return TxContext.instance(this)
   }
-
-  get aspect(): AspectContext {
-    return this._aspect;
-  }
-
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this);
   }
-
   get block(): BlockContext {
-    return this._block;
+    return BlockContext.instance(this);
   }
 
-  __evmCallableImplemented(): void {}
+  __blockContextImplemented(): void {
+  }
 
-  __modifiableAspectStateImplemented(): void {}
+  __envContextImplemented(): void {
+  }
 
-  __readonlyAspectStateImplemented(): void {}
+  __modifiableAspectStateImplemented(): void {
+  }
+
+  __readonlyAspectStateImplemented(): void {
+  }
+
+  __scheduleImplemented(): void {
+  }
+
+  __staticCallableImplemented(): void {
+  }
+
+  __txContextImplemented(): void {
+  }
 }

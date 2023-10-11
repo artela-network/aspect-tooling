@@ -1,10 +1,11 @@
-import {ContextKey, ErrLoadRuntimeCtxValue,convertUtil as utils} from "../../common";
+import {ContextKey, ConvertUtil, ErrLoadRuntimeCtxValue,} from "../../common";
 import {MutableAspectValue} from "./aspect-state-interface";
 import {SetNameSpace, StringData} from "../../proto";
 import {Protobuf} from "as-proto/assembly";
 import {RuntimeContextApi} from "../../hostapi";
 
 const runtimeContext = RuntimeContextApi.instance();
+const utils = new ConvertUtil();
 
 export class AspectContext {
     private static _instance: AspectContext | null;

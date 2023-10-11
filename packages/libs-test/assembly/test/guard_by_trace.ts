@@ -65,7 +65,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
         }
         // 3.Verify if the above two values are equal.
         if (deltaSys.compareTo(deltaUser) != 0) {
-            sys.vm.revert("risky transaction")
+            sys.common.revert("risky transaction")
         }
     }
 

@@ -1,16 +1,17 @@
+import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges, TxExtProperty,} from '../../proto';
 import {
-    EthCallStacks,
-    EthReceipt,
-    EthStackTransaction,
-    EthStateChangeIndices,
-    EthStateChanges,
-    EthTransaction,
-    GasMeter,
-    TxExtProperty,
-} from '../../proto';
-import {ContextKey, ErrLoadRuntimeCtxValue, NewMessageError, TraceQuery,} from '../../common';
+    ContextKey,
+    NewMessageError,
+    NotAuthorizedFail,
+    ReceiptContextAble,
+    TraceContextAble,
+    TraceQuery,
+    TxContextAble,
+} from '../../common';
 import {Protobuf} from 'as-proto/assembly';
 import {RuntimeContextApi} from "../../hostapi";
+import {EthReceiptKey, TxContentKey} from "../../common/key-tx";
+import {GasMeterKey} from "../../common/key-block";
 
 const runtimeContext = RuntimeContextApi.instance();
 
@@ -80,7 +81,10 @@ export class TraceContext implements TraceQuery {
         );
     }
 
-    public static instance(): TraceContext {
+    public static instance(ctx: TraceContextAble): TraceContext {
+        if (ctx == null) {
+            throw NotAuthorizedFail
+        }
         if (!this._instance) {
             this._instance = new TraceContext();
         }
@@ -95,33 +99,21 @@ export class TxContext {
     }
 
     get extProperties(): TxExtProperty {
-        const key = ContextKey.tx.extProperties.toString();
-        const response = runtimeContext.get(key);
-        if (!response.data || !response.data!.value) {
-            throw ErrLoadRuntimeCtxValue;
-        }
-        return Protobuf.decode<TxExtProperty>(response.data!.value, TxExtProperty.decode);
+        return ContextKey.tx.extProperties.unwrap()
     }
 
-    get content(): EthTransaction {
-        const key = ContextKey.tx.content.toString();
-        const response = runtimeContext.get(key);
-        if (!response.data || !response.data!.value) {
-            throw ErrLoadRuntimeCtxValue;
-        }
-        return Protobuf.decode<EthTransaction>(response.data!.value, EthTransaction.decode);
+    get content(): TxContentKey {
+        return ContextKey.tx.content
     }
 
-    get gasMeter(): GasMeter {
-        const key = ContextKey.tx.gasMeter.toString();
-        const response = runtimeContext.get(key);
-        if (!response.data || !response.data!.value) {
-            throw ErrLoadRuntimeCtxValue;
-        }
-        return Protobuf.decode<GasMeter>(response.data!.value, GasMeter.decode);
+    get gasMeter(): GasMeterKey {
+        return ContextKey.tx.gasMeter
     }
 
-    public static instance(): TxContext {
+    public static instance(ctx: TxContextAble): TxContext {
+        if (ctx == null) {
+            throw NotAuthorizedFail
+        }
         if (!this._instance) {
             this._instance = new TxContext();
         }
@@ -129,24 +121,22 @@ export class TxContext {
     }
 }
 
-export class EthReceiptContext {
-    private static _instance: EthReceiptContext | null;
+export class ReceiptContext {
+    private static _instance: ReceiptContext | null;
 
     private constructor() {
     }
 
-    public get(): EthReceipt {
-        const key = ContextKey.tx.receipt.toString();
-        const response = runtimeContext.get(key);
-        if (!response.data || !response.data!.value) {
-            throw ErrLoadRuntimeCtxValue;
-        }
-        return Protobuf.decode<EthReceipt>(response.data!.value, EthReceipt.decode);
+    public get(): EthReceiptKey {
+        return ContextKey.tx.receipt
     }
 
-    public static instance(): EthReceiptContext {
+    public static instance(ctx: ReceiptContextAble): ReceiptContext {
+        if (ctx == null) {
+            throw NotAuthorizedFail
+        }
         if (!this._instance) {
-            this._instance = new EthReceiptContext();
+            this._instance = new ReceiptContext();
         }
         return this._instance!;
     }

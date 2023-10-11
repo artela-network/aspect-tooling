@@ -53,16 +53,16 @@ export class StoreAspect implements IAspectTransaction, IAspectBlock {
             payload,
             new ScheduleOpts(0, "200000000", "30000", broker))
         periodicSchedule.submit(tx);
-        sys.vm.require(ctx.block != null, "onBlockFinalize block is empty")
-        sys.vm.require(ctx.env != null, "onBlockFinalize env is empty")
-        sys.vm.require(ctx.schedule != null, "onBlockFinalize schedule is empty")
+        sys.common.require(ctx.block != null, "onBlockFinalize block is empty")
+        sys.common.require(ctx.env != null, "onBlockFinalize env is empty")
+        sys.common.require(ctx.schedule != null, "onBlockFinalize schedule is empty")
     }
 
 
     onBlockInitialize(ctx: OnBlockInitializeCtx): void {
-        sys.vm.require(ctx.block != null, "onBlockInitialize block is empty")
-        sys.vm.require(ctx.schedule != null, "onBlockInitialize schedule is empty")
-        sys.vm.require(ctx.env != null, "onBlockInitialize env is empty")
+        sys.common.require(ctx.block != null, "onBlockInitialize block is empty")
+        sys.common.require(ctx.schedule != null, "onBlockInitialize schedule is empty")
+        sys.common.require(ctx.env != null, "onBlockInitialize env is empty")
     }
 
     onContractBinding(contractAddr: string): bool {
@@ -72,58 +72,58 @@ export class StoreAspect implements IAspectTransaction, IAspectBlock {
 
     postContractCall(ctx: PostContractCallCtx): void {
 
-        sys.vm.require(ctx.tx != null, 'postContractCall tx is empty')
-        sys.vm.require(ctx.block != null, "postContractCall block is empty")
-        sys.vm.require(ctx.aspect != null, "postContractCall aspect is empty")
-        sys.vm.require(ctx.currentCall != null, "postContractCall currInnerTx is empty")
-        sys.vm.require(ctx.stateDB != null, "postContractCall stateDB is empty")
-        sys.vm.require(ctx.trace != null, "postContractCall trace is empty")
-        sys.vm.require(ctx.env != null, "postContractCall env is empty")
+        sys.common.require(ctx.tx != null, 'postContractCall tx is empty')
+        sys.common.require(ctx.block != null, "postContractCall block is empty")
+        sys.common.require(ctx.aspect != null, "postContractCall aspect is empty")
+        sys.common.require(ctx.currentCall != null, "postContractCall currInnerTx is empty")
+        sys.common.require(ctx.stateDB != null, "postContractCall stateDB is empty")
+        sys.common.require(ctx.trace != null, "postContractCall trace is empty")
+        sys.common.require(ctx.env != null, "postContractCall env is empty")
     }
 
     postTxCommit(ctx: PostTxCommitCtx): void {
-        sys.vm.require(ctx.tx != null, 'postTxCommit tx is empty')
-        sys.vm.require(ctx.receipt != null, "postTxCommit receipt is empty")
-        sys.vm.require(ctx.aspect != null, "postTxCommit aspect is empty")
-        sys.vm.require(ctx.block != null, "postTxCommit block is empty")
-        sys.vm.require(ctx.env != null, "postTxCommit env is empty")
+        sys.common.require(ctx.tx != null, 'postTxCommit tx is empty')
+        sys.common.require(ctx.receipt != null, "postTxCommit receipt is empty")
+        sys.common.require(ctx.aspect != null, "postTxCommit aspect is empty")
+        sys.common.require(ctx.block != null, "postTxCommit block is empty")
+        sys.common.require(ctx.env != null, "postTxCommit env is empty")
 
     }
 
     postTxExecute(ctx: PostTxExecuteCtx): void {
-        sys.vm.require(ctx.tx != null, 'postTxExecute tx is empty')
-        sys.vm.require(ctx.env != null, "postTxExecute env is empty")
-        sys.vm.require(ctx.aspect != null, "postTxExecute aspect is empty")
-        sys.vm.require(ctx.trace != null, "postTxExecute trace is empty")
-        sys.vm.require(ctx.stateDB != null, "postTxExecute stateDB is empty")
+        sys.common.require(ctx.tx != null, 'postTxExecute tx is empty')
+        sys.common.require(ctx.env != null, "postTxExecute env is empty")
+        sys.common.require(ctx.aspect != null, "postTxExecute aspect is empty")
+        sys.common.require(ctx.trace != null, "postTxExecute trace is empty")
+        sys.common.require(ctx.stateDB != null, "postTxExecute stateDB is empty")
     }
 
     preContractCall(ctx: PreContractCallCtx): void {
 
-        sys.vm.require(ctx.tx != null, 'postContractCall tx is empty')
-        sys.vm.require(ctx.block != null, "postContractCall block is empty")
-        sys.vm.require(ctx.aspect != null, "postContractCall aspect is empty")
-        sys.vm.require(ctx.currentCall != null, "postContractCall currInnerTx is empty")
-        sys.vm.require(ctx.stateDB != null, "postContractCall stateDB is empty")
-        sys.vm.require(ctx.trace != null, "postContractCall trace is empty")
-        sys.vm.require(ctx.env != null, "postContractCall env is empty")
+        sys.common.require(ctx.tx != null, 'postContractCall tx is empty')
+        sys.common.require(ctx.block != null, "postContractCall block is empty")
+        sys.common.require(ctx.aspect != null, "postContractCall aspect is empty")
+        sys.common.require(ctx.currentCall != null, "postContractCall currInnerTx is empty")
+        sys.common.require(ctx.stateDB != null, "postContractCall stateDB is empty")
+        sys.common.require(ctx.trace != null, "postContractCall trace is empty")
+        sys.common.require(ctx.env != null, "postContractCall env is empty")
 
     }
 
     preTxExecute(ctx: PreTxExecuteCtx): void {
         //for smart contract call
-        sys.aspect.state.get<string>("k2").set<string>("test")
+        sys.aspect.mutableState(ctx).get<string>("k2").set<string>("test")
 
         const contextQueryResponse =sys.hostApi.runtimeContext.get("tx^context");
 
         ctx.aspect.transientStorage<string>("k2").set<string>("setk2")
         const nonce = ctx.tx.content.nonce
 
-        sys.vm.require(ctx.tx != null, 'preTxExecute tx is empty')
-        sys.vm.require(ctx.aspect != null, "preTxExecute context is empty")
-        sys.vm.require(ctx.env != null, "preTxExecute context is empty")
-        sys.vm.require(ctx.block != null, "preTxExecute context is empty")
-        sys.vm.require(ctx.stateDB != null, "preTxExecute context is empty")
+        sys.common.require(ctx.tx != null, 'preTxExecute tx is empty')
+        sys.common.require(ctx.aspect != null, "preTxExecute context is empty")
+        sys.common.require(ctx.env != null, "preTxExecute context is empty")
+        sys.common.require(ctx.block != null, "preTxExecute context is empty")
+        sys.common.require(ctx.stateDB != null, "preTxExecute context is empty")
     }
 
 }

@@ -19,7 +19,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
 
 
   isOwner(sender: string): bool {
-    let value = sys.aspect.property.get<string>("owner");
+    const value = sys.aspect.property.get<string>("owner");
     return value.includes(sender);
   }
   onContractBinding(contractAddr: string): bool {
@@ -49,7 +49,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
     let callCount = ctx.aspect.transientStorage<u64>(contextKey).unwrap();
     // If the call count large than 1, mark the transaction as failed.
     if (callCount > 1) {
-      sys.vm.revert("multiple inner tx calls");
+      sys.common.revert("multiple inner tx calls");
     }
   }
 

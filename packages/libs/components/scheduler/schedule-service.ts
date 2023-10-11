@@ -1,7 +1,9 @@
 import {EthTransaction, ScheduleMsg, ScheduleMsgId, ScheduleStatus} from '../../proto';
 import {ScheduleApi} from "../../hostapi";
-import {convertUtil} from "../../common";
+import {ConvertUtil, NotAuthorizedFail, ScheduleAble} from "../../common";
+
 const scheduleApi = ScheduleApi.instance();
+const convertUtil =new ConvertUtil();
 export class ScheduleManager {
     private static _instance: ScheduleManager | null = null;
 
@@ -16,7 +18,10 @@ export class ScheduleManager {
         return AdHocSchedule.new(name);
     }
 
-    public static instance(): ScheduleManager {
+    public static instance(ctx: ScheduleAble): ScheduleManager {
+        if (ctx == null) {
+            throw NotAuthorizedFail
+        }
         if (this._instance == null) {
             this._instance = new ScheduleManager();
         }

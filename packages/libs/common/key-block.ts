@@ -1,8 +1,8 @@
-import {Key} from './key-path';
+import {Key, ResultNotImplemented} from './key-path';
 import {EthBlockHeaderUnwrap, StringUnwrap, Uint64Unwrap, Uint8ArrayUnwrap} from "./result-convert";
-import {EthBlockHeader} from "../proto";
+import {EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice} from "../proto";
 
-export class BlockKey extends Key<any> {
+export class BlockKey extends Key<ResultNotImplemented> {
     constructor() {
         super('block');
     }
@@ -11,19 +11,19 @@ export class BlockKey extends Key<any> {
         return new BlockHeaderKey('header', this.parts, new EthBlockHeaderUnwrap());
     }
 
-    get txs(): Key {
+    get txs(): EthTxArrayKey {
         return new Key('txs', this.parts);
     }
 
-    get gasMeter(): Key {
+    get gasMeter(): GasMeterKey {
         return new Key('gasMeter', this.parts);
     }
 
-    get minGasPrice(): Key {
+    get minGasPrice(): MinGasPriceKey {
         return new Key('minGasPrice', this.parts);
     }
 
-    get lastCommit(): Key {
+    get lastCommit(): LastCommitKey {
         return new Key('lastCommit', this.parts);
     }
 }
@@ -97,4 +97,19 @@ export class BlockHeaderKey extends Key<EthBlockHeader> {
     get excessDataGas(): Key<string> {
         return new Key<string>('excessDataGas', this.parts, new StringUnwrap());
     }
+}
+export class EthTxArrayKey extends Key<EthTxArray> {
+
+}
+
+export class GasMeterKey extends Key<GasMeter> {
+
+}
+
+export class MinGasPriceKey extends Key<MinGasPrice> {
+
+}
+
+export class LastCommitKey extends Key<LastCommitInfo> {
+
 }
