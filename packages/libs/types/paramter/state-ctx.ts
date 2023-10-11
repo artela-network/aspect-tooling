@@ -1,10 +1,10 @@
 import {
   AspectStateModifiable,
-  BlockContextAble,
-  EnvContextAble,
+  BlockContextAccessible,
+  EnvContextAccessible,
   ScheduleAble,
-  StaticCallAble,
-  TxContextAble,
+  StaticCallable,
+  TxContextAccessible,
 } from '../../common';
 import {
   AspectProperty,
@@ -19,11 +19,11 @@ import {
 export class OperationCtx
   implements
     AspectStateModifiable,
-    StaticCallAble,
+    StaticCallable,
     ScheduleAble,
-    BlockContextAble,
-    EnvContextAble,
-    TxContextAble
+    BlockContextAccessible,
+    EnvContextAccessible,
+    TxContextAccessible
 {
   constructor() {}
 

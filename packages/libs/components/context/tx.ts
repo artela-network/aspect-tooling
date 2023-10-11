@@ -9,10 +9,10 @@ import {
   ContextKey,
   NewMessageError,
   NotAuthorizedFail,
-  ReceiptContextAble,
-  TraceContextAble,
-  TraceQuery,
-  TxContextAble,
+  ReceiptContextAccessible,
+  TraceAccessible,
+  TraceCtx,
+  TxContextAccessible,
 } from '../../common';
 import { Protobuf } from 'as-proto/assembly';
 import { RuntimeContextApi } from '../../hostapi';
@@ -21,7 +21,7 @@ import { GasMeterKey } from '../../common/key-block';
 
 const runtimeContext = RuntimeContextApi.instance();
 
-export class TraceContext implements TraceQuery {
+export class TraceContext implements TraceCtx {
   private static _instance: TraceContext | null;
 
   private constructor() {}
@@ -84,7 +84,7 @@ export class TraceContext implements TraceQuery {
     );
   }
 
-  public static instance(ctx: TraceContextAble): TraceContext {
+  public static instance(ctx: TraceAccessible): TraceContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }
@@ -112,7 +112,7 @@ export class Tx {
     return ContextKey.tx.gasMeter;
   }
 
-  public static instance(ctx: TxContextAble): Tx {
+  public static instance(ctx: TxContextAccessible): Tx {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }
@@ -132,7 +132,7 @@ export class ReceiptContext {
     return ContextKey.tx.receipt;
   }
 
-  public static instance(ctx: ReceiptContextAble): ReceiptContext {
+  public static instance(ctx: ReceiptContextAccessible): ReceiptContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }

@@ -1,9 +1,9 @@
 import {
   AspectStateModifiable,
-  BlockContextAble,
-  EnvContextAble,
+  BlockContextAccessible,
+  EnvContextAccessible,
   ScheduleAble,
-  StaticCallAble,
+  StaticCallable,
 } from '../../common';
 import {
   AspectProperty,
@@ -15,7 +15,12 @@ import {
 } from '../../components';
 
 export class OnBlockInitializeCtx
-  implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble, ScheduleAble
+  implements
+    AspectStateModifiable,
+    StaticCallable,
+    EnvContextAccessible,
+    BlockContextAccessible,
+    ScheduleAble
 {
   constructor() {}
 
@@ -53,7 +58,12 @@ export class OnBlockInitializeCtx
 }
 
 export class OnBlockFinalizeCtx
-  implements AspectStateModifiable, StaticCallAble, EnvContextAble, BlockContextAble, ScheduleAble
+  implements
+    AspectStateModifiable,
+    StaticCallable,
+    EnvContextAccessible,
+    BlockContextAccessible,
+    ScheduleAble
 {
   constructor() {}
 

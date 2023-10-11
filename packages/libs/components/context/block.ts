@@ -5,7 +5,7 @@ import {
   LastCommitKey,
   MinGasPriceKey,
 } from '../../common/key-block';
-import { BlockContextAble, ContextKey, NotAuthorizedFail } from '../../common';
+import { BlockContextAccessible, ContextKey, NotAuthorizedFail } from '../../common';
 
 export class BlockContext {
   private static _instance: BlockContext | null;
@@ -36,7 +36,7 @@ export class BlockContext {
     return ContextKey.block.lastCommit;
   }
 
-  public static instance(ctx: BlockContextAble): BlockContext {
+  public static instance(ctx: BlockContextAccessible): BlockContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }

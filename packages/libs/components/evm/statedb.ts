@@ -1,5 +1,5 @@
 import { StateDbApi } from '../../hostapi';
-import { NotAuthorizedFail, StateContextAble } from '../../common';
+import { NotAuthorizedFail, StateDBAccessible } from '../../common';
 
 export class StateContext {
   private stateDbApi: StateDbApi;
@@ -30,7 +30,7 @@ export class StateContext {
 
   private static _instance: StateContext | null;
 
-  public static instance(ctx: StateContextAble): StateContext {
+  public static instance(ctx: StateDBAccessible): StateContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }

@@ -1,4 +1,4 @@
-import { ContextKey, EnvContextAble, NotAuthorizedFail } from '../../common';
+import { ContextKey, EnvContextAccessible, NotAuthorizedFail } from '../../common';
 import { ChainConfigKey, ConsParamsKey, EnvContentKey, EvmParamsKey } from '../../common/key-env';
 
 export class EnvContext {
@@ -22,7 +22,7 @@ export class EnvContext {
     return ContextKey.env.chainConfig;
   }
 
-  public static instance(ctx: EnvContextAble): EnvContext {
+  public static instance(ctx: EnvContextAccessible): EnvContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }

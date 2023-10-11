@@ -1,8 +1,8 @@
-import { AspectStateReadonly, StaticCallAble } from '../../common';
+import { AspectStateReadonly, StaticCallable } from '../../common';
 import { AspectProperty, ImmutableAspectState, StaticCaller } from '../../components';
 import { EthTransaction } from '../../proto';
 
-export class FilterTxCtx implements AspectStateReadonly, StaticCallAble {
+export class FilterTxCtx implements AspectStateReadonly, StaticCallable {
   private readonly _tx: EthTransaction;
   constructor(tx: EthTransaction) {
     this._tx = tx;

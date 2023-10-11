@@ -12,23 +12,23 @@ import {
 } from '../../components';
 import {
   AspectStateModifiable,
-  BlockContextAble,
-  EnvContextAble,
-  JustInTimeCallAble,
-  StateContextAble,
-  TraceContextAble,
-  TxContextAble,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  JustInTimeCallable,
+  StateDBAccessible,
+  TraceAccessible,
+  TxContextAccessible,
 } from '../../common';
 
 export class PreContractCallCtx
   implements
-    JustInTimeCallAble,
+    JustInTimeCallable,
     AspectStateModifiable,
-    BlockContextAble,
-    StateContextAble,
-    TraceContextAble,
-    TxContextAble,
-    EnvContextAble
+    BlockContextAccessible,
+    StateDBAccessible,
+    TraceAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
 {
   private readonly _innerTx: EthStackTransaction;
 
@@ -85,13 +85,13 @@ export class PreContractCallCtx
 
 export class PostContractCallCtx
   implements
-    JustInTimeCallAble,
+    JustInTimeCallable,
     AspectStateModifiable,
-    BlockContextAble,
-    StateContextAble,
-    TraceContextAble,
-    TxContextAble,
-    EnvContextAble
+    BlockContextAccessible,
+    StateDBAccessible,
+    TraceAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
 {
   private readonly _innerTx: EthStackTransaction;
   constructor(innerTx: EthStackTransaction) {

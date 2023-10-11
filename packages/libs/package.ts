@@ -22,15 +22,15 @@ import {
 import {
   AspectStateModifiable,
   AspectStateReadonly,
-  BlockContextAble,
+  BlockContextAccessible,
   ConvertUtil,
-  EnvContextAble,
-  JustInTimeCallAble,
-  ReceiptContextAble,
-  StateContextAble,
-  StaticCallAble,
-  TraceContextAble,
-  TxContextAble,
+  EnvContextAccessible,
+  JustInTimeCallable,
+  ReceiptContextAccessible,
+  StateDBAccessible,
+  StaticCallable,
+  TraceAccessible,
+  TxContextAccessible,
 } from './common';
 
 export namespace sys {
@@ -69,35 +69,35 @@ export namespace sys {
     export const property = AspectProperty.instance();
   }
   export namespace evm {
-    export function staticCall(ctx: StaticCallAble): StaticCaller {
+    export function staticCall(ctx: StaticCallable): StaticCaller {
       return StaticCaller.instance(ctx);
     }
-    export function jitCall(ctx: JustInTimeCallAble): JustInTimeCaller {
+    export function jitCall(ctx: JustInTimeCallable): JustInTimeCaller {
       return JustInTimeCaller.instance(ctx);
     }
 
-    export function stateDB(ctx: StateContextAble): StateContext {
+    export function stateDB(ctx: StateDBAccessible): StateContext {
       return StateContext.instance(ctx);
     }
   }
   export namespace context {
-    export function env(ctx: EnvContextAble): EnvContext {
+    export function env(ctx: EnvContextAccessible): EnvContext {
       return EnvContext.instance(ctx);
     }
 
-    export function block(ctx: BlockContextAble): BlockContext {
+    export function block(ctx: BlockContextAccessible): BlockContext {
       return BlockContext.instance(ctx);
     }
 
-    export function tx(ctx: TxContextAble): Tx {
+    export function tx(ctx: TxContextAccessible): Tx {
       return Tx.instance(ctx);
     }
 
-    export function receipt(ctx: ReceiptContextAble): ReceiptContext {
+    export function receipt(ctx: ReceiptContextAccessible): ReceiptContext {
       return ReceiptContext.instance(ctx);
     }
 
-    export function trace(ctx: TraceContextAble): TraceContext {
+    export function trace(ctx: TraceAccessible): TraceContext {
       return TraceContext.instance(ctx);
     }
   }

@@ -15,37 +15,37 @@ export interface AspectStateModifiable extends AspectStateReadonly {
 export interface AspectStateReadonly {
   __readonlyAspectStateImplemented(): void;
 }
-export interface StaticCallAble {
+export interface StaticCallable {
   __staticCallableImplemented(): void;
 }
-export interface JustInTimeCallAble {
+export interface JustInTimeCallable {
   __justInTimeCallableImplemented(): void;
 }
 
-export interface StateContextAble {
+export interface StateDBAccessible {
   __stateQueryableImplemented(): void;
 }
 
-export interface BlockContextAble {
+export interface BlockContextAccessible {
   __blockContextImplemented(): void;
 }
 
-export interface TxContextAble {
+export interface TxContextAccessible {
   __txContextImplemented(): void;
 }
 
-export interface EnvContextAble {
+export interface EnvContextAccessible {
   __envContextImplemented(): void;
 }
 
-export interface ReceiptContextAble {
+export interface ReceiptContextAccessible {
   __receiptContextImplemented(): void;
 }
 
-export interface TraceContextAble {
+export interface TraceAccessible {
   __traceContextImplemented(): void;
 }
-export interface TraceQuery {
+export interface TraceCtx {
   findCall(index: u64): EthStackTransaction | null;
 
   callTree(): EthCallStacks;

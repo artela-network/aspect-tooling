@@ -1,10 +1,10 @@
 import {
   AspectStateModifiable,
-  BlockContextAble,
-  EnvContextAble,
-  ReceiptContextAble,
-  StaticCallAble,
-  TxContextAble,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  ReceiptContextAccessible,
+  StaticCallable,
+  TxContextAccessible,
 } from '../../common';
 import {
   AspectContext,
@@ -20,11 +20,11 @@ import {
 export class PostTxCommitCtx
   implements
     AspectStateModifiable,
-    TxContextAble,
-    ReceiptContextAble,
-    BlockContextAble,
-    EnvContextAble,
-    StaticCallAble
+    TxContextAccessible,
+    ReceiptContextAccessible,
+    BlockContextAccessible,
+    EnvContextAccessible,
+    StaticCallable
 {
   constructor() {}
 

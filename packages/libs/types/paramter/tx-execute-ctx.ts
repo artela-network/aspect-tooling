@@ -1,11 +1,11 @@
 import {
   AspectStateModifiable,
-  BlockContextAble,
-  EnvContextAble,
-  StateContextAble,
-  StaticCallAble,
-  TraceContextAble,
-  TxContextAble,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  StateDBAccessible,
+  StaticCallable,
+  TraceAccessible,
+  TxContextAccessible,
 } from '../../common';
 import {
   AspectContext,
@@ -22,11 +22,11 @@ import {
 export class PreTxExecuteCtx
   implements
     AspectStateModifiable,
-    StaticCallAble,
-    StateContextAble,
-    BlockContextAble,
-    TxContextAble,
-    EnvContextAble
+    StaticCallable,
+    StateDBAccessible,
+    BlockContextAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
 {
   constructor() {}
 
@@ -78,13 +78,13 @@ export class PreTxExecuteCtx
 
 export class PostTxExecuteCtx
   implements
-    TraceContextAble,
+    TraceAccessible,
     AspectStateModifiable,
-    StaticCallAble,
-    StateContextAble,
-    BlockContextAble,
-    TxContextAble,
-    EnvContextAble
+    StaticCallable,
+    StateDBAccessible,
+    BlockContextAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
 {
   constructor() {}
 

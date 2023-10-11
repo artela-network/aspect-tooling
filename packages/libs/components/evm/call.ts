@@ -5,7 +5,7 @@ import {
   JitInherentResponse,
 } from '../../proto';
 import { EvmCallApi } from '../../hostapi';
-import { JustInTimeCallAble, NotAuthorizedFail, StaticCallAble } from '../../common';
+import { JustInTimeCallable, NotAuthorizedFail, StaticCallable } from '../../common';
 
 export class StaticCaller {
   private static _instance: StaticCaller | null;
@@ -16,7 +16,7 @@ export class StaticCaller {
     return EvmCallApi.instance().staticCall(request);
   }
 
-  public static instance(ctx: StaticCallAble): StaticCaller {
+  public static instance(ctx: StaticCallable): StaticCaller {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }
@@ -36,7 +36,7 @@ export class JustInTimeCaller {
     return EvmCallApi.instance().jitCall(request);
   }
 
-  public static instance(ctx: JustInTimeCallAble): JustInTimeCaller {
+  public static instance(ctx: JustInTimeCallable): JustInTimeCaller {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }
