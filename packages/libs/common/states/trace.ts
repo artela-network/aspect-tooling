@@ -1,5 +1,5 @@
 import { EthStateChange } from '../../proto';
-import {TraceCtx} from "../authority-base";
+import { TraceCtx } from '../authority-base';
 
 export class State<T> {
   readonly account: string;

@@ -18,7 +18,6 @@ import {
 export class StoreAspect implements IAspectTransaction, IAspectBlock {
   filterTx(ctx: FilterTxCtx): bool {
     // add test data
-
   }
 
   isOwner(sender: string): bool {
@@ -89,7 +88,7 @@ export class StoreAspect implements IAspectTransaction, IAspectBlock {
     const k1 = ctx.aspect.transientStorage<string>('k1').unwrap();
     const k2 = ctx.aspect.transientStorage<string>('k2').unwrap();
 
-    sys.require(k1 == 'v2' && k2 == 'v2', "get error");
+    sys.require(k1 == 'v2' && k2 == 'v2', 'get error');
     sys.require(ctx.tx != null, 'postTxExecute tx is empty');
     sys.require(ctx.env != null, 'postTxExecute env is empty');
     sys.require(ctx.aspect != null, 'postTxExecute aspect is empty');
@@ -98,7 +97,6 @@ export class StoreAspect implements IAspectTransaction, IAspectBlock {
   }
 
   preContractCall(ctx: PreContractCallCtx): void {
-
     sys.require(ctx.tx != null, 'postContractCall tx is empty');
     sys.require(ctx.block != null, 'postContractCall block is empty');
     sys.require(ctx.aspect != null, 'postContractCall aspect is empty');
