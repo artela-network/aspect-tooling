@@ -121,7 +121,7 @@ abstract class BaseType implements ASTType {
 
   constructorFunc(stateVarName: string): string {
     return `
-        constructor(ctx: TraceQuery, addr: string, indices: Uint8Array[] = []) {
+        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
             super(new StateChangeProperties(ctx, addr, '${stateVarName}', indices));
         }
         `;
@@ -193,7 +193,7 @@ export class ASTNumber extends BaseType {
     if (this.bits > 64) {
       return `
             override unmarshalState(raw: EthStateChange) : State<BigInt> {
-                let valueHex = sys.common.utils.uint8ArrayToHex(raw.value);
+                let valueHex = sys.utils.uint8ArrayToHex(raw.value);
                 let value = BigInt.fromString(valueHex, 16);
                 return new State(raw.account, value, raw.callIndex);
             }
@@ -202,7 +202,7 @@ export class ASTNumber extends BaseType {
 
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            let valueHex = sys.common.utils.uint8ArrayToHex(raw.value);
+            let valueHex = sys.utils.uint8ArrayToHex(raw.value);
             let value = BigInt.fromString(valueHex, 16);
             return new State(raw.account, <${this.asType()}>value.to${
       this.signed ? 'U' : ''
@@ -524,7 +524,7 @@ export class ASTStruct extends BaseComplexType {
 
   structConstructor(stateVarName: string, properties: [string, string][]): string {
     let res = `
-        constructor(ctx: TraceQuery, addr: string, indices: Uint8Array[] = []) {
+        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
         `;
 
     for (let i = 0; i < properties.length; i++) {
