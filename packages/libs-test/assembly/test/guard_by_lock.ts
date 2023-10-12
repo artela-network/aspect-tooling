@@ -45,7 +45,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
 
     // 2.Check if another transaction has already occupied.
     if (this._ENTERED == ctx.aspect.transientStorage<string>(reentKey).unwrap()) {
-      sys.common.revert('revert');
+      sys.revert('revert');
     }
     // 3.Set reentrant lock entered.
     ctx.aspect.transientStorage<string>(reentKey).set<string>(this._ENTERED);

@@ -44,7 +44,7 @@ class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
     let callCount = ctx.aspect.transientStorage<u64>(contextKey).unwrap();
     // If the call count large than 1, mark the transaction as failed.
     if (callCount > 1) {
-      sys.common.revert('multiple inner tx calls');
+      sys.revert('multiple inner tx calls');
     }
   }
 

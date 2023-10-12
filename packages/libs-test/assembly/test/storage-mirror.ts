@@ -10,7 +10,7 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
   sys,
-  JitInherentRequest,
+  JitInherentRequest, ethereum,
 } from '@artela/aspect-libs';
 
 export class StorageMirror implements IAspectTransaction, IAspectBlock {
@@ -40,32 +40,32 @@ export class StorageMirror implements IAspectTransaction, IAspectBlock {
   preContractCall(ctx: PreContractCallCtx): void {}
 
   postContractCall(ctx: PostContractCallCtx): void {
-    const txData = sys.common.utils.uint8ArrayToHex(ctx.tx.content.input);
+    const txData = sys.utils.uint8ArrayToHex(ctx.tx.content.input);
     // calling store method
     if (txData.startsWith('6057361d')) {
       // then we try to mirror the call to another storage contract
       const walletAddress = sys.aspect.property.get<string>('wallet');
       const contractAddress = sys.aspect.property.get<string>('contract');
-      const callData = sys.common.ethereum.abiEncode('execute', [
-        sys.common.ethereum.Address.fromHexString(contractAddress),
-        sys.common.ethereum.Number.fromU64(0),
-        sys.common.ethereum.Bytes.fromHexString(txData),
+      const callData = ethereum.abiEncode('execute', [
+        ethereum.Address.fromHexString(contractAddress),
+        ethereum.Number.fromU64(0),
+        ethereum.Bytes.fromHexString(txData),
       ]);
 
       const request = new JitInherentRequest(
-        sys.common.utils.hexToUint8Array(walletAddress),
+        sys.utils.hexToUint8Array(walletAddress),
         new Uint8Array(0),
         new Uint8Array(0),
-        sys.common.utils.hexToUint8Array(callData),
-        sys.common.utils.hexToUint8Array(sys.common.ethereum.Number.fromU64(1000000).encodeHex()),
-        sys.common.utils.hexToUint8Array(sys.common.ethereum.Number.fromU64(1000000).encodeHex()),
+        sys.utils.hexToUint8Array(callData),
+        sys.utils.hexToUint8Array(ethereum.Number.fromU64(1000000).encodeHex()),
+        sys.utils.hexToUint8Array(ethereum.Number.fromU64(1000000).encodeHex()),
         new Uint8Array(0),
         new Uint8Array(0),
         new Uint8Array(0),
       );
 
-      const response = sys.evm.jitSend(request);
-      sys.common.require(response.success, 'failed to call JIT');
+      const response = sys.evm.jitCall(ctx).submit(request);
+      sys.require(response.success, 'failed to call JIT');
     }
   }
 

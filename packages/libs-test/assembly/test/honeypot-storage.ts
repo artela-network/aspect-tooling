@@ -23,7 +23,7 @@ export namespace HoneyPotState {
     }
 
     override unmarshalState(raw: EthStateChange): State<BigInt> {
-      const valueHex = sys.common.utils.uint8ArrayToHex(raw.value);
+      const valueHex = sys.utils.uint8ArrayToHex(raw.value);
       const value = BigInt.fromString(valueHex, 16);
       return new State(raw.account, value, raw.callIndex);
     }
@@ -45,7 +45,7 @@ export namespace HoneyPotState {
       return new balances_MappingValue(
         this.__properties__.ctx,
         this.__properties__.account,
-        sys.common.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)),
+        sys.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)),
       );
     }
 
@@ -61,7 +61,7 @@ export namespace HoneyPotState {
       return new balances_MappingValue(
         this.__properties__.ctx,
         this.__properties__.account,
-        sys.common.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]),
+        sys.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]),
       );
     }
   }
@@ -73,7 +73,7 @@ export namespace HoneyPotState {
     }
 
     override unmarshalState(raw: EthStateChange): State<BigInt> {
-      const valueHex = sys.common.utils.uint8ArrayToHex(raw.value);
+      const valueHex = sys.utils.uint8ArrayToHex(raw.value);
       const value = BigInt.fromString(valueHex, 16);
       return new State(raw.account, value, raw.callIndex);
     }
