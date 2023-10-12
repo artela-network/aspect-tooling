@@ -43,9 +43,7 @@ export interface IAspectOperation {
 export class PointCutType {
   static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
   static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
-  static readonly ON_TX_VERIFY_METHOD: string = 'onTxVerify';
-  static readonly ON_ACCOUNT_VERIFY_METHOD: string = 'onAccountVerify';
-  static readonly ON_GAS_PAYMENT_METHOD: string = 'onGasPayment';
+
   static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
   static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
   static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';

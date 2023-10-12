@@ -1,4 +1,8 @@
-import { crypto, utils } from '../../../system';
+import { ConvertUtil } from '../../helper/convert';
+import { CryptoApi } from '../../../hostapi';
+
+const crypto = CryptoApi.instance();
+const utils = new ConvertUtil();
 
 export namespace ethereum {
   export function parseMethodSig(calldata: Uint8Array): string {

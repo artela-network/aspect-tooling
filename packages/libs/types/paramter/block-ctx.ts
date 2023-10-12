@@ -1,62 +1,101 @@
-import { BlockContext, EnvContext } from '../../context';
-import { AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
-import { ScheduleManager } from '../../components';
+import {
+  AspectStateModifiable,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  ScheduleAble,
+  StaticCallable,
+} from '../../common';
+import {
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  ScheduleManager,
+  StaticCaller,
+} from '../../components';
 
-export class OnBlockInitializeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
-  private readonly _blockContext: BlockContext;
-  private readonly _env: EnvContext;
-  private readonly _schedule: ScheduleManager;
-
-  constructor() {
-    this._blockContext = BlockContext.get();
-    this._env = EnvContext.get();
-    this._schedule = ScheduleManager.get();
-  }
+export class OnBlockInitializeCtx
+  implements
+    AspectStateModifiable,
+    StaticCallable,
+    EnvContextAccessible,
+    BlockContextAccessible,
+    ScheduleAble
+{
+  constructor() {}
 
   get block(): BlockContext {
-    return this._blockContext;
+    return BlockContext.instance(this);
   }
-
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this);
   }
 
+  get property(): AspectProperty {
+    return AspectProperty.instance();
+  }
+
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
+  }
+
+  get staticCall(): StaticCaller {
+    return StaticCaller.instance(this);
+  }
   get schedule(): ScheduleManager {
-    return this._schedule;
+    return ScheduleManager.instance(this);
   }
 
-  __evmCallableImplemented(): void {}
+  __blockContextImplemented(): void {}
 
+  __envContextImplemented(): void {}
+
+  __staticCallableImplemented(): void {}
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+  __scheduleImplemented(): void {}
 }
 
-export class OnBlockFinalizeCtx implements EvmCallableCtx, AspectStateModifiableCtx {
-  private readonly _blockContext: BlockContext;
-  private readonly _env: EnvContext;
-  private readonly _schedule: ScheduleManager;
-
-  constructor() {
-    this._blockContext = BlockContext.get();
-    this._env = EnvContext.get();
-    this._schedule = ScheduleManager.get();
-  }
+export class OnBlockFinalizeCtx
+  implements
+    AspectStateModifiable,
+    StaticCallable,
+    EnvContextAccessible,
+    BlockContextAccessible,
+    ScheduleAble
+{
+  constructor() {}
 
   get block(): BlockContext {
-    return this._blockContext;
+    return BlockContext.instance(this);
+  }
+  get env(): EnvContext {
+    return EnvContext.instance(this);
   }
 
-  get env(): EnvContext {
-    return this._env;
+  get property(): AspectProperty {
+    return AspectProperty.instance();
+  }
+
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
+  }
+
+  get staticCall(): StaticCaller {
+    return StaticCaller.instance(this);
   }
   get schedule(): ScheduleManager {
-    return this._schedule;
+    return ScheduleManager.instance(this);
   }
+  __blockContextImplemented(): void {}
+  __envContextImplemented(): void {}
 
-  __evmCallableImplemented(): void {}
+  __staticCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __scheduleImplemented(): void {}
 }

@@ -1,5 +1,5 @@
 import { EthStateChange } from '../../proto';
-import { TraceContext } from '../../context';
+import {TraceCtx} from "../authority-base";
 
 export class State<T> {
   readonly account: string;
@@ -46,7 +46,7 @@ export abstract class StateChange<T> {
 
 export class StateChangeProperties {
   constructor(
-    readonly ctx: TraceContext,
+    readonly ctx: TraceCtx,
     readonly account: string,
     readonly stateVar: string,
     readonly indices: Uint8Array[] = [],

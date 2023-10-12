@@ -1,21 +1,19 @@
 // The entry file of your WebAssembly module.
 
-import { IAspectOperation, OperationCtx } from '@artela/aspect-libs/types';
-import { utils } from '@artela/aspect-libs';
-import { Entry } from '@artela/aspect-libs/types/aspect-entry';
-
-function AssertTrue(cond: bool, msg: string): void {
-  if (!cond) {
-    utils.revert(msg);
-  }
-}
+import { Entry, IAspectOperation, OperationCtx, sys } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
   operation(ctx: OperationCtx, data: Uint8Array): Uint8Array {
-    AssertTrue(ctx != null, 'operation context is empty');
-    AssertTrue(data != null, 'operation context is empty');
-    AssertTrue(ctx.staticCaller != null, 'operation context is empty');
-    return utils.stringToUint8Array('test');
+    sys.require(ctx != null, 'operation context is empty');
+    sys.require(data != null, 'operation context is empty');
+    sys.require(ctx.mutableState != null, 'operation context is empty');
+    sys.require(ctx.staticCall != null, 'operation context is empty');
+    sys.require(ctx.schedule != null, 'operation context is empty');
+    sys.require(ctx.tx != null, 'operation context is empty');
+    sys.require(ctx.env != null, 'operation context is empty');
+    sys.require(ctx.block != null, 'operation context is empty');
+    const uint8Array = sys.utils.stringToUint8Array('test');
+    return uint8Array;
   }
 }
 
@@ -26,5 +24,5 @@ export function execute(methodPtr: i32, argPtr: i32): i32 {
 }
 
 export function allocate(size: i32): i32 {
-  return utils.alloc(size);
+  return sys.alloc(size);
 }

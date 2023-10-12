@@ -1,4 +1,6 @@
 #bash
+rm -rf ./node_modules
+npm install
 rm -rf ./build
 for file in ./assembly/test/*-test.ts
 do

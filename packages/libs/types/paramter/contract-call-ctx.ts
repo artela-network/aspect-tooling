@@ -1,107 +1,145 @@
 import { EthStackTransaction } from '../../proto';
-import { BlockContext, EnvContext, TraceContext, TxContext } from '../../context';
 import {
   AspectContext,
-  AspectStateModifiableCtx,
-  InherentCallableCtx,
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  JustInTimeCaller,
+  MutableAspectState,
   StateContext,
-} from '../../system';
+  TraceContext,
+  Tx,
+} from '../../components';
+import {
+  AspectStateModifiable,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  JustInTimeCallable,
+  StateDBAccessible,
+  TraceAccessible,
+  TxContextAccessible,
+} from '../../common';
 
-export class PreContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
+export class PreContractCallCtx
+  implements
+    JustInTimeCallable,
+    AspectStateModifiable,
+    BlockContextAccessible,
+    StateDBAccessible,
+    TraceAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
+{
   private readonly _innerTx: EthStackTransaction;
-  private readonly _aspectContext: AspectContext;
-  private readonly _blockContext: BlockContext;
-  private readonly _stateContext: StateContext;
-  private readonly _traceContext: TraceContext;
-  private readonly _txContext: TxContext;
-  private readonly _env: EnvContext;
 
   constructor(innerTx: EthStackTransaction) {
     this._innerTx = innerTx;
-    this._aspectContext = AspectContext.get();
-    this._blockContext = BlockContext.get();
-    this._stateContext = StateContext.get();
-    this._traceContext = TraceContext.get();
-    this._txContext = TxContext.get();
-    this._env = EnvContext.get();
   }
-
-  get tx(): TxContext {
-    return this._txContext;
+  get property(): AspectProperty {
+    return AspectProperty.instance();
   }
-
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
+  }
+  get stateDB(): StateContext {
+    return StateContext.instance(this);
+  }
+  get jitCall(): JustInTimeCaller {
+    return JustInTimeCaller.instance(this);
+  }
+  get tx(): Tx {
+    return Tx.instance(this);
+  }
   get block(): BlockContext {
-    return this._blockContext;
+    return BlockContext.instance(this);
   }
-
   get currentCall(): EthStackTransaction {
     return this._innerTx;
   }
-
-  get stateDB(): StateContext {
-    return this._stateContext;
-  }
-
   get trace(): TraceContext {
-    return this._traceContext;
+    return TraceContext.instance(this);
   }
-
   get aspect(): AspectContext {
-    return this._aspectContext;
+    return AspectContext.instance();
   }
-
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this);
   }
-
-  __inherentCallableImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __blockContextImplemented(): void {}
+
+  __envContextImplemented(): void {}
+
+  __justInTimeCallableImplemented(): void {}
+
+  __stateQueryableImplemented(): void {}
+
+  __traceContextImplemented(): void {}
+
+  __txContextImplemented(): void {}
 }
 
-export class PostContractCallCtx implements AspectStateModifiableCtx, InherentCallableCtx {
-  private readonly _aspectContext: AspectContext = AspectContext.get();
-  private readonly _blockContext: BlockContext = BlockContext.get();
-  private readonly _stateContext: StateContext = StateContext.get();
-  private readonly _traceContext: TraceContext = TraceContext.get();
-  private readonly _txContext: TxContext = TxContext.get();
-  private readonly _env: EnvContext = EnvContext.get();
-
-  constructor(private readonly _currInnerTx: EthStackTransaction) {}
-
-  get tx(): TxContext {
-    return this._txContext;
+export class PostContractCallCtx
+  implements
+    JustInTimeCallable,
+    AspectStateModifiable,
+    BlockContextAccessible,
+    StateDBAccessible,
+    TraceAccessible,
+    TxContextAccessible,
+    EnvContextAccessible
+{
+  private readonly _innerTx: EthStackTransaction;
+  constructor(innerTx: EthStackTransaction) {
+    this._innerTx = innerTx;
   }
-
-  get block(): BlockContext {
-    return this._blockContext;
+  get property(): AspectProperty {
+    return AspectProperty.instance();
   }
-
-  get currentCall(): EthStackTransaction {
-    return this._currInnerTx;
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
   }
-
-  get aspect(): AspectContext {
-    return this._aspectContext;
-  }
-
   get stateDB(): StateContext {
-    return this._stateContext;
+    return StateContext.instance(this);
   }
-
+  get jitCall(): JustInTimeCaller {
+    return JustInTimeCaller.instance(this);
+  }
+  get tx(): Tx {
+    return Tx.instance(this);
+  }
+  get block(): BlockContext {
+    return BlockContext.instance(this);
+  }
+  get currentCall(): EthStackTransaction {
+    return this._innerTx;
+  }
   get trace(): TraceContext {
-    return this._traceContext;
+    return TraceContext.instance(this);
   }
-
+  get aspect(): AspectContext {
+    return AspectContext.instance();
+  }
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this);
   }
-
-  __inherentCallableImplemented(): void {}
-
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __blockContextImplemented(): void {}
+
+  __envContextImplemented(): void {}
+
+  __justInTimeCallableImplemented(): void {}
+
+  __stateQueryableImplemented(): void {}
+
+  __traceContextImplemented(): void {}
+
+  __txContextImplemented(): void {}
 }

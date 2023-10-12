@@ -1,38 +1,68 @@
-import { AspectContext, AspectStateModifiableCtx, EvmCallableCtx } from '../../system';
-import { BlockContext, EnvContext, TxContext } from '../../context';
+import {
+  AspectStateModifiable,
+  BlockContextAccessible,
+  EnvContextAccessible,
+  ScheduleAble,
+  StaticCallable,
+  TxContextAccessible,
+} from '../../common';
+import {
+  AspectProperty,
+  BlockContext,
+  EnvContext,
+  MutableAspectState,
+  ScheduleManager,
+  StaticCaller,
+  Tx,
+} from '../../components';
 
-export class OperationCtx implements AspectStateModifiableCtx, EvmCallableCtx {
-  private readonly _aspect: AspectContext;
-  private readonly _tx: TxContext;
-  private readonly _env: EnvContext;
-  private readonly _block: BlockContext;
+export class OperationCtx
+  implements
+    AspectStateModifiable,
+    StaticCallable,
+    ScheduleAble,
+    BlockContextAccessible,
+    EnvContextAccessible,
+    TxContextAccessible
+{
+  constructor() {}
 
-  constructor() {
-    this._aspect = AspectContext.get();
-    this._tx = TxContext.get();
-    this._env = EnvContext.get();
-    this._block = BlockContext.get();
+  get property(): AspectProperty {
+    return AspectProperty.instance();
   }
 
-  get tx(): TxContext {
-    return this._tx;
+  get mutableState(): MutableAspectState {
+    return MutableAspectState.instance(this);
   }
 
-  get aspect(): AspectContext {
-    return this._aspect;
+  get schedule(): ScheduleManager {
+    return ScheduleManager.instance(this);
   }
 
+  get staticCall(): StaticCaller {
+    return StaticCaller.instance(this);
+  }
+  get tx(): Tx {
+    return Tx.instance(this);
+  }
   get env(): EnvContext {
-    return this._env;
+    return EnvContext.instance(this);
   }
-
   get block(): BlockContext {
-    return this._block;
+    return BlockContext.instance(this);
   }
 
-  __evmCallableImplemented(): void {}
+  __blockContextImplemented(): void {}
+
+  __envContextImplemented(): void {}
 
   __modifiableAspectStateImplemented(): void {}
 
   __readonlyAspectStateImplemented(): void {}
+
+  __scheduleImplemented(): void {}
+
+  __staticCallableImplemented(): void {}
+
+  __txContextImplemented(): void {}
 }

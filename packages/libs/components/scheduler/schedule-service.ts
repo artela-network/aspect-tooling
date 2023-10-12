@@ -1,6 +1,9 @@
 import { EthTransaction, ScheduleMsg, ScheduleMsgId, ScheduleStatus } from '../../proto';
-import { Scheduler, utils } from '../../system';
+import { ScheduleApi } from '../../hostapi';
+import { ConvertUtil, NotAuthorizedFail, ScheduleAble } from '../../common';
 
+const scheduleApi = ScheduleApi.instance();
+const convertUtil = new ConvertUtil();
 export class ScheduleManager {
   private static _instance: ScheduleManager | null = null;
 
@@ -14,7 +17,10 @@ export class ScheduleManager {
     return AdHocSchedule.new(name);
   }
 
-  public static get(): ScheduleManager {
+  public static instance(ctx: ScheduleAble): ScheduleManager {
+    if (ctx == null) {
+      throw NotAuthorizedFail;
+    }
     if (this._instance == null) {
       this._instance = new ScheduleManager();
     }
@@ -38,7 +44,7 @@ export class PeriodicSchedule implements Schedule {
 
     sch.id = new ScheduleMsgId(this._name, '');
     // sch.id.aspectId, createHeight will be set in the hostapi
-    return Scheduler.get().submit(sch);
+    return scheduleApi.submit(sch);
   }
 
   public static new(name: string): PeriodicSchedule {
@@ -86,7 +92,7 @@ export class AdHocSchedule implements Schedule {
 
     sch.id = new ScheduleMsgId(this._name, '');
     // sch.id.aspectId, createHeight will be set in the hostapi
-    return Scheduler.get().submit(sch);
+    return scheduleApi.submit(sch);
   }
 
   public static new(name: string): AdHocSchedule {
@@ -112,7 +118,7 @@ export class AdHocSchedule implements Schedule {
 
 export class ScheduleTx {
   public New(input: string, msg: ScheduleOpts): EthTransaction {
-    const inputBytes = utils.stringToUint8Array(input);
+    const inputBytes = convertUtil.stringToUint8Array(input);
 
     const tx = new EthTransaction();
     tx.chainId = '';

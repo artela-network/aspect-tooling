@@ -1,99 +1,88 @@
 // The entry file of your WebAssembly module.
 
 import {
+  Entry,
   FilterTxCtx,
-  GetPayMasterCtx,
   IAspectTransaction,
   PostContractCallCtx,
   PostTxCommitCtx,
   PostTxExecuteCtx,
   PreContractCallCtx,
   PreTxExecuteCtx,
-  VerifyAccountCtx,
-  VerifyTxCtx,
-  Entry,
-  UtilityProvider,
+  sys,
 } from '@artela/aspect-libs';
-
-function AssertTrue(cond: bool, msg: string): void {
-  if (!cond) {
-    UtilityProvider.revert(msg);
-  }
-}
 
 class AspectTest implements IAspectTransaction {
   filterTx(ctx: FilterTxCtx): bool {
-    AssertTrue(ctx.tx != null, 'FilterTxCtx tx is empty');
-    AssertTrue(ctx.aspectContext != null, 'FilterTxCtx context is empty');
+    /*    ctx.readonlyState.get<string>("k2")
+         sys.aspect.readonlyState(ctx).get<string>("k1")
+
+      ctx.staticCall.submit()
+         ctx.tx.nonce
+         ctx.property.get()*/
 
     return true;
   }
 
-  getPayMaster(ctx: GetPayMasterCtx): string {
-    AssertTrue(ctx.tx != null, 'GetPayMasterCtx tx is empty');
-    AssertTrue(ctx.aspectContext != null, 'GetPayMasterCtx context is empty');
-
-    return 'test';
-  }
-
   isOwner(sender: string): bool {
-    AssertTrue(sender != null, 'isOwner sender is empty');
+    sys.require(sender != null, 'isOwner sender is empty');
     return true;
   }
 
   onContractBinding(contractAddr: string): bool {
-    AssertTrue(contractAddr != null, 'onContractBinding contractAddr is empty');
+    sys.require(contractAddr != null, 'onContractBinding contractAddr is empty');
     return true;
-  }
-
-  postContractCall(ctx: PostContractCallCtx): void {
-    AssertTrue(ctx.tx != null, 'postContractCall tx is empty');
-    AssertTrue(ctx.jitCall != null, 'postContractCall call is empty');
-    AssertTrue(ctx.aspectContext != null, 'postContractCall context is empty');
-    AssertTrue(ctx.traceContext != null, 'postContractCall innerTx is empty');
-    AssertTrue(ctx.stateContext != null, 'postContractCall innerTxContext is empty');
   }
 
   postTxCommit(ctx: PostTxCommitCtx): void {
-    AssertTrue(ctx.tx != null, 'postTxCommit tx is empty');
-    AssertTrue(ctx.receipt != null, 'postTxCommit receipt is empty');
-    AssertTrue(ctx.aspectContext != null, 'postTxCommit context is empty');
-    AssertTrue(ctx.blockContext != null, 'postTxCommit staticCaller is empty');
-    AssertTrue(ctx.staticCaller != null, 'postTxCommit evmTxContext is empty');
-    AssertTrue(ctx.schedule != null, 'postTxCommit scheduleManager is empty');
+    sys.require(ctx.tx != null, 'postTxCommit tx is empty');
+    sys.require(ctx.receipt != null, 'postTxCommit receipt is empty');
+    sys.require(ctx.aspect != null, 'postTxCommit context is empty');
+    sys.require(ctx.block != null, 'postTxCommit staticCaller is empty');
+    sys.require(ctx.env != null, 'postTxCommit evmTxContext is empty');
   }
 
   postTxExecute(ctx: PostTxExecuteCtx): void {
-    AssertTrue(ctx.tx != null, 'postTxExecute tx is empty');
-    AssertTrue(ctx.aspectContext != null, 'postTxExecute aspectContext is empty');
-    AssertTrue(ctx.stateContext != null, 'postTxExecute evmTxContext is empty');
-    AssertTrue(ctx.staticCaller != null, 'postTxExecute staticCaller is empty');
-    AssertTrue(ctx.blockContext != null, 'postTxExecute blockContext is empty');
+    sys.require(ctx.tx != null, 'PostTxExecuteCtx tx is empty');
+    sys.require(ctx.aspect != null, 'PostTxExecuteCtx aspect is empty');
+    sys.require(ctx.stateDB != null, 'PostTxExecuteCtx stateDB is empty');
+    sys.require(ctx.trace != null, 'PostTxExecuteCtx trace is empty');
+    sys.require(ctx.block != null, 'PostTxExecuteCtx block is empty');
+    sys.require(ctx.env != null, 'PostTxExecuteCtx env is empty');
   }
 
   preContractCall(ctx: PreContractCallCtx): void {
-    AssertTrue(ctx.tx != null, 'preContractCall tx is empty');
-    AssertTrue(ctx.jitCall != null, 'preContractCall receipt is empty');
-    AssertTrue(ctx.aspectContext != null, 'preContractCall context is empty');
-    AssertTrue(ctx.blockContext != null, 'preContractCall staticCaller is empty');
-    AssertTrue(ctx.stateContext != null, 'preContractCall justInTimeCaller is empty');
+    var findCall = ctx.trace.findCall(1);
+    var findCall1 = sys.context.trace(ctx).findCall(1);
+    //sys.hostApi.runtimeContext;
+
+    sys.require(ctx.tx != null, 'preContractCall tx is empty');
+    sys.require(ctx.currentCall != null, 'preContractCall receipt is empty');
+    sys.require(ctx.aspect != null, 'preContractCall context is empty');
+    sys.require(ctx.block != null, 'preContractCall staticCaller is empty');
+    sys.require(ctx.stateDB != null, 'preContractCall justInTimeCaller is empty');
+    sys.require(ctx.trace != null, 'preContractCall justInTimeCaller is empty');
+    sys.require(ctx.env != null, 'preContractCall justInTimeCaller is empty');
+  }
+  postContractCall(ctx: PostContractCallCtx): void {
+    ctx.aspect.transientStorage<string>('k1').set<string>('v1');
+
+    let gas = ctx.block.header.unwrap();
+    sys.require(ctx.tx != null, 'postContractCall tx is empty');
+    sys.require(ctx.currentCall != null, 'postContractCall currentCall is empty');
+    sys.require(ctx.aspect != null, 'postContractCall aspect is empty');
+    sys.require(ctx.block != null, 'postContractCall block is empty');
+    sys.require(ctx.stateDB != null, 'postContractCall stateDB is empty');
+    sys.require(ctx.trace != null, 'postContractCall trace is empty');
+    sys.require(ctx.env != null, 'postContractCall env is empty');
   }
 
   preTxExecute(ctx: PreTxExecuteCtx): void {
-    AssertTrue(ctx.tx != null, 'preTxExecute tx is empty');
-    AssertTrue(ctx.aspectContext != null, 'preTxExecute context is empty');
-  }
+    const ethBlockHeader = ctx.block.header.unwrap();
+    const number = ctx.block.header.gasUsed.unwrap();
 
-  verifyAccount(ctx: VerifyAccountCtx): bool {
-    AssertTrue(ctx.tx != null, 'verifyAccount tx is empty');
-    AssertTrue(ctx.context != null, 'verifyAccount context is empty');
-    return true;
-  }
-
-  verifyTx(ctx: VerifyTxCtx): bool {
-    AssertTrue(ctx.tx != null, 'VerifyTxCtx tx is empty');
-    AssertTrue(ctx.context != null, 'VerifyTxCtx context is empty');
-    return true;
+    sys.require(ctx.tx != null, 'preTxExecute tx is empty');
+    sys.require(ctx.aspect != null, 'preTxExecute context is empty');
   }
 }
 
@@ -104,5 +93,5 @@ export function execute(methodPtr: i32, argPtr: i32): i32 {
 }
 
 export function allocate(size: i32): i32 {
-  return UtilityProvider.alloc(size);
+  return sys.alloc(size);
 }

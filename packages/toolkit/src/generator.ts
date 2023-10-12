@@ -49,8 +49,8 @@ export default class Generator {
             StateChange,
             StateKey,
             StateChangeProperties,
-            TraceContext,
-            utils
+            TraceCtx,
+            sys
         } from "@artela/aspect-libs";
     `;
 
