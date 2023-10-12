@@ -12,8 +12,8 @@ import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
-const toolVersion = '^0.0.37';
-const libVersion = '^0.0.21';
+const toolVersion = '^0.0.38';
+const libVersion = '^0.0.22';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -326,17 +326,17 @@ export default class Init extends Command {
         updated = true;
       }
       if (!dependencies['@artela/web3']) {
-        dependencies['@artela/web3'] = '^1.9.14';
+        dependencies['@artela/web3'] = '^1.9.16';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-atl-aspect']) {
-        dependencies['@artela/web3-atl-aspect'] = '^1.9.14';
+        dependencies['@artela/web3-atl-aspect'] = '^1.9.16';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-eth-contract']) {
-        dependencies['@artela/web3-eth-contract'] = '^1.9.14';
+        dependencies['@artela/web3-eth-contract'] = '^1.9.15';
         pkg['dependencies'] = dependencies;
         updated = true;
       }
@@ -387,9 +387,9 @@ export default class Init extends Command {
             license: 'ISC',
             dependencies: {
               '@artela/aspect-libs': libVersion,
-              '@artela/web3': '^1.9.14',
-              '@artela/web3-atl-aspect': '^1.9.14',
-              '@artela/web3-eth-contract': '^1.9.14',
+              '@artela/web3': '^1.9.16',
+              '@artela/web3-atl-aspect': '^1.9.16',
+              '@artela/web3-eth-contract': '^1.9.15',
               '@artela/web3-utils': '^1.9.8',
               '@assemblyscript/loader': '^0.27.5',
               'as-proto': '^1.3.0',
