@@ -24,6 +24,10 @@ class header {
     i32.store(ptr + 2, this.dataLen);
   }
 
+  updateLen(ptr: i32, size: i32): void {
+    i32.store(ptr + 2, size);
+  }
+
   len(): i32 {
     return 6; // i16 + i32
   }
@@ -60,7 +64,10 @@ export class AString {
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
-    String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr, true);
+    const utf8Len = String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr, true) as i32;
+    // need to update the data length in header to the actual utf8 length
+    // -1 to remove the null terminator
+    this.head.updateLen(ptr, utf8Len - 1);
     // it's weird that it doesn't work in the following way:
     // | let encoded = String.UTF8.encode(this.body);
     // | store<ArrayBuffer>(bodyPtr, encoded);
