@@ -36,26 +36,19 @@ export class UtilApi {
   }
 
   public hexToUint8Array(s: string): Uint8Array {
-    this.log("-5.1---")
     if (s.length % 2 !== 0) {
       throw new Error('Invalid hex string');
     }
-    this.log("-5.2---")
 
     const outPtr = __UtilApi__.fromHexString(new AString(s).store());
-    this.log("-5.3---")
 
     const out = new AUint8Array();
     out.load(outPtr);
-    this.log("-5.4---")
 
     const data = out.get();
     if (data.length == 0 && s.length != 0) {
-      this.log("-5.5---")
       throw new Error('Invalid hex string');
     }
-    this.log("-5.6---")
-
     return data;
   }
   public uint8ArrayToHex(data: Uint8Array): string {
