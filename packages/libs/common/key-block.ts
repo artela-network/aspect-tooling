@@ -1,11 +1,15 @@
-import { Key, ResultNotImplemented } from './key-path';
+import {Key, ResultNotImplemented} from './key-path';
 import {
   EthBlockHeaderUnwrap,
+  EthTxArrayUnwrap,
+  GasMeterUnwrap,
+  LastCommitInfoUnwrap,
+  MinGasPriceUnwrap,
   StringUnwrap,
   Uint64Unwrap,
   Uint8ArrayUnwrap,
 } from './result-convert';
-import { EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice } from '../proto';
+import {EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice} from '../proto';
 
 export class BlockKey extends Key<ResultNotImplemented> {
   constructor() {
@@ -17,19 +21,19 @@ export class BlockKey extends Key<ResultNotImplemented> {
   }
 
   get txs(): EthTxArrayKey {
-    return new Key('txs', this.parts);
+    return new Key('txs', this.parts, new EthTxArrayUnwrap());
   }
 
   get gasMeter(): GasMeterKey {
-    return new Key('gasMeter', this.parts);
+    return new Key('gasMeter', this.parts, new GasMeterUnwrap());
   }
 
   get minGasPrice(): MinGasPriceKey {
-    return new Key('minGasPrice', this.parts);
+    return new Key('minGasPrice', this.parts, new MinGasPriceUnwrap());
   }
 
   get lastCommit(): LastCommitKey {
-    return new Key('lastCommit', this.parts);
+    return new Key('lastCommit', this.parts, new LastCommitInfoUnwrap());
   }
 }
 

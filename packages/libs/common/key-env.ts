@@ -1,5 +1,6 @@
-import { Key, ResultNotImplemented } from './key-path';
-import { ChainConfig, ConsParams, EnvContent, EvmParams } from '../proto';
+import {Key, ResultNotImplemented} from './key-path';
+import {ChainConfig, ConsParams, EnvContent, EvmParams} from '../proto';
+import {ChainConfigUnwrap, ConsParamsUnwrap, EnvContentUnwrap, EvmParamsUnwrap} from "./result-convert";
 
 export class EnvKey extends Key<ResultNotImplemented> {
   constructor() {
@@ -7,19 +8,19 @@ export class EnvKey extends Key<ResultNotImplemented> {
   }
 
   get consensusParams(): ConsParamsKey {
-    return new Key('consensusParams', this.parts);
+    return new Key('consensusParams', this.parts, new ConsParamsUnwrap());
   }
 
   get chainConfig(): ChainConfigKey {
-    return new Key('chainConfig', this.parts);
+    return new Key('chainConfig', this.parts, new ChainConfigUnwrap());
   }
 
   get evmParams(): EvmParamsKey {
-    return new Key('evmParams', this.parts);
+    return new Key('evmParams', this.parts, new EvmParamsUnwrap());
   }
 
   get baseFee(): EnvContentKey {
-    return new Key('content', this.parts);
+    return new Key('content', this.parts, new EnvContentUnwrap());
   }
 }
 
