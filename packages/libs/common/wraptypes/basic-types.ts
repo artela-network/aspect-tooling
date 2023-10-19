@@ -40,7 +40,7 @@ class header {
 export class AString {
   public set(s: string): void {
     this.body = s;
-    this.head.dataLen = s.length;
+    this.head.dataLen = String.UTF8.byteLength(s);
   }
 
   public get(): string {
