@@ -2,7 +2,7 @@ import { Key, ResultNotImplemented } from './key-path';
 
 import { GasMeterKey } from './key-block';
 import { EthReceipt, EthTransaction, TxExtProperty } from '../proto';
-import { StringUnwrap } from './result-convert';
+import {EthReceiptUnwrap, EthTransactionUnwrap, GasMeterUnwrap, StringUnwrap} from './result-convert';
 
 import { ConvertUtil } from './helper/convert';
 const convertUtil = new ConvertUtil();
@@ -21,15 +21,15 @@ export class TxKey extends Key<ResultNotImplemented> {
   }
 
   get content(): TxContentKey {
-    return new TxContentKey('content', this.parts);
+    return new TxContentKey('content', this.parts,new EthTransactionUnwrap());
   }
 
   get receipt(): EthReceiptKey {
-    return new Key('receipt', this.parts);
+    return new Key('receipt', this.parts,new EthReceiptUnwrap());
   }
 
   get gasMeter(): GasMeterKey {
-    return new Key('gasMeter', this.parts);
+    return new Key('gasMeter', this.parts,new GasMeterUnwrap());
   }
 
   get stateChanges(): StateChangeKey {

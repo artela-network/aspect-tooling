@@ -24,10 +24,6 @@ class header {
     i32.store(ptr + 2, this.dataLen);
   }
 
-  updateLen(ptr: i32, size: i32): void {
-    i32.store(ptr + 2, size);
-  }
-
   len(): i32 {
     return 6; // i16 + i32
   }
@@ -44,7 +40,7 @@ class header {
 export class AString {
   public set(s: string): void {
     this.body = s;
-    this.head.dataLen = s.length;
+    this.head.dataLen = String.UTF8.byteLength(s);
   }
 
   public get(): string {
@@ -62,15 +58,14 @@ export class AString {
   public store(): i32 {
     const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
-    const bodyPtr = ptr + this.head.len();
+    let bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
-    const utf8Len = String.UTF8.encodeUnsafe(changetype<usize>(this.body), this.head.dataLen, bodyPtr, true) as i32;
-    // need to update the data length in header to the actual utf8 length
-    // -1 to remove the null terminator
-    this.head.updateLen(ptr, utf8Len - 1);
-    // it's weird that it doesn't work in the following way:
-    // | let encoded = String.UTF8.encode(this.body);
-    // | store<ArrayBuffer>(bodyPtr, encoded);
+    let encoded = Uint8Array.wrap(String.UTF8.encode(this.body));
+    for (let i = 0; i < encoded.length; i++) {
+      memory.fill(bodyPtr, encoded[i], 1);
+      bodyPtr++;
+    }
+
     return ptr;
   }
 
@@ -79,7 +74,7 @@ export class AString {
 
   constructor(body: string = '') {
     this.body = body;
-    this.head = new header(typeIndex.TypeString, String.UTF16.byteLength(body));
+    this.head = new header(typeIndex.TypeString, String.UTF8.byteLength(body));
   }
 }
 

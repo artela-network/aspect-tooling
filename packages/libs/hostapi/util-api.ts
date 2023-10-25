@@ -39,9 +39,12 @@ export class UtilApi {
     if (s.length % 2 !== 0) {
       throw new Error('Invalid hex string');
     }
+
     const outPtr = __UtilApi__.fromHexString(new AString(s).store());
+
     const out = new AUint8Array();
     out.load(outPtr);
+
     const data = out.get();
     if (data.length == 0 && s.length != 0) {
       throw new Error('Invalid hex string');
