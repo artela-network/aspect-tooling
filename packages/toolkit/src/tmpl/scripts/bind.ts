@@ -54,9 +54,9 @@ async function f() {
         contractOptions.gas=parseInt(argv.gas);
     }
 
-    let contract = new web3.atl.Contract([],
+    let contract = new Web3.eth.Contract([],
         contractAddress, contractOptions);
-    let nonceVal = await web3.atl.getTransactionCount(contractAccount);
+    let nonceVal = await Web3.eth.getTransactionCount(contractAccount);
 
     await contract.bind({
         priority: 1,

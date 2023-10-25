@@ -72,7 +72,7 @@ async function deploy() {
 
 
     // retrieve current nonce
-    let nonceVal = await web3.atl.getTransactionCount(account);
+    let nonceVal = await Web3.eth.getTransactionCount(account);
 
     const contractOptions = {
         from: account,
@@ -92,7 +92,7 @@ async function deploy() {
 
     const contractAbi = JSON.parse(abiTxt);
     // instantiate an instance of demo contract
-    let contractObj = new web3.atl.Contract(contractAbi);
+    let contractObj = new Web3.eth.Contract(contractAbi);
 
     // deploy demo contract
     let schedule_instance = contractObj.deploy(deployParams).send(contractOptions);

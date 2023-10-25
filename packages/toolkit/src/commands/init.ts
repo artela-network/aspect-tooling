@@ -12,8 +12,10 @@ import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 
-const toolVersion = '^0.0.38';
-const libVersion = '^0.0.22';
+const toolVersion = '^0.0.39';
+const libVersion = '^0.0.23';
+const web3Version = '^1.9.17';
+const web3UtilVersion = '^1.9.8';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -326,22 +328,22 @@ export default class Init extends Command {
         updated = true;
       }
       if (!dependencies['@artela/web3']) {
-        dependencies['@artela/web3'] = '^1.9.16';
+        dependencies['@artela/web3'] = web3Version;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
-      if (!dependencies['@artela/web3-atl-aspect']) {
-        dependencies['@artela/web3-atl-aspect'] = '^1.9.16';
+      if (!dependencies['@artela/web3-atl']) {
+        dependencies['@artela/web3-atl'] = web3Version;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
-      if (!dependencies['@artela/web3-eth-contract']) {
-        dependencies['@artela/web3-eth-contract'] = '^1.9.15';
+      if (!dependencies['@artela/web3-eth']) {
+        dependencies['@artela/web3-eth'] = web3Version;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
       if (!dependencies['@artela/web3-utils']) {
-        dependencies['@artela/web3-utils'] = '^1.9.8';
+        dependencies['@artela/web3-utils'] = web3UtilVersion;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
@@ -387,10 +389,10 @@ export default class Init extends Command {
             license: 'ISC',
             dependencies: {
               '@artela/aspect-libs': libVersion,
-              '@artela/web3': '^1.9.16',
-              '@artela/web3-atl-aspect': '^1.9.16',
-              '@artela/web3-eth-contract': '^1.9.15',
-              '@artela/web3-utils': '^1.9.8',
+              '@artela/web3': web3Version,
+              '@artela/web3-atl': web3Version,
+              '@artela/web3-eth': web3Version,
+              '@artela/web3-utils': web3UtilVersion,
               '@assemblyscript/loader': '^0.27.5',
               'as-proto': '^1.3.0',
             },
