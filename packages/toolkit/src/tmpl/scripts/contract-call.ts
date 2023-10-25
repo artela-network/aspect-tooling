@@ -76,10 +76,10 @@ async function call() {
     }
 
     // retrieve current nonce
-    const nonceVal = await web3.atl.getTransactionCount(account);
+    const nonceVal = await Web3.eth.getTransactionCount(account);
 
     // instantiate an instance of contract
-    let contract = new web3.atl.Contract(abi, contractAddr);
+    let contract = new Web3.eth.Contract(abi, contractAddr);
 
     // invoke contract method
     let instance = contract.methods[method](...parameters).send({ from: account, nonce: nonceVal, ...contractOptions });

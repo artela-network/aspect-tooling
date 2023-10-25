@@ -30,7 +30,7 @@ async function f() {
     }
 
     // set nonce value
-    let nonceValAspectDeployer = await web3.atl.getTransactionCount(aspectDeployer);
+    let nonceValAspectDeployer = await Web3.eth.getTransactionCount(aspectDeployer);
 
     //
     //read wasm code
