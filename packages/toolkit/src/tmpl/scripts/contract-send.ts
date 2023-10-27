@@ -1,30 +1,31 @@
-export const BindTmpl = `
-
+export const ContractSendTmpl = `
 "use strict"
-const Web3 = require("@artela/web3");
-const fs = require("fs");
+
+// import required libs
+const fs = require('fs');
+const Web3 = require('@artela/web3');
 var argv = require('yargs')
     .string('node')
     .string('pkfile')
+    .string('args')
     .string('contract')
-    .string('aspectId')
     .string('gas')
+    .string('method')
     .string('abi')
     .argv;
 
-async function bind() {
+
+async function send() {
     // init connection to Artela node
     const configJson = JSON.parse(fs.readFileSync('./project.config.json', "utf-8").toString());
-    const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
-
-    let node = (argv.node) ? String(argv.node) : configJson.node;
-    if (!node) {
-        console.log("'node' cannot be empty, please set by the parameter or project.config.json")
+    // init connection to Artela node
+    let node = (argv.node)?String(argv.node):configJson.node;
+    if(!node){
+        console.log("'node' cannot be empty, please set by the parameter or artela.config.json")
         process.exit(0)
     }
     const web3 = new Web3(node);
     let gasPrice = await web3.eth.getGasPrice();
-
 
     //--pkfile ./build/privateKey.txt
     let senderPriKey = String(argv.pkfile)
@@ -37,20 +38,14 @@ async function bind() {
     }
     let pk = fs.readFileSync(senderPriKey, 'utf-8');
     let sender = web3.eth.accounts.privateKeyToAccount(pk);
+    console.log("from address: ", sender.address);
     web3.eth.accounts.wallet.add(sender.privateKey);
 
 
-    // --contract {smart-contract-address}
-    let contractAddress = String(argv.contract)
-    if (!contractAddress || contractAddress === 'undefined') {
-        console.log("'contractAddress' cannot be empty, please set by the parameter ' --contract 0xxxx'")
-        process.exit(0)
-    }
-
-    // --aspectId {aspect-Id}
-    let aspectId = String(argv.aspectId)
-    if (!aspectId || aspectId === 'undefined') {
-        console.log("'aspectId' cannot be empty, please set by the parameter' --aspectId 0xxxx'")
+    // --contract 0x9999999999999999999999999999999999999999
+    const contractAddr = argv.contract;
+    if(!contractAddr){
+        console.log("'contract address' cannot be empty, please set by the parameter ' --contract 0x9999999999999999999999999999999999999999'")
         process.exit(0)
     }
 
@@ -63,33 +58,36 @@ async function bind() {
         console.log("'abi' cannot be empty, please set by the parameter' --abi xxx/xxx.abi'")
         process.exit(0)
     }
+    // --args [55]
+    const inputs = argv.args;
+    let parameters=[];
+    if(inputs && inputs!=='undefined') {
+        parameters = JSON.parse(inputs);
+    }
+    //--method count
+    const method = argv.method;
+    if(!method || method==='undefined') {
+        console.log("'method' cannot be empty, please set by the parameter ' --method {method-name}'")
+        process.exit(0)
+    }
 
-    // do aspect bind
-    let storageInstance = new web3.eth.Contract(abi, contractAddress);
-    // bind the smart contract with aspect
-    let bind = await storageInstance.bind({
-        priority: 1,
-        aspectId: aspectId,
-        aspectVersion: 1,
-    })
+    let storageInstance = new web3.eth.Contract(abi, contractAddr);
+    let instance = storageInstance.methods[method](...parameters);
 
     let tx = {
         from: sender.address,
-        data: bind.encodeABI(),
+        to: contractAddr,
+        data: instance.encodeABI(),
         gasPrice,
-        to: ASPECT_ADDR,
-        gas: !parseInt(argv.gas) | 9000000
+        gas: !parseInt(argv.gas) | 4000000
     }
-
     let signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
-    console.log("sending signed transaction...");
+    console.log('call contract tx hash: ' + signedTx.transactionHash);
+
     await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
         .on('receipt', receipt => {
             console.log(receipt);
         });
-    console.log("== aspect bind success ==");
-
 }
-
-bind().then();
+send().then();
 `

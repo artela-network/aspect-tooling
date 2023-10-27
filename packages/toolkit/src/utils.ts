@@ -268,7 +268,7 @@ export class ASTAddress extends BaseType {
   unmarshalStateFunc(): string {
     return `
         override unmarshalState(raw: EthStateChange) : State<${this.asType()}> {
-            return new State(raw.account, sys.common.utils.uint8ArrayToHex(raw.value), raw.callIndex);
+            return new State(raw.account, sys.utils.uint8ArrayToHex(raw.value), raw.callIndex);
         }
         `;
   }

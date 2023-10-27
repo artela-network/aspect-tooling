@@ -1,10 +1,4 @@
-import {
-  EthCallStacks,
-  EthStackTransaction,
-  EthStateChangeIndices,
-  EthStateChanges,
-  TxExtProperty,
-} from '../../proto';
+import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges, TxExtProperty,} from '../../proto';
 import {
   ContextKey,
   NewMessageError,
@@ -14,10 +8,10 @@ import {
   TraceCtx,
   TxContextAccessible,
 } from '../../common';
-import { Protobuf } from 'as-proto/assembly';
-import { RuntimeContextApi } from '../../hostapi';
-import { EthReceiptKey, TxContentKey } from '../../common/key-tx';
-import { GasMeterKey } from '../../common/key-block';
+import {Protobuf} from 'as-proto/assembly';
+import {RuntimeContextApi} from '../../hostapi';
+import {EthReceiptKey, TxContentKey} from '../../common/key-tx';
+import {GasMeterKey} from '../../common/key-block';
 
 const runtimeContext = RuntimeContextApi.instance();
 
@@ -32,6 +26,9 @@ export class TraceContext implements TraceCtx {
     if (!response.result!.success) {
       throw NewMessageError('Err load calltree');
     }
+    if (response.data == null) {
+      return new EthStackTransaction()
+    }
     return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode).calls.get(
       index,
     );
@@ -42,6 +39,9 @@ export class TraceContext implements TraceCtx {
     const response = runtimeContext.get(callTreeKey);
     if (!response.result!.success) {
       throw NewMessageError('Err load calltree');
+    }
+    if (response.data == null) {
+      return new EthCallStacks()
     }
     return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode);
   }
@@ -55,6 +55,9 @@ export class TraceContext implements TraceCtx {
     const response = runtimeContext.get(statePath);
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
+    }
+    if (response.data == null) {
+      return new EthStateChanges()
     }
 
     return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
@@ -78,6 +81,10 @@ export class TraceContext implements TraceCtx {
     if (!response.result!.success) {
       throw NewMessageError(response.result!.message);
     }
+    if (response.data == null) {
+      return new EthStateChangeIndices()
+    }
+
     return Protobuf.decode<EthStateChangeIndices>(
       response.data!.value,
       EthStateChangeIndices.decode,

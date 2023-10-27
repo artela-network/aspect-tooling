@@ -6,11 +6,9 @@ const fs = require('fs');
 const Web3 = require('@artela/web3');
 var argv = require('yargs')
     .string('node')
-    .string('sender')
+    .string('pkfile')
     .string('args')
     .string('contract')
-    .string('gasPrice')
-    .string('gas')
     .string('method')
     .string('abi')
     .argv;
@@ -19,7 +17,6 @@ var argv = require('yargs')
 async function call() {
     // init connection to Artela node
     const configJson = JSON.parse(fs.readFileSync('./project.config.json', "utf-8").toString());
-    // init connection to Artela node
     let node = (argv.node)?String(argv.node):configJson.node;
     if(!node){
         console.log("'node' cannot be empty, please set by the parameter or artela.config.json")
@@ -27,26 +24,20 @@ async function call() {
     }
     const web3 = new Web3(node);
 
-    //--sender 0x9999999999999999999999999999999999999999
-    const account =String(argv.sender)
-    if(!account || account==='undefined') {
-        console.log("'sender' cannot be empty, please set by the parameter ' --sender 0x9999999999999999999999999999999999999999'")
+    //--pkfile ./build/privateKey.txt
+    let senderPriKey = String(argv.pkfile)
+    if (!senderPriKey || senderPriKey === 'undefined') {
+        senderPriKey = "privateKey.txt"
+    }
+    if (!fs.existsSync(senderPriKey)) {
+        console.log("'account' cannot be empty, please set by the parameter ' --pkfile ./build/privateKey.txt'")
         process.exit(0)
     }
+    let pk = fs.readFileSync(senderPriKey, 'utf-8');
+    let sender = web3.eth.accounts.privateKeyToAccount(pk);
+    console.log("from address: ", sender.address);
+    web3.eth.accounts.wallet.add(sender.privateKey);
 
-
-    const contractOptions = {
-        gasPrice:  '1000000000',
-        gas:  4000000
-    };
-    // --gasPrice 2000000000
-    if(argv.gasPrice && argv.gasPrice!=='undefined') {
-        contractOptions.gasPrice=argv.gasPrice;
-    }
-    // --gas 2000000
-    if(argv.gas && argv.gas!=='undefined') {
-        contractOptions.gas=parseInt(argv.gas);
-    }
 
     // --contract 0x9999999999999999999999999999999999999999
     const contractAddr = argv.contract;
@@ -56,12 +47,14 @@ async function call() {
     }
 
     // --abi xxx/xxx.abi
-    const abiPath=String(argv.abi)
-    let abi=null
-    if(abiPath && abiPath!=='undefined') {
+    const abiPath = String(argv.abi)
+    let abi = null
+    if (abiPath && abiPath !== 'undefined') {
         abi = JSON.parse(fs.readFileSync(abiPath, "utf-8").toString());
+    } else {
+        console.log("'abi' cannot be empty, please set by the parameter' --abi xxx/xxx.abi'")
+        process.exit(0)
     }
-
     // --args [55]
     const inputs = argv.args;
     let parameters=[];
@@ -75,21 +68,10 @@ async function call() {
         process.exit(0)
     }
 
-    // retrieve current nonce
-    const nonceVal = await Web3.eth.getTransactionCount(account);
-
-    // instantiate an instance of contract
-    let contract = new Web3.eth.Contract(abi, contractAddr);
-
-    // invoke contract method
-    let instance = contract.methods[method](...parameters).send({ from: account, nonce: nonceVal, ...contractOptions });
-    contract = await instance.on('receipt', function (receipt) {
-        console.log("receipt: ", receipt);
-    }).on('transactionHash', (txHash) => {
-        console.log("tx hash: ", txHash);
-    });
-
+    let storageInstance = new web3.eth.Contract(abi, contractAddr);
+    let instance = await storageInstance.methods[method](...parameters).call();
+    console.log("==== reuslt===" + instance);
 }
 
 call().then();
-`;
+`

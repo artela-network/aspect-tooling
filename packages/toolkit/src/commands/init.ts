@@ -5,15 +5,17 @@ import * as fs from 'fs';
 import path from 'path';
 import { WasmIndexTmpl } from '../tmpl/assembly/indextmpl';
 import { AspectTmpl } from '../tmpl/assembly/aspect/aspect';
-import { DeployTmpl } from '../tmpl/scripts/deploy';
+import { DeployTmpl } from '../tmpl/scripts/aspect-deploy';
 import { BindTmpl } from '../tmpl/scripts/bind';
 
 import { ReadMeTmpl } from '../tmpl/readme';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
+import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
+import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.39';
-const libVersion = '^0.0.23';
+const toolVersion = '^0.0.40';
+const libVersion = '^0.0.24';
 const web3Version = '^1.9.17';
 const web3UtilVersion = '^1.9.8';
 
@@ -230,6 +232,14 @@ export default class Init extends Command {
     if (!fs.existsSync(callPath)) {
       fs.writeFileSync(callPath, ContractCallTmpl);
     }
+    const contractSend = path.join(scriptDir, 'contract-send.cjs');
+    if (!fs.existsSync(contractSend)) {
+      fs.writeFileSync(contractSend, ContractSendTmpl);
+    }
+    const createAccount = path.join(scriptDir, 'create-account.cjs');
+    if (!fs.existsSync(createAccount)) {
+      fs.writeFileSync(createAccount, CreateAccountTmpl);
+    }
   }
 
   ensurePackageJson(dir: string) {
@@ -264,6 +274,9 @@ export default class Init extends Command {
         pkg['scripts'] = scripts;
         updated = true;
       }
+
+
+
       if (!scripts['contract:bind']) {
         scripts['contract:bind'] = 'node scripts/bind.cjs';
         pkg['scripts'] = scripts;
@@ -279,6 +292,17 @@ export default class Init extends Command {
         pkg['scripts'] = scripts;
         updated = true;
       }
+      if (!scripts['contract:send']) {
+        scripts['contract:send'] = 'node scripts/contract-send.cjs';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+      if (!scripts['account:create']) {
+        scripts['account:create'] = 'node scripts/create-account.cjs';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+
       if (!scripts['aspect:deploy']) {
         scripts['aspect:deploy'] = 'npm run aspect:build && node scripts/aspect-deploy.cjs';
         pkg['scripts'] = scripts;
@@ -372,6 +396,9 @@ export default class Init extends Command {
             version: '1.0.0',
             main: 'index.js',
             scripts: {
+              "account:create": "node scripts/create-account.cjs",
+              "contract:send": "node scripts/contract-send.cjs",
+              "contract:call": "node scripts/contract-call.cjs",
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./assembly/aspect',
@@ -379,7 +406,6 @@ export default class Init extends Command {
               'asbuild:release': 'asc assembly/index.ts --target release',
               'contract:bind': 'node scripts/bind.cjs',
               'contract:deploy': 'node scripts/contract-deploy.cjs',
-              'contract:call': 'node scripts/contract-call.cjs',
               'contract:build':
                 'asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite',
               build: 'npm run contract:build && npm run aspect:gen && npm run aspect:build',

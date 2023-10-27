@@ -6,11 +6,11 @@ const fs = require('fs');
 const Web3 = require("@artela/web3");
 var argv = require('yargs')
     .string('node')
-    .string('sender')
+    .string('pkfile')
     .string('bytecode')
     .string('abi')
-    .string('gasPrice')
     .string('gas')
+    .string('args')
     .argv;
 
 
@@ -63,49 +63,54 @@ async function deploy() {
         }
     }
 
-    //--sender 0x99999999999999999999
-    let account =String(argv.sender)
-    if(!account || account==='undefined') {
-        console.log("'account' cannot be empty, please set by the parameter ' --sender 0x9999999999999999999999999999999999999999'")
-        process.exit(0)
+    //--pkfile ./build/privateKey.txt
+    let senderPriKey =String(argv.pkfile)
+    if(!senderPriKey || senderPriKey==='undefined') {
+        senderPriKey="privateKey.txt"
     }
-
-
-    // retrieve current nonce
-    let nonceVal = await Web3.eth.getTransactionCount(account);
-
-    const contractOptions = {
-        from: account,
-        nonce: nonceVal,
-        gasPrice:  '1000000000',
-        gas:  4000000,
-    };
-
-    //--gasPrice 1000000
-    if(argv.gasPrice && argv.gasPrice!=='undefined') {
-        contractOptions.gasPrice=argv.gasPrice;
+   if(! fs.existsSync(senderPriKey)){
+       console.log("'account' cannot be empty, please set by the parameter ' --pkfile ./build/privateKey.txt'")
+       process.exit(0)
     }
-    //--gas 20000
-    if(argv.gas && argv.gas!=='undefined') {
-        contractOptions.gas=parseInt(argv.gas);
-    }
+    let pk = fs.readFileSync(senderPriKey, 'utf-8');
+    let account = web3.eth.accounts.privateKeyToAccount(pk);
+    console.log("from address: ", account.address);
+    web3.eth.accounts.wallet.add(account.privateKey);
 
-    const contractAbi = JSON.parse(abiTxt);
-    // instantiate an instance of demo contract
-    let contractObj = new Web3.eth.Contract(contractAbi);
+
 
     // deploy demo contract
-    let schedule_instance = contractObj.deploy(deployParams).send(contractOptions);
-    let contractAddress="";
-    contractObj = await schedule_instance.on('receipt', function (receipt) {
-        console.log("=============== deployed contract ===============");
-        console.log(receipt);
-        contractAddress= receipt.contractAddress
-    }).on('transactionHash', (txHash) => {
-        console.log("deploy contract tx hash: ", txHash);
-    });
-    console.log(\`--contractAccount \${account} --contractAddress \${contractAddress}\`);
+    let contractAddress;
+    {
+        const contractAbi = JSON.parse(abiTxt);
+
+        // instantiate an instance of demo contract
+        let tokenContract = new web3.eth.Contract(contractAbi);
+
+        // deploy token contract
+        let tokenDeploy = tokenContract.deploy(deployParams);
+        let nonceVal = await web3.eth.getTransactionCount(account.address);
+
+        let tokenTx = {
+            from: account.address,
+            data: tokenDeploy.encodeABI(),
+            nonce: nonceVal,
+            gas: !parseInt(argv.gas)|7000000
+        }
+
+
+        let signedTokenTx = await web3.eth.accounts.signTransaction(tokenTx, account.privateKey);
+        console.log('deploy contract tx hash: ' + signedTokenTx.transactionHash);
+        await web3.eth.sendSignedTransaction(signedTokenTx.rawTransaction)
+            .on('receipt', receipt => {
+                console.log(receipt);
+                console.log("contract address: ", receipt.contractAddress);
+                contractAddress = receipt.contractAddress;
+            });
+    }
+    console.log(\`--contractAccount \${account.address} --contractAddress \${contractAddress}\`);
+
 }
 
 deploy().then();
-`;
+`

@@ -1,8 +1,8 @@
-import { RuntimeContextApi } from '../hostapi';
-import { BlockKey } from './key-block';
-import { TxKey } from './key-tx';
-import { EnvKey } from './key-env';
-import { NewMessageError } from './errors';
+import {RuntimeContextApi} from '../hostapi';
+import {BlockKey} from './key-block';
+import {TxKey} from './key-tx';
+import {EnvKey} from './key-env';
+import {NewMessageError} from './errors';
 
 export interface ResultUnwrap<T> {
   decode(u: Uint8Array): T;
@@ -48,7 +48,11 @@ export class Key<T> {
     if (this.parts.length == 0) {
       return '';
     }
-    return this.parts.join('^');
+    let path = this.parts.join('^');
+    if (path.endsWith('^')){
+      path=path.slice(0,path.length-1)
+    }
+    return path;
   }
 }
 
