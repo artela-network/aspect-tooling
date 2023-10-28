@@ -18,8 +18,8 @@ async function deploy() {
 
     const configJson = JSON.parse(fs.readFileSync('./project.config.json', "utf-8").toString());
     // init connection to Artela node
-    let node = (argv.node)?String(argv.node):configJson.node;
-    if(!node){
+    let node = (argv.node) ? String(argv.node) : configJson.node;
+    if (!node) {
         console.log("'node' cannot be empty, please set by the parameter or artela.config.json")
         process.exit(0)
     }
@@ -27,56 +27,58 @@ async function deploy() {
 
     const deployParams = {
         data: null,
-        arguments:null,
+        arguments: null,
     }
     // get bytecode by path  --bytecode  ./build/contract/xxx.bin
-    let bytecodePath =String(argv.bytecode)
-    let byteTxt=""
-    if(!bytecodePath){
+    let bytecodePath = String(argv.bytecode)
+    let byteTxt = ""
+    if (!bytecodePath) {
         console.log("'bytecode' cannot be empty, please set by the parameter ' --bytecode ./build/contract/xxx.bin'")
         process.exit(0)
-    }else {
-        byteTxt = fs.readFileSync(bytecodePath,"utf-8");
-        if(!byteTxt){
+    } else {
+        byteTxt = fs.readFileSync(bytecodePath, "utf-8").toString().trim();
+        if (!byteTxt) {
             console.log("bytecode cannot be empty")
             process.exit(0)
         }
-        deployParams.data=byteTxt
+        if (byteTxt.startsWith("0x")) {
+            byteTxt = byteTxt.slice(2);
+        }
+        deployParams.data = byteTxt
     }
     // --args [55]
     const inputs = argv.args;
-    if(inputs && inputs!=='undefined') {
-        deployParams.arguments=JSON.parse(inputs)
+    if (inputs && inputs !== 'undefined') {
+        deployParams.arguments = JSON.parse(inputs)
     }
 
     //--abi ./build/contract/xxx.abi
-    let abiPath =String(argv.abi)
-    let abiTxt=""
-    if(!abiPath){
+    let abiPath = String(argv.abi)
+    let abiTxt = ""
+    if (!abiPath) {
         console.log("'abi' cannot be empty, please set by the parameter ' --abi ./build/contract/xxx.abi'")
         process.exit(0)
-    }else {
-         abiTxt = fs.readFileSync(abiPath,"utf-8");
-        if(!abiTxt){
+    } else {
+        abiTxt = fs.readFileSync(abiPath, "utf-8").toString().trim();
+        if (!abiTxt) {
             console.log("'abi' json cannot be empty")
             process.exit(0)
         }
     }
 
     //--pkfile ./build/privateKey.txt
-    let senderPriKey =String(argv.pkfile)
-    if(!senderPriKey || senderPriKey==='undefined') {
-        senderPriKey="privateKey.txt"
+    let senderPriKey = String(argv.pkfile)
+    if (!senderPriKey || senderPriKey === 'undefined') {
+        senderPriKey = "privateKey.txt"
     }
-   if(! fs.existsSync(senderPriKey)){
-       console.log("'account' cannot be empty, please set by the parameter ' --pkfile ./build/privateKey.txt'")
-       process.exit(0)
+    if (!fs.existsSync(senderPriKey)) {
+        console.log("'account' cannot be empty, please set by the parameter ' --pkfile ./build/privateKey.txt'")
+        process.exit(0)
     }
     let pk = fs.readFileSync(senderPriKey, 'utf-8');
     let account = web3.eth.accounts.privateKeyToAccount(pk);
     console.log("from address: ", account.address);
     web3.eth.accounts.wallet.add(account.privateKey);
-
 
 
     // deploy demo contract
@@ -95,7 +97,7 @@ async function deploy() {
             from: account.address,
             data: tokenDeploy.encodeABI(),
             nonce: nonceVal,
-            gas: !parseInt(argv.gas)|7000000
+            gas: !parseInt(argv.gas) | 7000000
         }
 
 
@@ -113,4 +115,5 @@ async function deploy() {
 }
 
 deploy().then();
+
 `
