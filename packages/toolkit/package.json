@@ -21,8 +21,7 @@
     "build": "tsc -b tsconfig.build.json && oclif manifest && oclif readme",
     "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz",
     "format": "prettier --write -c **/*.ts",
-    "type-check": "tsc --noEmit",
-    "pub": " npm run build && npm run oclif:pack && npm publish"
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

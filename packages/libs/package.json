@@ -9,7 +9,6 @@
     "build": "asc --exportRuntime --runtime stub index.ts --lib aspect-libs -b aspect-libs.wasm",
     "format": "prettier --write -c **/*.ts",
     "lint": "prettier -c **/*.ts",
-    "test": "node test/test.js"
   },
   "publishConfig": {
     "access": "public"
