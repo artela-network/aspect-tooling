@@ -28,7 +28,7 @@ async function create() {
     let account;
     if (fs.existsSync(privateFile)) {
         let pk = fs.readFileSync(privateFile, 'utf-8');
-        account = web3.atl.accounts.privateKeyToAccount(pk);
+        account = web3.atl.accounts.privateKeyToAccount(pk.trim());
     } else {
         account = web3.atl.accounts.create();
         const dirPath = path.dirname(privateFile);

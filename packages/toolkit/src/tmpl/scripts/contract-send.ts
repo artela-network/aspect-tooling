@@ -37,7 +37,7 @@ async function send() {
         process.exit(0)
     }
     let pk = fs.readFileSync(senderPriKey, 'utf-8');
-    let sender = web3.eth.accounts.privateKeyToAccount(pk);
+    let sender = web3.eth.accounts.privateKeyToAccount(pk.trim());
     console.log("from address: ", sender.address);
     web3.eth.accounts.wallet.add(sender.privateKey);
 

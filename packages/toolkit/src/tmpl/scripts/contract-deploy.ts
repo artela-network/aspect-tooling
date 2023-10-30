@@ -44,7 +44,7 @@ async function deploy() {
         if (byteTxt.startsWith("0x")) {
             byteTxt = byteTxt.slice(2);
         }
-        deployParams.data = byteTxt
+        deployParams.data = byteTxt.trim()
     }
     // --args [55]
     const inputs = argv.args;
@@ -76,7 +76,7 @@ async function deploy() {
         process.exit(0)
     }
     let pk = fs.readFileSync(senderPriKey, 'utf-8');
-    let account = web3.eth.accounts.privateKeyToAccount(pk);
+    let account = web3.eth.accounts.privateKeyToAccount(pk.trim());
     console.log("from address: ", account.address);
     web3.eth.accounts.wallet.add(account.privateKey);
 
