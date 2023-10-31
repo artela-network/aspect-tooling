@@ -14,7 +14,7 @@ import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.43';
+const toolVersion = '^0.0.44';
 const libVersion = '^0.0.24';
 const web3Version = '^1.9.17';
 const web3UtilVersion = '^1.9.8';
@@ -118,7 +118,7 @@ export default class Init extends Command {
         projectConfig,
         JSON.stringify(
           {
-            node: 'https://artela-devnet-rpc2.artela.network',
+            node: 'https://testnet-rpc1.artela.network',
           },
           null,
           2,
@@ -310,7 +310,7 @@ export default class Init extends Command {
       }
       if (!scripts['contract:build']) {
         scripts['contract:build'] =
-          'asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
+          'solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
         pkg['scripts'] = scripts;
         updated = true;
       }
@@ -407,7 +407,7 @@ export default class Init extends Command {
               'contract:bind': 'node scripts/bind.cjs',
               'contract:deploy': 'node scripts/contract-deploy.cjs',
               'contract:build':
-                'asolc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite',
+                'solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite',
               build: 'npm run contract:build && npm run aspect:gen && npm run aspect:build',
             },
             keywords: [],
