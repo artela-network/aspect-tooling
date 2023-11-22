@@ -5,10 +5,10 @@
 
 import { Writer, Reader } from 'as-proto/assembly';
 import { RunResult } from './run-result';
-import { Any } from '../../google/protobuf/any';
+import { EthMessageCallResult } from './eth-message-call-result';
 
-export class ContextQueryResponse {
-  static encode(message: ContextQueryResponse, writer: Writer): void {
+export class CallMessageResponse {
+  static encode(message: CallMessageResponse, writer: Writer): void {
     const result = message.result;
     if (result !== null) {
       writer.uint32(10);
@@ -21,14 +21,14 @@ export class ContextQueryResponse {
     if (data !== null) {
       writer.uint32(18);
       writer.fork();
-      Any.encode(data, writer);
+      EthMessageCallResult.encode(data, writer);
       writer.ldelim();
     }
   }
 
-  static decode(reader: Reader, length: i32): ContextQueryResponse {
+  static decode(reader: Reader, length: i32): CallMessageResponse {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new ContextQueryResponse();
+    const message = new CallMessageResponse();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
@@ -38,7 +38,7 @@ export class ContextQueryResponse {
           break;
 
         case 2:
-          message.data = Any.decode(reader, reader.uint32());
+          message.data = EthMessageCallResult.decode(reader, reader.uint32());
           break;
 
         default:
@@ -51,9 +51,9 @@ export class ContextQueryResponse {
   }
 
   result: RunResult | null;
-  data: Any | null;
+  data: EthMessageCallResult | null;
 
-  constructor(result: RunResult | null = null, data: Any | null = null) {
+  constructor(result: RunResult | null = null, data: EthMessageCallResult | null = null) {
     this.result = result;
     this.data = data;
   }

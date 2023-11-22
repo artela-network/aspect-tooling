@@ -10,9 +10,10 @@ import {
   PreTxExecuteCtx,
 } from '.';
 import { AString, MessageUtil } from '../common';
-import { Any, AspectResponse, BoolData, BytesData, RunResult } from '../proto';
+import { Any, AspectResponse, BoolData, BytesData, ConsParams, RunResult } from '../proto';
 import { IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx } from '../types';
-import { PointCutType } from './aspect-interface';
+import { ITransactionVerifier, PointCutType } from './aspect-interface';
+import { VerifyTxCtx } from './paramter/verify-tx-ctx';
 
 const messageUtil = MessageUtil.instance();
 
@@ -20,15 +21,18 @@ export class Entry {
   private readonly blockAspect: IAspectBlock | null;
   private readonly transactionAspect: IAspectTransaction | null;
   private readonly operationAspect: IAspectOperation | null;
+  private readonly transactionVerifier: ITransactionVerifier | null;
 
   constructor(
     blockAspect: IAspectBlock | null,
     transactionAspect: IAspectTransaction | null,
     operationAspect: IAspectOperation | null,
+    transactionVerifier: ITransactionVerifier | null,
   ) {
     this.blockAspect = blockAspect;
     this.transactionAspect = transactionAspect;
     this.operationAspect = operationAspect;
+    this.transactionVerifier = transactionVerifier;
   }
 
   public isBlockLevel(): i32 {
@@ -37,6 +41,10 @@ export class Entry {
 
   public isTransactionLevel(): i32 {
     return messageUtil.StoreOutputBool(this.transactionAspect != null);
+  }
+
+  public isTransactionVerifier(): i32 {
+    return messageUtil.StoreOutputBool(this.transactionVerifier != null);
   }
 
   public execute(methodPtr: i32, argPtr: i32): i32 {
@@ -76,6 +84,27 @@ export class Entry {
           messageUtil.BoolData,
           boolData,
           BoolData.encode,
+        );
+      }
+    } else if (method == PointCutType.ON_TX_VERIFY_METHOD) {
+      const arg = messageUtil.LoadEthTxAspect(argPtr);
+      if (arg.tx == null) {
+        out = messageUtil.ErrAspectResponse('tx is null');
+      } else {
+        const ctx = new VerifyTxCtx(arg.tx!);
+        let validationBytes = new Uint8Array(0);
+        if (arg.callData) {
+          validationBytes = arg.callData!.value;
+        }
+        const validationData = Protobuf.decode<BytesData>(validationBytes, BytesData.decode);
+        const sender = this.transactionVerifier!.verifyTx(ctx, validationData.data);
+        const bytesData = new BytesData(sender);
+        out = messageUtil.NewDataResponse(
+          true,
+          'success',
+          messageUtil.BytesData,
+          bytesData,
+          BytesData.encode,
         );
       }
     } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {

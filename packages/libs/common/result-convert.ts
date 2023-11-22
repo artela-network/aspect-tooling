@@ -1,15 +1,22 @@
-import {Key, ResultUnwrap} from './key-path';
+import { Key, ResultUnwrap } from './key-path';
 import {
-  BytesData, ChainConfig, ConsParams, EnvContent,
+  BytesData,
+  ChainConfig,
+  ConsParams,
+  EnvContent,
   EthBlockHeader,
   EthReceipt,
   EthTransaction,
-  EthTxArray, EvmParams, GasMeter,
-  IntData, LastCommitInfo, MinGasPrice,
+  EthTxArray,
+  EvmParams,
+  GasMeter,
+  IntData,
+  LastCommitInfo,
+  MinGasPrice,
   StringData,
-  TxExtProperty
+  TxExtProperty,
 } from '../proto';
-import {Protobuf} from 'as-proto/assembly';
+import { Protobuf } from 'as-proto/assembly';
 
 export class EthBlockHeaderUnwrap implements ResultUnwrap<EthBlockHeader> {
   public decode(u: Uint8Array): EthBlockHeader {

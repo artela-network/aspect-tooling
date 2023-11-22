@@ -1,4 +1,4 @@
-import {Key, ResultNotImplemented} from './key-path';
+import { Key, ResultNotImplemented } from './key-path';
 import {
   EthBlockHeaderUnwrap,
   EthTxArrayUnwrap,
@@ -9,7 +9,7 @@ import {
   Uint64Unwrap,
   Uint8ArrayUnwrap,
 } from './result-convert';
-import {EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice} from '../proto';
+import { EthBlockHeader, EthTxArray, GasMeter, LastCommitInfo, MinGasPrice } from '../proto';
 
 export class BlockKey extends Key<ResultNotImplemented> {
   constructor() {

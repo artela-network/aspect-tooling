@@ -92,4 +92,4 @@ async function bind() {
 }
 
 bind().then();
-`
+`;

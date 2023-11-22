@@ -74,4 +74,4 @@ async function call() {
 }
 
 call().then();
-`
+`;
