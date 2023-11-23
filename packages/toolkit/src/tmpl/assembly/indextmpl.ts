@@ -3,7 +3,7 @@ import {Entry} from "@artela/aspect-libs";
 import {Aspect} from "./aspect/aspect";
 
 const aspect = new Aspect();
-const entry = new Entry(aspect, aspect, aspect, aspect);
+const entry = new Entry(aspect, aspect, aspect, null);
 
 export function execute(methodPtr: i32, argPtr: i32): i32 {
     return entry.execute(methodPtr, argPtr);
