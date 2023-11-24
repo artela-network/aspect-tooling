@@ -34,7 +34,6 @@ import {
 } from './common';
 
 export namespace sys {
-  export const crypto = CryptoApi.instance();
   export const utils = new ConvertUtil();
   export function alloc(size: i32): i32 {
     return heap.alloc(size) as i32;

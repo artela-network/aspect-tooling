@@ -1,0 +1,25 @@
+{
+  // 输入选项 - 入口文件/文件夹
+  "entryPoints": [
+    "types","hostapi","components","common","proto"
+  ],
+  // 输入选项 - 排除文件/文件夹
+  "exclude": [
+    "node_moudles",
+    "build",
+    "docs"
+  ],
+  // 输出选项 - 将软件包package.json中的版本version添加到项目名称中
+  "includeVersion": false,
+  // 输出选项 - 设置将在模板标题中使用的项目的名称。默认为package.json中的name
+  "name": "Aspect Library Document",
+  // 输出选项 - 不在页面末尾打印TypeDoc链接
+  "hideGenerator": true,
+  // 输出选项 - 禁用描述代码位置
+  "disableSources": false,
+
+  "skipErrorChecking": true
+
+//  "plugin": ["@mxssfd/typedoc-theme"],
+//  "theme": "my-theme"
+}

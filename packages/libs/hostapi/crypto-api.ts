@@ -1,7 +1,6 @@
 import { AString, AUint8Array } from '../common';
 
 declare namespace __CryptoApi__ {
-  function hash(hasher: i32, dataPtr: i32): i32;
 
   function sha256(dataPtr: i32): i32;
 

@@ -1,4 +1,10 @@
-import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges, TxExtProperty,} from '../../proto';
+import {
+  EthCallStacks,
+  EthStackTransaction,
+  EthStateChangeIndices,
+  EthStateChanges,
+  TxExtProperty,
+} from '../../proto';
 import {
   ContextKey,
   NewMessageError,
@@ -10,8 +16,8 @@ import {
 } from '../../common';
 import {Protobuf} from 'as-proto/assembly';
 import {RuntimeContextApi} from '../../hostapi';
-import {EthReceiptKey, TxContentKey} from '../../common/key-tx';
 import {GasMeterKey} from '../../common/key-block';
+import {EthReceiptKey, TxContentKey} from "../../common/key-tx";
 
 const runtimeContext = RuntimeContextApi.instance();
 
@@ -135,7 +141,7 @@ export class ReceiptContext {
 
   private constructor() {}
 
-  public get(): EthReceiptKey {
+  get content(): EthReceiptKey {
     return ContextKey.tx.receipt;
   }
 
