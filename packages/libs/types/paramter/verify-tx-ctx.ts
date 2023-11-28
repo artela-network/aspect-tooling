@@ -1,15 +1,9 @@
-import { AspectStateReadonly, BlockContextAccessible, StaticCallable } from '../../common';
-import { AspectProperty, BlockContext, ImmutableAspectState, StaticCaller } from '../../components';
-import { EthTransaction } from '../../proto';
+import {AspectStateReadonly, BlockContextAccessible, StaticCallable, TxContextAccessible} from '../../common';
+import {AspectProperty, BlockContext, ImmutableAspectState, StaticCaller, Tx} from '../../components';
 
-export class VerifyTxCtx implements AspectStateReadonly, StaticCallable, BlockContextAccessible {
-  private readonly _tx: EthTransaction;
-  constructor(tx: EthTransaction) {
-    this._tx = tx;
-  }
-
-  get tx(): EthTransaction {
-    return this._tx;
+export class VerifyTxCtx implements TxContextAccessible, AspectStateReadonly, StaticCallable, BlockContextAccessible {
+  get tx(): Tx {
+    return Tx.instance(this);
   }
 
   get property(): AspectProperty {
@@ -33,4 +27,7 @@ export class VerifyTxCtx implements AspectStateReadonly, StaticCallable, BlockCo
   __staticCallableImplemented(): void {}
 
   __blockContextImplemented(): void {}
+
+  __txContextImplemented(): void {
+  }
 }

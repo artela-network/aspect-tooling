@@ -88,25 +88,21 @@ export class Entry {
       }
     } else if (method == PointCutType.ON_TX_VERIFY_METHOD) {
       const arg = messageUtil.LoadEthTxAspect(argPtr);
-      if (arg.tx == null) {
-        out = messageUtil.ErrAspectResponse('tx is null');
-      } else {
-        const ctx = new VerifyTxCtx(arg.tx!);
-        let validationBytes = new Uint8Array(0);
-        if (arg.callData) {
-          validationBytes = arg.callData!.value;
-        }
-        const validationData = Protobuf.decode<BytesData>(validationBytes, BytesData.decode);
-        const sender = this.transactionVerifier!.verifyTx(ctx, validationData.data);
-        const bytesData = new BytesData(sender);
-        out = messageUtil.NewDataResponse(
-          true,
-          'success',
-          messageUtil.BytesData,
-          bytesData,
-          BytesData.encode,
-        );
+      const ctx = new VerifyTxCtx();
+      let validationBytes = new Uint8Array(0);
+      if (arg.callData) {
+        validationBytes = arg.callData!.value;
       }
+      const validationData = Protobuf.decode<BytesData>(validationBytes, BytesData.decode);
+      const sender = this.transactionVerifier!.verifyTx(ctx, validationData.data);
+      const bytesData = new BytesData(sender);
+      out = messageUtil.NewDataResponse(
+        true,
+        'success',
+        messageUtil.BytesData,
+        bytesData,
+        BytesData.encode,
+      );
     } else if (method == PointCutType.PRE_TX_EXECUTE_METHOD) {
       const ctx = new PreTxExecuteCtx();
       this.transactionAspect!.preTxExecute(ctx);
