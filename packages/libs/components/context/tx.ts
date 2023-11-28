@@ -6,7 +6,7 @@ import {
   TxExtProperty,
 } from '../../proto';
 import {
-  ContextKey,
+  ContextKey, Key,
   NewMessageError,
   NotAuthorizedFail,
   ReceiptContextAccessible,
@@ -123,6 +123,10 @@ export class Tx {
 
   get gasMeter(): GasMeterKey {
     return ContextKey.tx.gasMeter;
+  }
+
+  get msgHash(): Key<Uint8Array> {
+    return ContextKey.tx.msgHash;
   }
 
   public static instance(ctx: TxContextAccessible): Tx {

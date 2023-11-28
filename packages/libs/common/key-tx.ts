@@ -6,7 +6,7 @@ import {
   EthReceiptUnwrap,
   EthTransactionUnwrap,
   GasMeterUnwrap,
-  StringUnwrap,
+  StringUnwrap, Uint8ArrayUnwrap,
 } from './result-convert';
 
 import { ConvertUtil } from './helper/convert';
@@ -19,6 +19,10 @@ export class TxKey extends Key<ResultNotImplemented> {
 
   get extProperties(): Key<TxExtProperty> {
     return new Key('extProperties', this.parts);
+  }
+
+  get msgHash(): Key<Uint8Array> {
+    return new Key('msgHash', this.parts, new Uint8ArrayUnwrap());
   }
 
   get context(): MappingKey {
