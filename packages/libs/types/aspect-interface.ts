@@ -9,6 +9,7 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
 } from '.';
+import { VerifyTxCtx } from './paramter/verify-tx-ctx';
 
 export interface AspectBase {
   isOwner(sender: string): bool;
@@ -18,6 +19,10 @@ export interface IAspectBlock extends AspectBase {
   onBlockInitialize(ctx: OnBlockInitializeCtx): void;
 
   onBlockFinalize(ctx: OnBlockFinalizeCtx): void;
+}
+
+export interface ITransactionVerifier extends AspectBase {
+  verifyTx(ctx: VerifyTxCtx, validationData: Uint8Array): Uint8Array;
 }
 
 export interface IAspectTransaction extends AspectBase {
@@ -44,6 +49,7 @@ export class PointCutType {
   static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
   static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
 
+  static readonly ON_TX_VERIFY_METHOD: string = 'onTxVerify';
   static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
   static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
   static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';

@@ -14,9 +14,9 @@ import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.45';
-const libVersion = '^0.0.24';
-const web3Version = '^1.9.17';
+const toolVersion = '^0.0.46';
+const libVersion = '^0.0.25';
+const web3Version = '^1.9.18';
 const web3UtilVersion = '^1.9.8';
 
 export default class Init extends Command {
@@ -275,8 +275,6 @@ export default class Init extends Command {
         updated = true;
       }
 
-
-
       if (!scripts['contract:bind']) {
         scripts['contract:bind'] = 'node scripts/bind.cjs';
         pkg['scripts'] = scripts;
@@ -396,9 +394,9 @@ export default class Init extends Command {
             version: '1.0.0',
             main: 'index.js',
             scripts: {
-              "account:create": "node scripts/create-account.cjs",
-              "contract:send": "node scripts/contract-send.cjs",
-              "contract:call": "node scripts/contract-call.cjs",
+              'account:create': 'node scripts/create-account.cjs',
+              'contract:send': 'node scripts/contract-send.cjs',
+              'contract:call': 'node scripts/contract-call.cjs',
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./assembly/aspect',
