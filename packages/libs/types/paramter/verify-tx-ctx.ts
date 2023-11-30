@@ -9,14 +9,14 @@ import {
   BlockContext,
   ImmutableAspectState,
   StaticCaller,
-  Tx,
+  TxContext,
 } from '../../components';
 
 export class VerifyTxCtx
   implements TxContextAccessible, AspectStateReadonly, StaticCallable, BlockContextAccessible
 {
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
 
   get property(): AspectProperty {

@@ -1,25 +1,15 @@
 {
-  // Input Option - Import File/Folder
   "entryPoints": [
-    "types","hostapi","components","common","proto"
+    "types","hostApi","components","common","proto"
   ],
-  // Input Option - Exclude Files/Folders
   "exclude": [
-    "node_moudles",
+    "node_modules",
     "build",
     "docs"
   ],
-  // Output Options - Add the version from the package.json to the project name
   "includeVersion": false,
-  // Output Options - Sets the name of the project that will be used in the title of the template. The default value is name in package.json
   "name": "Aspect Library Document",
-  // Output Option - Do not print TypeDoc links at the end of the page
   "hideGenerator": true,
-  // Output Option - Disables the description code position
   "disableSources": false,
-
   "skipErrorChecking": true
-
-//  "plugin": ["@mxssfd/typedoc-theme"],
-//  "theme": "my-theme"
 }

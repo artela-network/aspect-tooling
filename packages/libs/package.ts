@@ -17,7 +17,7 @@ import {
   StateContext,
   StaticCaller,
   TraceContext,
-  Tx,
+  TxContext,
 } from './components';
 import {
   AspectStateModifiable,
@@ -88,8 +88,8 @@ export namespace sys {
       return BlockContext.instance(ctx);
     }
 
-    export function tx(ctx: TxContextAccessible): Tx {
-      return Tx.instance(ctx);
+    export function tx(ctx: TxContextAccessible): TxContext {
+      return TxContext.instance(ctx);
     }
 
     export function receipt(ctx: ReceiptContextAccessible): ReceiptContext {

@@ -1,3 +1,3 @@
 export * from './environment';
 export * from './block';
-export * from './tx';
+export * from './tx-context';

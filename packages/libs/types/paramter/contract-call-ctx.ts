@@ -8,7 +8,7 @@ import {
   MutableAspectState,
   StateContext,
   TraceContext,
-  Tx,
+  TxContext,
 } from '../../components';
 import {
   AspectStateModifiable,
@@ -47,8 +47,8 @@ export class PreContractCallCtx
   get jitCall(): JustInTimeCaller {
     return JustInTimeCaller.instance(this);
   }
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
   get block(): BlockContext {
     return BlockContext.instance(this);
@@ -109,8 +109,8 @@ export class PostContractCallCtx
   get jitCall(): JustInTimeCaller {
     return JustInTimeCaller.instance(this);
   }
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
   get block(): BlockContext {
     return BlockContext.instance(this);

@@ -1,5 +1,5 @@
 import {
-  EthCallStacks,
+  EthCallStacks, EthReceipt,
   EthStackTransaction,
   EthStateChangeIndices,
   EthStateChanges,
@@ -109,8 +109,8 @@ export class TraceContext implements TraceCtx {
   }
 }
 
-export class Tx {
-  private static _instance: Tx | null;
+export class TxContext {
+  private static _instance: TxContext | null;
 
   private constructor() {}
 
@@ -130,12 +130,12 @@ export class Tx {
     return ContextKey.tx.msgHash;
   }
 
-  public static instance(ctx: TxContextAccessible): Tx {
+  public static instance(ctx: TxContextAccessible): TxContext {
     if (ctx == null) {
       throw NotAuthorizedFail;
     }
     if (!this._instance) {
-      this._instance = new Tx();
+      this._instance = new TxContext();
     }
     return this._instance!;
   }
@@ -146,6 +146,9 @@ export class ReceiptContext {
 
   private constructor() {}
 
+  public unwrap(): EthReceipt {
+    return ContextKey.tx.receipt.unwrap();
+  }
   get content(): EthReceiptKey {
     return ContextKey.tx.receipt;
   }
