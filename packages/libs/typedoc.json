@@ -1,21 +1,21 @@
 {
-  // 输入选项 - 入口文件/文件夹
+  // Input Option - Import File/Folder
   "entryPoints": [
     "types","hostapi","components","common","proto"
   ],
-  // 输入选项 - 排除文件/文件夹
+  // Input Option - Exclude Files/Folders
   "exclude": [
     "node_moudles",
     "build",
     "docs"
   ],
-  // 输出选项 - 将软件包package.json中的版本version添加到项目名称中
+  // Output Options - Add the version from the package.json to the project name
   "includeVersion": false,
-  // 输出选项 - 设置将在模板标题中使用的项目的名称。默认为package.json中的name
+  // Output Options - Sets the name of the project that will be used in the title of the template. The default value is name in package.json
   "name": "Aspect Library Document",
-  // 输出选项 - 不在页面末尾打印TypeDoc链接
+  // Output Option - Do not print TypeDoc links at the end of the page
   "hideGenerator": true,
-  // 输出选项 - 禁用描述代码位置
+  // Output Option - Disables the description code position
   "disableSources": false,
 
   "skipErrorChecking": true
