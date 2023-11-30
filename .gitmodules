@@ -1,4 +1,4 @@
 [submodule "aspect-core"]
 	path = aspect-core
 	url = https://github.com/artela-network/aspect-core.git
-	branch = poc/on-tx-verify
+	branch = main

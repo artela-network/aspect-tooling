@@ -6,7 +6,8 @@ import {
   TxExtProperty,
 } from '../../proto';
 import {
-  ContextKey, Key,
+  ContextKey,
+  Key,
   NewMessageError,
   NotAuthorizedFail,
   ReceiptContextAccessible,

@@ -6,7 +6,8 @@ import {
   EthReceiptUnwrap,
   EthTransactionUnwrap,
   GasMeterUnwrap,
-  StringUnwrap, Uint8ArrayUnwrap,
+  StringUnwrap,
+  Uint8ArrayUnwrap,
 } from './result-convert';
 
 import { ConvertUtil } from './helper/convert';

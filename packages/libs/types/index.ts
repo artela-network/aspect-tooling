@@ -7,4 +7,9 @@ export { VerifyTxCtx } from './paramter/verify-tx-ctx';
 export { PreTxExecuteCtx, PostTxExecuteCtx } from './paramter/tx-execute-ctx';
 
 export { Entry } from './aspect-entry';
-export { IAspectOperation, IAspectTransaction, IAspectBlock, ITransactionVerifier } from './aspect-interface';
+export {
+  IAspectOperation,
+  IAspectTransaction,
+  IAspectBlock,
+  ITransactionVerifier,
+} from './aspect-interface';

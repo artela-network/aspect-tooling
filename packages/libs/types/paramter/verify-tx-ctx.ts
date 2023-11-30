@@ -1,7 +1,20 @@
-import {AspectStateReadonly, BlockContextAccessible, StaticCallable, TxContextAccessible} from '../../common';
-import {AspectProperty, BlockContext, ImmutableAspectState, StaticCaller, Tx} from '../../components';
+import {
+  AspectStateReadonly,
+  BlockContextAccessible,
+  StaticCallable,
+  TxContextAccessible,
+} from '../../common';
+import {
+  AspectProperty,
+  BlockContext,
+  ImmutableAspectState,
+  StaticCaller,
+  Tx,
+} from '../../components';
 
-export class VerifyTxCtx implements TxContextAccessible, AspectStateReadonly, StaticCallable, BlockContextAccessible {
+export class VerifyTxCtx
+  implements TxContextAccessible, AspectStateReadonly, StaticCallable, BlockContextAccessible
+{
   get tx(): Tx {
     return Tx.instance(this);
   }
@@ -28,6 +41,5 @@ export class VerifyTxCtx implements TxContextAccessible, AspectStateReadonly, St
 
   __blockContextImplemented(): void {}
 
-  __txContextImplemented(): void {
-  }
+  __txContextImplemented(): void {}
 }
