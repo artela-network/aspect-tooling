@@ -1,12 +1,7 @@
-import {
-  EthCallStacks,
-  EthStackTransaction,
-  EthStateChangeIndices,
-  EthStateChanges,
-  TxExtProperty,
-} from '../../proto';
+import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges, TxExtProperty,} from '../../proto';
 import {
   ContextKey,
+  Key,
   NewMessageError,
   NotAuthorizedFail,
   ReceiptContextAccessible,
@@ -16,8 +11,8 @@ import {
 } from '../../common';
 import {Protobuf} from 'as-proto/assembly';
 import {RuntimeContextApi} from '../../hostapi';
+import {EthReceiptKey, TxContentKey} from '../../common/key-tx';
 import {GasMeterKey} from '../../common/key-block';
-import {EthReceiptKey, TxContentKey} from "../../common/key-tx";
 
 const runtimeContext = RuntimeContextApi.instance();
 
@@ -33,7 +28,7 @@ export class TraceContext implements TraceCtx {
       throw NewMessageError('Err load calltree');
     }
     if (response.data == null) {
-      return new EthStackTransaction()
+      return new EthStackTransaction();
     }
     return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode).calls.get(
       index,
@@ -47,7 +42,7 @@ export class TraceContext implements TraceCtx {
       throw NewMessageError('Err load calltree');
     }
     if (response.data == null) {
-      return new EthCallStacks()
+      return new EthCallStacks();
     }
     return Protobuf.decode<EthCallStacks>(response.data!.value, EthCallStacks.decode);
   }
@@ -63,7 +58,7 @@ export class TraceContext implements TraceCtx {
       throw NewMessageError(response.result!.message);
     }
     if (response.data == null) {
-      return new EthStateChanges()
+      return new EthStateChanges();
     }
 
     return Protobuf.decode<EthStateChanges>(response.data!.value, EthStateChanges.decode);
@@ -88,7 +83,7 @@ export class TraceContext implements TraceCtx {
       throw NewMessageError(response.result!.message);
     }
     if (response.data == null) {
-      return new EthStateChangeIndices()
+      return new EthStateChangeIndices();
     }
 
     return Protobuf.decode<EthStateChangeIndices>(
@@ -125,6 +120,10 @@ export class Tx {
     return ContextKey.tx.gasMeter;
   }
 
+  get msgHash(): Key<Uint8Array> {
+    return ContextKey.tx.msgHash;
+  }
+
   public static instance(ctx: TxContextAccessible): Tx {
     if (ctx == null) {
       throw NotAuthorizedFail;
@@ -141,7 +140,7 @@ export class ReceiptContext {
 
   private constructor() {}
 
-  get content(): EthReceiptKey {
+  public get(): EthReceiptKey {
     return ContextKey.tx.receipt;
   }
 

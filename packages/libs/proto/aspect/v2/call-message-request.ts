@@ -4,28 +4,28 @@
 //   protoc        v4.25.1
 
 import { Writer, Reader } from 'as-proto/assembly';
-import { EthTransaction } from './eth-transaction';
+import { EthMessage } from './eth-message';
 
-export class EthTxArray {
-  static encode(message: EthTxArray, writer: Writer): void {
-    const tx = message.tx;
-    for (let i: i32 = 0; i < tx.length; ++i) {
+export class CallMessageRequest {
+  static encode(message: CallMessageRequest, writer: Writer): void {
+    const message_2 = message.message;
+    if (message_2 !== null) {
       writer.uint32(10);
       writer.fork();
-      EthTransaction.encode(tx[i], writer);
+      EthMessage.encode(message_2, writer);
       writer.ldelim();
     }
   }
 
-  static decode(reader: Reader, length: i32): EthTxArray {
+  static decode(reader: Reader, length: i32): CallMessageRequest {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new EthTxArray();
+    const message = new CallMessageRequest();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.tx.push(EthTransaction.decode(reader, reader.uint32()));
+          message.message = EthMessage.decode(reader, reader.uint32());
           break;
 
         default:
@@ -37,9 +37,9 @@ export class EthTxArray {
     return message;
   }
 
-  tx: Array<EthTransaction>;
+  message: EthMessage | null;
 
-  constructor(tx: Array<EthTransaction> = []) {
-    this.tx = tx;
+  constructor(message: EthMessage | null = null) {
+    this.message = message;
   }
 }

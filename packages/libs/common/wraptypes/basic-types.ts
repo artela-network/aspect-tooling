@@ -197,14 +197,14 @@ export class AI64 {
     return this.body;
   }
 
-  public load(ptr: i64): void {
+  public load(ptr: i32): void {
     this.head = new header(0, 0);
     this.head.load(ptr);
     const bodyPtr = ptr + this.head.len();
     this.body = i64.load(bodyPtr);
   }
 
-  public store(): i64 {
+  public store(): i32 {
     const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();

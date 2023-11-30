@@ -44,4 +44,4 @@ async function create() {
 }
 
 create().then();
-`
+`;

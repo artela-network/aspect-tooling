@@ -1,4 +1,4 @@
-[submodule "aspect-sdk"]
-	path = aspect-sdk
-	url = https://github.com/artela-network/artelasdk.git
-	branch = 23004-beta1
+[submodule "aspect-core"]
+	path = aspect-core
+	url = https://github.com/artela-network/aspect-core.git
+	tag = v0.4.2-beta

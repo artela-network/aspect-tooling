@@ -275,8 +275,6 @@ export default class Init extends Command {
         updated = true;
       }
 
-
-
       if (!scripts['contract:bind']) {
         scripts['contract:bind'] = 'node scripts/bind.cjs';
         pkg['scripts'] = scripts;
@@ -396,9 +394,9 @@ export default class Init extends Command {
             version: '1.0.0',
             main: 'index.js',
             scripts: {
-              "account:create": "node scripts/create-account.cjs",
-              "contract:send": "node scripts/contract-send.cjs",
-              "contract:call": "node scripts/contract-call.cjs",
+              'account:create': 'node scripts/create-account.cjs',
+              'contract:send': 'node scripts/contract-send.cjs',
+              'contract:call': 'node scripts/contract-call.cjs',
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./assembly/aspect',
