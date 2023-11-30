@@ -1,4 +1,10 @@
-import {EthCallStacks, EthStackTransaction, EthStateChangeIndices, EthStateChanges, TxExtProperty,} from '../../proto';
+import {
+  EthCallStacks,
+  EthStackTransaction,
+  EthStateChangeIndices,
+  EthStateChanges,
+  TxExtProperty,
+} from '../../proto';
 import {
   ContextKey,
   Key,
@@ -9,10 +15,10 @@ import {
   TraceCtx,
   TxContextAccessible,
 } from '../../common';
-import {Protobuf} from 'as-proto/assembly';
-import {RuntimeContextApi} from '../../hostapi';
-import {EthReceiptKey, TxContentKey} from '../../common/key-tx';
-import {GasMeterKey} from '../../common/key-block';
+import { Protobuf } from 'as-proto/assembly';
+import { RuntimeContextApi } from '../../hostapi';
+import { EthReceiptKey, TxContentKey } from '../../common/key-tx';
+import { GasMeterKey } from '../../common/key-block';
 
 const runtimeContext = RuntimeContextApi.instance();
 
