@@ -14,7 +14,7 @@ import {
   MutableAspectState,
   ReceiptContext,
   StaticCaller,
-  Tx,
+  TxContext,
 } from '../../components';
 
 export class PostTxCommitCtx
@@ -43,8 +43,8 @@ export class PostTxCommitCtx
     return BlockContext.instance(this);
   }
 
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
 
   get receipt(): ReceiptContext {

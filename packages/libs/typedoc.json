@@ -1,0 +1,15 @@
+{
+  "entryPoints": [
+    "types","hostApi","components","common","proto"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "docs"
+  ],
+  "includeVersion": false,
+  "name": "Aspect Library Document",
+  "hideGenerator": true,
+  "disableSources": false,
+  "skipErrorChecking": true
+}

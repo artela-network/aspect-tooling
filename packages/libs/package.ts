@@ -17,7 +17,7 @@ import {
   StateContext,
   StaticCaller,
   TraceContext,
-  Tx,
+  TxContext,
 } from './components';
 import {
   AspectStateModifiable,
@@ -34,7 +34,6 @@ import {
 } from './common';
 
 export namespace sys {
-  export const crypto = CryptoApi.instance();
   export const utils = new ConvertUtil();
   export function alloc(size: i32): i32 {
     return heap.alloc(size) as i32;
@@ -89,8 +88,8 @@ export namespace sys {
       return BlockContext.instance(ctx);
     }
 
-    export function tx(ctx: TxContextAccessible): Tx {
-      return Tx.instance(ctx);
+    export function tx(ctx: TxContextAccessible): TxContext {
+      return TxContext.instance(ctx);
     }
 
     export function receipt(ctx: ReceiptContextAccessible): ReceiptContext {

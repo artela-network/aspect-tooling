@@ -1,6 +1,6 @@
 {
   "name": "@artela/aspect-libs",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "AssemblyScript library for writing Artela Aspect",
   "main": "index.ts",
   "module": "index.ts",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "asc --exportRuntime --runtime stub index.ts --lib aspect-libs -b aspect-libs.wasm",
     "format": "prettier --write -c **/*.ts",
-    "lint": "prettier -c **/*.ts"
+    "lint": "prettier -c **/*.ts",
+    "typedoc": "npx typedoc --tsconfig typedoc.json"
   },
   "publishConfig": {
     "access": "public"
@@ -18,8 +19,10 @@
     "as-proto": "^1.3.0"
   },
   "devDependencies": {
+    "@mxssfd/typedoc-theme": "^1.1.3",
+    "as-proto-gen": "^1.3.0",
     "prettier": "^2.4.1",
-    "as-proto-gen": "^1.3.0"
+    "typedoc": "^0.25.3"
   },
   "ascMain": "index.ts"
 }

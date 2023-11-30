@@ -16,7 +16,7 @@ import {
   StateContext,
   StaticCaller,
   TraceContext,
-  Tx,
+  TxContext,
 } from '../../components';
 
 export class PreTxExecuteCtx
@@ -30,8 +30,8 @@ export class PreTxExecuteCtx
 {
   constructor() {}
 
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
 
   get stateDB(): StateContext {
@@ -91,8 +91,8 @@ export class PostTxExecuteCtx
   get trace(): TraceContext {
     return TraceContext.instance(this);
   }
-  get tx(): Tx {
-    return Tx.instance(this);
+  get tx(): TxContext {
+    return TxContext.instance(this);
   }
 
   get stateDB(): StateContext {
