@@ -146,7 +146,7 @@ export class ReceiptContext {
 
   private constructor() {}
 
-  public get(): EthReceiptKey {
+  get content(): EthReceiptKey {
     return ContextKey.tx.receipt;
   }
 
