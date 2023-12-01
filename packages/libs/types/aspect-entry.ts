@@ -10,7 +10,7 @@ import {
   PreTxExecuteCtx,
 } from '.';
 import { AString, MessageUtil } from '../common';
-import { Any, AspectResponse, BoolData, BytesData, ConsParams, RunResult } from '../proto';
+import { Any, AspectResponse, BoolData, BytesData, RunResult } from '../proto';
 import { IAspectBlock, IAspectOperation, IAspectTransaction, OperationCtx } from '../types';
 import { ITransactionVerifier, PointCutType } from './aspect-interface';
 import { VerifyTxCtx } from './paramter/verify-tx-ctx';
@@ -52,11 +52,6 @@ export class Entry {
     methodArg.load(methodPtr);
     const method = methodArg.get();
 
-    if (method == PointCutType.ON_CONTRACT_BINDING_METHOD && this.transactionAspect) {
-      const arg = messageUtil.LoadInputString(argPtr);
-      const out = this.transactionAspect!.onContractBinding(arg);
-      return messageUtil.StoreOutputBool(out);
-    }
     if (method == PointCutType.IS_OWNER_METHOD) {
       const arg = messageUtil.LoadInputString(argPtr);
       if (this.transactionAspect) {

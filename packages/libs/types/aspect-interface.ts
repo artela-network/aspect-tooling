@@ -119,5 +119,4 @@ export class PointCutType {
 
   static readonly OPERATION_METHOD: string = 'operation';
   static readonly IS_OWNER_METHOD: string = 'isOwner';
-  static readonly ON_CONTRACT_BINDING_METHOD: string = 'onContractBinding';
 }
