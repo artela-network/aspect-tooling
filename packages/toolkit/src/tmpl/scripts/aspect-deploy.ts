@@ -4,7 +4,7 @@ const Web3 = require("@artela/web3");
 const fs = require("fs");
 const argv = require('yargs')
     .string('node')
-    .string('pkfile')
+    .string('skfile')
     .string('gas')
     .string('wasm')
     .argv;
@@ -26,13 +26,13 @@ async function deploy() {
     let gasPrice = await web3.eth.getGasPrice();
 
 
-    //--pkfile ./build/privateKey.txt
-    let senderPriKey = String(argv.pkfile)
+    //--skfile ./build/privateKey.txt
+    let senderPriKey = String(argv.skfile)
     if (!senderPriKey || senderPriKey === 'undefined') {
         senderPriKey = "privateKey.txt"
     }
     if (!fs.existsSync(senderPriKey)) {
-        console.log("'account' cannot be empty, please set by the parameter ' --pkfile ./build/privateKey.txt'")
+        console.log("'account' cannot be empty, please set by the parameter ' --skfile ./build/privateKey.txt'")
         process.exit(0)
     }
     let pk = fs.readFileSync(senderPriKey, 'utf-8');
