@@ -1,4 +1,4 @@
-import {AString, AUint8Array} from '../common';
+import {AString, AUint8Array, BigInt} from '../common';
 import {UtilApi} from "./util-api";
 
 declare namespace __CryptoApi__ {
@@ -92,18 +92,21 @@ export class CryptoApi {
    * recover the address associated with the public key from elliptic curve signature or return zero on error.
    * The function parameters correspond to ECDSA values of the signature:
    * @param hash
-   * @param v final 1 byte of signature
+   * @param v final 32 bytes of signature
    * @param r  first 32 bytes of signature
    * @param s  second 32 bytes of signature
    *
    * @returns string returns an address, and not an address payable
    */
-  public ecRecover(hash: string, v: i8, r: string, s: string): string {
+  public ecRecover(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
+   if (v.countBits()!=256 || r.countBits()!=256 && s.countBits()!=256){
+     return ""
+   }
     //[msgHash 32B][v 32B][r 32B][s 32B]
     const syscallInput = hash
-        + "00000000000000000000000000000000000000000000000000000000000000" + v
-        + r
-        + s;
+        + v.toString(16)
+        + r.toString(16)
+        + s.toString(16);
     const ret = this._ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
     return UtilApi.instance().uint8ArrayToHex(ret);
   }
