@@ -40,21 +40,6 @@ export class Aspect implements IAspectTransaction, IAspectBlock, IAspectOperatio
     }
 
     /**
-     * onContractBinding is an Aspect lifecycle hook, it will be invoked by Aspect Core when
-     * a new smart contract is binding to this Aspect. Aspect can choose whether to allow the
-     * binding request or not. The binding request will succeed if onContractBinding returns true,
-     * otherwise it will fail.
-     *
-     * @param ctx context of Aspect state
-     * @param contractAddr address of the smart contract to binding with current Aspect
-     * @return true if binding succeed, otherwise false
-     */
-    onContractBinding(contractAddr: string): bool {
-        return true;
-    }
-
-
-    /**
      * filterTx is a join-point which will be invoked when the mem pool first
      * received the transaction. Since it is a join-point outside the consensus stage,
      * so at this join-point, no state or context can be persisted.
