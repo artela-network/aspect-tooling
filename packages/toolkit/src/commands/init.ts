@@ -14,8 +14,8 @@ import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.48';
-const libVersion = '^0.0.27';
+const toolVersion = '^0.0.49';
+const libVersion = '^0.0.28';
 const web3Version = '^1.9.18';
 const web3UtilVersion = '^1.9.8';
 

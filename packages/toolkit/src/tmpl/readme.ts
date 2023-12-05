@@ -31,9 +31,9 @@ This is a sample project of Artela Aspect.
 ### 1.Create a account
 
 \`\`\`solidity
-  npm run account:create  -- --pkfile {file_path}
+  npm run account:create  -- --skfile {file_path}
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 
 
 ### 2. Build contract
@@ -47,14 +47,14 @@ This is a sample project of Artela Aspect.
 ### 3. Deploy contract
 
 \`\`\`bash
-  npm run contract:deploy -- --pkfile {privateKey-path} \\                        
+  npm run contract:deploy -- --skfile {privateKey-path} \\                        
                            --abi ./build/contract/xxx.abi \\                          
                            --bytecode ./build/contract/xxx.bin \\     
                            --args [..] \\                     
                            --gas 200000 
                            
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 > * --abi : contract abi path.
 > * --bytecode:  contract bytecode path.
 > * --args : If your contract's constructor requires input parameters, use \`--args '[1, "a"]'\` (optional).
@@ -73,11 +73,11 @@ This is a sample project of Artela Aspect.
 ### 5. Deploy Aspect
 
 \`\`\`bash
-  npm run aspect:deploy -- --pkfile {privateKey-path} \\                                                
+  npm run aspect:deploy -- --skfile {privateKey-path} \\                                                
                          --wasm ./build/release.wasm \\
                          --gas 200000  
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 > * --wasm : wasm path.
 > * --gas : like \`200000\`,(optional,default value \`7000000\`).
 
@@ -85,13 +85,13 @@ This is a sample project of Artela Aspect.
 ### 6. Contract Bind Aspect
 
 \`\`\`bash
-  npm run contract:bind -- --pkfile {privateKey-path} \\                          
+  npm run contract:bind -- --skfile {privateKey-path} \\                          
                          --contract {smart-contract-address} \\
                          --abi ./build/contract/xxx.abi \\                        
                          --aspectId {aspect-Id} \\                          
                          --gas 200000 
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 > * --abi : contract abi path.
 > * --contract:  smart contract address.
 > * --aspectId:  aspect id.
@@ -101,14 +101,14 @@ This is a sample project of Artela Aspect.
 ### 7. Contract Call
 
 \`\`\`shell
-  npm run contract:call -- --pkfile {privateKey-path}    \\     
+  npm run contract:call -- --skfile {privateKey-path}    \\     
                          --contract {smart-contract-address}  \\                         
                          --abi ./build/contract/xxx.abi   \\                                    
                          --method {method-name}  \\   
                          --args [..]
                          --gas 200000 
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 > * --abi : contract abi path.
 > * --contract:  smart contract address.
 > * --method:  method name.
@@ -119,14 +119,14 @@ This is a sample project of Artela Aspect.
 ### 8. Send Transaction
 
 \`\`\`shell
-  npm run contract:send -- --pkfile {privateKey-path}    \\     
+  npm run contract:send -- --skfile {privateKey-path}    \\     
                          --contract {smart-contract-address}  \\                         
                          --abi ./build/contract/xxx.abi   \\                                    
                          --method {method-name}  \\   
                          --args [..]
                          --gas 200000 
 \`\`\`
-> * --pkfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
+> * --skfile : privateKey path for sender. (optional,default value \`./privateKey.txt\`).
 > * --abi : contract abi path.
 > * --contract:  smart contract address.
 > * --method:  method name.
