@@ -49,6 +49,59 @@ export interface ITransactionVerifier extends AspectBase {
   verifyTx(ctx: VerifyTxCtx, validationData: Uint8Array): Uint8Array;
 }
 
+
+export interface IPostTxCommitJP extends AspectBase {
+
+  /**
+   * postTxCommit will be triggered after the transaction is committed.
+   *
+   * @param ctx the context of the finalized transaction and receipt.
+   */
+  postTxCommit(ctx: PostTxCommitCtx): void;
+}
+
+export interface IPreTxExecuteJP extends AspectBase {
+
+  /**
+   * preTxExecute will be triggered before the transaction is executed.
+   *
+   * @param ctx the context of the transaction to be executed.
+   */
+  preTxExecute(ctx: PreTxExecuteCtx): void;
+}
+
+export interface IPreContractCallJP extends AspectBase {
+
+  /**
+   * preContractCall will be triggered before the contract call is executed.
+   *
+   * @param ctx the context of the contract call.
+   */
+  preContractCall(ctx: PreContractCallCtx): void;
+}
+
+export interface IPostContractCallJP extends AspectBase {
+
+  /**
+   * postContractCall will be triggered after the contract call is executed.
+   *
+   * @param ctx the context of the executed contract call.
+   */
+  postContractCall(ctx: PostContractCallCtx): void;
+}
+
+export interface IPostTxExecuteJP extends AspectBase {
+
+  /**
+   * postTxExecute will be triggered after the transaction is executed.
+   *
+   * @param ctx the context of the executed transaction.
+   */
+  postTxExecute(ctx: PostTxExecuteCtx): void;
+}
+
+
+
 export interface IAspectTransaction extends AspectBase {
   /**
    * filterTx is used to filter the transaction. If the transaction is valid, return true to keep
@@ -94,8 +147,8 @@ export interface IAspectTransaction extends AspectBase {
   postTxCommit(ctx: PostTxCommitCtx): void;
 }
 
-export interface IAspectOperation {
-  /**
+export interface IAspectOperation extends AspectBase{
+/**
    * operation is used to execute the logics within the Aspect.
    *
    * @param ctx the context of the operation.
