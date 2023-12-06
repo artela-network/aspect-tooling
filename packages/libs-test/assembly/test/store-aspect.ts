@@ -1,7 +1,7 @@
 import {
   ethereum,
   FilterTxCtx,
-  IAspectBlock,
+  IBlockJP,
   IAspectTransaction,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
@@ -15,7 +15,7 @@ import {
   sys,
 } from '@artela/aspect-libs';
 
-export class StoreAspect implements IAspectTransaction, IAspectBlock {
+export class StoreAspect implements IAspectTransaction, IBlockJP {
   filterTx(ctx: FilterTxCtx): bool {
     // add test data
   }

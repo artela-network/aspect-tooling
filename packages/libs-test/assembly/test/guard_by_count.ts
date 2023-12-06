@@ -3,7 +3,7 @@
 
 import {
   FilterTxCtx,
-  IAspectBlock,
+  IBlockJP,
   IAspectTransaction,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
@@ -15,7 +15,7 @@ import {
   sys,
 } from '@artela/aspect-libs';
 
-class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
+class GuardByCountAspect implements IAspectTransaction, IBlockJP {
   isOwner(sender: string): bool {
     const value = sys.aspect.property.get<string>('owner');
     return value.includes(sender);

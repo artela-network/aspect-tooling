@@ -1,14 +1,14 @@
 // The entry file of your WebAssembly module.
 
 import {
-  IAspectBlock,
+  IBlockJP,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
   sys,
   Entry,
 } from '@artela/aspect-libs';
 
-class AspectTest implements IAspectBlock {
+class AspectTest implements IBlockJP {
   onBlockInitialize(ctx: OnBlockInitializeCtx): void {
     sys.require(ctx.block != null, 'onBlockInitialize blockHeader is empty');
     sys.require(ctx.staticCall != null, 'onBlockInitialize scheduleManager is empty');

@@ -11,7 +11,7 @@ import {
 } from '.';
 import { VerifyTxCtx } from './paramter/verify-tx-ctx';
 
-export interface AspectBase {
+export interface IAspectBase {
   /**
    * isOwner is used to check whether the sender is the owner of the contract.
    *
@@ -21,7 +21,7 @@ export interface AspectBase {
   isOwner(sender: string): bool;
 }
 
-export interface IAspectBlock extends AspectBase {
+export interface IBlockJP extends IAspectBase {
   /**
    * onBlockInitialize is called when the block proposal is prepared.
    *
@@ -37,7 +37,7 @@ export interface IAspectBlock extends AspectBase {
   onBlockFinalize(ctx: OnBlockFinalizeCtx): void;
 }
 
-export interface ITransactionVerifier extends AspectBase {
+export interface ITransactionVerifier extends IAspectBase {
   /**
    * verifyTx is used to verify the transaction. If the transaction is valid,
    * an ethereum address will be returned. Otherwise, you can either call revert or return empty data
@@ -50,7 +50,7 @@ export interface ITransactionVerifier extends AspectBase {
 }
 
 
-export interface IPostTxCommitJP extends AspectBase {
+export interface IPostTxCommitJP extends IAspectBase {
 
   /**
    * postTxCommit will be triggered after the transaction is committed.
@@ -60,7 +60,7 @@ export interface IPostTxCommitJP extends AspectBase {
   postTxCommit(ctx: PostTxCommitCtx): void;
 }
 
-export interface IPreTxExecuteJP extends AspectBase {
+export interface IPreTxExecuteJP extends IAspectBase {
 
   /**
    * preTxExecute will be triggered before the transaction is executed.
@@ -70,7 +70,7 @@ export interface IPreTxExecuteJP extends AspectBase {
   preTxExecute(ctx: PreTxExecuteCtx): void;
 }
 
-export interface IPreContractCallJP extends AspectBase {
+export interface IPreContractCallJP extends IAspectBase {
 
   /**
    * preContractCall will be triggered before the contract call is executed.
@@ -80,7 +80,7 @@ export interface IPreContractCallJP extends AspectBase {
   preContractCall(ctx: PreContractCallCtx): void;
 }
 
-export interface IPostContractCallJP extends AspectBase {
+export interface IPostContractCallJP extends IAspectBase {
 
   /**
    * postContractCall will be triggered after the contract call is executed.
@@ -90,7 +90,7 @@ export interface IPostContractCallJP extends AspectBase {
   postContractCall(ctx: PostContractCallCtx): void;
 }
 
-export interface IPostTxExecuteJP extends AspectBase {
+export interface IPostTxExecuteJP extends IAspectBase {
 
   /**
    * postTxExecute will be triggered after the transaction is executed.
@@ -102,7 +102,7 @@ export interface IPostTxExecuteJP extends AspectBase {
 
 
 
-export interface IAspectTransaction extends AspectBase {
+export interface IAspectTransaction extends IAspectBase {
   /**
    * filterTx is used to filter the transaction. If the transaction is valid, return true to keep
    * the transaction, otherwise, the transaction will be dropped.
@@ -147,7 +147,7 @@ export interface IAspectTransaction extends AspectBase {
   postTxCommit(ctx: PostTxCommitCtx): void;
 }
 
-export interface IAspectOperation extends AspectBase{
+export interface IAspectOperation extends IAspectBase{
 /**
    * operation is used to execute the logics within the Aspect.
    *

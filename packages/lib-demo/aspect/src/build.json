@@ -1,0 +1,16 @@
+[{
+  "aspectName":"release",
+  "PostContractCall":test,
+  "PreContractCall":test,
+  "PostTxExecute":test,
+  "PreTxExecute":test,
+  "PostTxCommit":test,
+},{
+  "aspectName":"aspect2",
+  "PostContractCall":test,
+  "PreContractCall":test,
+  "PostTxExecute":test,
+  "PreTxExecute":test,
+  "PostTxCommit":test,
+}
+]
