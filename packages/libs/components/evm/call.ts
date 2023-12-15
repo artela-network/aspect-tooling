@@ -36,7 +36,7 @@ export class StaticCaller {
 export class JitCallBuilder {
   private _sender: string;
   private _nonce: u64;
-  private _nonceKey: BigInt;
+  private _nonceKey: string;
   private _initCode: Uint8Array;
   private _callData: Uint8Array;
   private _callGasLimit: u64;
@@ -48,7 +48,7 @@ export class JitCallBuilder {
   constructor() {
     this._sender = '';
     this._nonce = 0;
-    this._nonceKey = BigInt.fromInt16(0);
+    this._nonceKey = '';
     this._initCode = new Uint8Array(0);
     this._callData = new Uint8Array(0);
     this._callGasLimit = 0;
@@ -71,9 +71,10 @@ export class JitCallBuilder {
     return this;
   }
 
-  nonceKey(nonceKey: BigInt): JitCallBuilder {
-    if (nonceKey.countBits() > 192) {
-      throw new Error('nonce key too large, no more than 192 bits');
+  nonceKey(nonceKey: string): JitCallBuilder {
+    nonceKey = nonceKey.startsWith('0x') ? nonceKey.substr(2) : nonceKey;
+    if (nonceKey.length != 48) {
+      throw new Error('nonce key must be 24 bytes');
     }
 
     this._nonceKey = nonceKey;
@@ -119,7 +120,7 @@ export class JitCallBuilder {
     return new JitInherentRequest(
       ethereum.Address.fromHexString(this._sender),
       this._nonce,
-      UtilApi.instance().hexToUint8Array(this._nonceKey.toString(16)),
+      UtilApi.instance().hexToUint8Array(this._nonceKey),
       this._initCode,
       this._callData,
       this._callGasLimit,
