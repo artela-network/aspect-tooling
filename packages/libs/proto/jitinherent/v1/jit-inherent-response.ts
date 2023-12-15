@@ -26,9 +26,6 @@ export class JitInherentResponse {
 
     writer.uint32(40);
     writer.uint64(message.leftoverGas);
-
-    writer.uint32(50);
-    writer.string(message.errorMsg);
   }
 
   static decode(reader: Reader, length: i32): JitInherentResponse {
@@ -58,10 +55,6 @@ export class JitInherentResponse {
           message.leftoverGas = reader.uint64();
           break;
 
-        case 6:
-          message.errorMsg = reader.string();
-          break;
-
         default:
           reader.skipType(tag & 7);
           break;
@@ -76,7 +69,6 @@ export class JitInherentResponse {
   success: bool;
   ret: Uint8Array;
   leftoverGas: u64;
-  errorMsg: string;
 
   constructor(
     jitInherentHashes: Array<Uint8Array> = [],
@@ -84,13 +76,11 @@ export class JitInherentResponse {
     success: bool = false,
     ret: Uint8Array = new Uint8Array(0),
     leftoverGas: u64 = 0,
-    errorMsg: string = '',
   ) {
     this.jitInherentHashes = jitInherentHashes;
     this.txHash = txHash;
     this.success = success;
     this.ret = ret;
     this.leftoverGas = leftoverGas;
-    this.errorMsg = errorMsg;
   }
 }
