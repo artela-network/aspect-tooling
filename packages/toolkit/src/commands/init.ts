@@ -3,8 +3,7 @@
 import { Command, Flags } from '@oclif/core';
 import * as fs from 'fs';
 import path from 'path';
-import { WasmIndexTmpl } from '../tmpl/assembly/indextmpl';
-import { AspectTmpl } from '../tmpl/assembly/aspect/aspect';
+import { WasmIndexTmpl } from '../tmpl/aspect/indextmpl';
 import { DeployTmpl } from '../tmpl/scripts/aspect-deploy';
 import { BindTmpl } from '../tmpl/scripts/bind';
 
@@ -144,7 +143,7 @@ export default class Init extends Command {
         JSON.stringify(
           {
             extends: tsconfigBase,
-            include: ['./assembly/**/*.ts'],
+            include: ['./aspect/**/*.ts'],
           },
           null,
           2,
@@ -168,7 +167,7 @@ export default class Init extends Command {
 
   ensureAssemblyDirectory(dir: string) {
     const projectDir = path.resolve(dir);
-    const assemblyDir = path.join(projectDir, 'assembly');
+    const assemblyDir = path.join(projectDir, 'aspect');
     //  this.log("- Making sure that the 'assembly' directory exists...");
     if (fs.existsSync(assemblyDir)) {
       this.log('  Exists: ' + assemblyDir);
@@ -176,31 +175,12 @@ export default class Init extends Command {
       fs.mkdirSync(assemblyDir);
       this.log('  Created: ' + assemblyDir);
     }
-
-    this.ensureAspectDirectory(assemblyDir);
     const aspectIndexPath = path.join(assemblyDir, 'index.ts');
     if (!fs.existsSync(aspectIndexPath)) {
       fs.writeFileSync(aspectIndexPath, WasmIndexTmpl);
     }
   }
 
-  ensureAspectDirectory(dir: string) {
-    const projectDir = path.resolve(dir);
-    const aspectDir = path.join(projectDir, 'aspect');
-
-    //  this.log("- Making sure that the 'aspect' directory exists...");
-    if (fs.existsSync(aspectDir)) {
-      this.log('  Exists: ' + aspectDir);
-    } else {
-      fs.mkdirSync(aspectDir);
-      this.log('  Created: ' + aspectDir);
-    }
-
-    const aspectPath = path.join(aspectDir, 'aspect.ts');
-    if (!fs.existsSync(aspectPath)) {
-      fs.writeFileSync(aspectPath, AspectTmpl);
-    }
-  }
 
   ensureScriptDirectory(dir: string) {
     const projectDir = path.resolve(dir);
@@ -262,8 +242,8 @@ export default class Init extends Command {
         },
       };
       if (!scripts['aspect:build']) {
-        scripts['asbuild:debug'] = 'asc assembly/index.ts --target debug';
-        scripts['asbuild:release'] = 'asc assembly/index.ts --target release';
+        scripts['asbuild:debug'] = 'asc aspect/index.ts --target debug';
+        scripts['asbuild:release'] = 'asc aspect/index.ts --target release';
         scripts['aspect:build'] = 'npm run asbuild:debug && npm run asbuild:release';
         pkg['scripts'] = scripts;
         updated = true;
@@ -318,7 +298,7 @@ export default class Init extends Command {
         updated = true;
       }
       if (!scripts['aspect:gen']) {
-        scripts['aspect:gen'] = 'aspect-tool generate -i ./build/contract -o ./assembly/aspect';
+        scripts['aspect:gen'] = 'aspect-tool generate -i ./build/contract -o ./aspect/contract';
         pkg['scripts'] = scripts;
         updated = true;
       }
@@ -399,9 +379,9 @@ export default class Init extends Command {
               'contract:call': 'node scripts/contract-call.cjs',
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
-              'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./assembly/aspect',
-              'asbuild:debug': 'asc assembly/index.ts --target debug',
-              'asbuild:release': 'asc assembly/index.ts --target release',
+              'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./aspect/contract',
+              'asbuild:debug': 'asc aspect/index.ts --target debug',
+              'asbuild:release': 'asc aspect/index.ts --target release',
               'contract:bind': 'node scripts/bind.cjs',
               'contract:deploy': 'node scripts/contract-deploy.cjs',
               'contract:build':

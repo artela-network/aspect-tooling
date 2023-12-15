@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const Web3 = require("@artela/web3");
 var argv = require('yargs')
-    .string('pkfile')
+    .string('skfile')
     .argv;
 
 
@@ -22,8 +22,8 @@ async function create() {
     const web3 = new Web3(node);
 
     let privateFile = 'privateKey.txt'; // <-- your private key here, if not exist, create new one
-    if(argv.pkfile){
-        privateFile=argv.pkfile;
+    if(argv.skfile){
+        privateFile=argv.skfile;
     }
     let account;
     if (fs.existsSync(privateFile)) {

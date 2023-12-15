@@ -1,4 +1,4 @@
-
+export const WasmIndexTmpl = `
 import {
     allocate,
     entryPoint,
@@ -59,3 +59,4 @@ export {execute, allocate}
 
 
 
+`;

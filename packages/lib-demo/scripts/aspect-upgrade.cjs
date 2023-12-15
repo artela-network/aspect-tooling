@@ -7,6 +7,7 @@ const argv = require('yargs')
     .string('skfile')
     .string('gas')
     .string('wasm')
+    .string('aspectId')
     .argv;
 
 async function deploy() {
@@ -55,15 +56,21 @@ async function deploy() {
         process.exit(0)
     }
 
+    // --aspectId {aspect-Id}
+    let aspectId = String(argv.aspectId)
+    if (!aspectId || aspectId === 'undefined') {
+        console.log("'aspectId' cannot be empty, please set by the parameter' --aspectId 0xxxx'")
+        process.exit(0)
+    }
+
 
     // to deploy aspect
     let aspect = new web3.atl.Aspect();
-    let deploy = await aspect.deploy({
+    let deploy = await aspect.upgrade({
+        aspectId:aspectId,
         data: '0x' + aspectCode,
         properties: [{'key': 'owner', 'value': sender.address}],
-        paymaster: sender.address,
-        proof: '0x0',
-        joinPoints:["PreContractCall","PostContractCall"]
+        joinPoints:["PreContractCall"]
     });
 
     let tx = {
@@ -79,9 +86,8 @@ async function deploy() {
         .on('receipt', receipt => {
             console.log(receipt);
         });
-    let aspectID = ret.aspectAddress;
     console.log("ret: ", ret);
-    console.log("== deploy aspectID ==", aspectID)
+    console.log("== upgrade aspectID ==", aspectId)
 }
 
 deploy().then();

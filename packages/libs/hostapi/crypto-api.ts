@@ -98,7 +98,7 @@ export class CryptoApi {
    *
    * @returns string returns an address, and not an address payable
    */
-  public ecRecover(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
+  public ecRecover2(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
     if (v.countBits() == 0 || r.countBits() == 0 || s.countBits() == 0 || v.countBits() > 256 || r.countBits() > 256 || s.countBits() > 256) {
      return ""
    }
@@ -108,11 +108,11 @@ export class CryptoApi {
 
     //[msgHash 32B][v 32B][r 32B][s 32B]
     const syscallInput = hash + vStr + rStr + sStr;
-    const ret = this._ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
+    const ret = this.ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
     return UtilApi.instance().uint8ArrayToHex(ret);
   }
 
-  private _ecRecover(data: Uint8Array): Uint8Array {
+  public ecRecover(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.ecRecover(dataPtr);
     const resRaw = new AUint8Array();
