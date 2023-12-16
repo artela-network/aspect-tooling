@@ -5,7 +5,7 @@ import {
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
   sys,
-  Entry,
+  entryPoint,execute, allocate,
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectBlock {
@@ -28,13 +28,10 @@ class AspectTest implements IAspectBlock {
     return true;
   }
 }
+// 2.register aspect Instance
+const aspect = new AspectTest()
+entryPoint.setAspect(aspect)
 
-export function execute(methodPtr: i32, argPtr: i32): i32 {
-  const aspect = new AspectTest();
-  const entry = new Entry(aspect, null, null);
-  return entry.execute(methodPtr, argPtr);
-}
+// 3.must export it
+export {execute, allocate}
 
-export function allocate(size: i32): i32 {
-  return sys.alloc(size);
-}

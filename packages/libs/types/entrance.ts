@@ -1,6 +1,6 @@
 import {EntryPoint} from "./aspect-entry";
 import {
-    IBlockJP,
+    IAspectBlock,
     IPostContractCallJP,
     IPostTxCommitJP,
     IPostTxExecuteJP,
@@ -18,7 +18,7 @@ export function execute(methodPtr: i32, argPtr: i32): i32 {
 
 export function isBlockLevel(): i32 {
     let is = false
-    if (entryPoint.getAspect() != null && entryPoint.getAspect() instanceof IBlockJP) {
+    if (entryPoint.getAspect() != null && entryPoint.getAspect() instanceof IAspectBlock) {
         is = true
     }
     return messageUtil.StoreOutputBool(is);

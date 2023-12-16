@@ -1,6 +1,6 @@
 import {
   FilterTxCtx,
-  IBlockJP,
+  IAspectBlock,
   IAspectTransaction,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
@@ -14,7 +14,7 @@ import {
   ethereum,
 } from '@artela/aspect-libs';
 
-export class StorageMirror implements IAspectTransaction, IBlockJP {
+export class StorageMirror implements IAspectTransaction, IAspectBlock {
   filterTx(ctx: FilterTxCtx): bool {
     return true;
   }

@@ -3,7 +3,7 @@
 import {
   BigInt,
   FilterTxCtx,
-  IBlockJP,
+  IAspectBlock,
   IAspectTransaction,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
@@ -16,7 +16,7 @@ import {
 } from '@artela/aspect-libs';
 import { HoneyPotState } from './honeypot-storage';
 
-class GuardByCountAspect implements IAspectTransaction, IBlockJP {
+class GuardByCountAspect implements IAspectTransaction, IAspectBlock {
   isOwner(sender: string): bool {
     let value = sys.aspect.property.get<string>('owner');
     return !!value.includes(sender);

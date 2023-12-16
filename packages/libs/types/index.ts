@@ -9,8 +9,7 @@ export { PreTxExecuteCtx, PostTxExecuteCtx } from './paramter/tx-execute-ctx';
 export {EntryPoint} from './aspect-entry';
 export {
   IAspectOperation,
-  IAspectTransaction,
-  IBlockJP,
+  IAspectBlock,
   ITransactionVerifier,
   IPostContractCallJP,
   IPostTxCommitJP,

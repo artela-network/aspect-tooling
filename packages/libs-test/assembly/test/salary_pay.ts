@@ -1,7 +1,7 @@
 // The entry file of your WebAssembly module.
 import {
   FilterTxCtx,
-  IBlockJP,
+  IAspectBlock,
   IAspectTransaction,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
@@ -17,7 +17,7 @@ import {
   ScheduleOpts,
 } from '@artela/aspect-libs';
 
-class SalaryPayment implements IAspectTransaction, IBlockJP {
+class SalaryPayment implements IAspectTransaction, IAspectBlock {
   filterTx(ctx: FilterTxCtx): bool {
     return false;
   }

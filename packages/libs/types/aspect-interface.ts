@@ -1,5 +1,4 @@
 import {
-  FilterTxCtx,
   OnBlockFinalizeCtx,
   OnBlockInitializeCtx,
   OperationCtx,
@@ -9,7 +8,7 @@ import {
   PreContractCallCtx,
   PreTxExecuteCtx,
 } from '.';
-import { VerifyTxCtx } from './paramter/verify-tx-ctx';
+import {VerifyTxCtx} from './paramter/verify-tx-ctx';
 
 export interface IAspectBase {
   /**
@@ -21,7 +20,7 @@ export interface IAspectBase {
   isOwner(sender: string): bool;
 }
 
-export interface IBlockJP extends IAspectBase {
+export interface IAspectBlock extends IAspectBase {
   /**
    * onBlockInitialize is called when the block proposal is prepared.
    *
@@ -102,52 +101,7 @@ export interface IPostTxExecuteJP extends IAspectBase {
 
 
 
-export interface IAspectTransaction extends IAspectBase {
-  /**
-   * filterTx is used to filter the transaction. If the transaction is valid, return true to keep
-   * the transaction, otherwise, the transaction will be dropped.
-   *
-   * @param ctx the context of the transaction to be filtered.
-   */
-  filterTx(ctx: FilterTxCtx): bool;
-
-  /**
-   * preTxExecute will be triggered before the transaction is executed.
-   *
-   * @param ctx the context of the transaction to be executed.
-   */
-  preTxExecute(ctx: PreTxExecuteCtx): void;
-
-  /**
-   * preContractCall will be triggered before the contract call is executed.
-   *
-   * @param ctx the context of the contract call.
-   */
-  preContractCall(ctx: PreContractCallCtx): void;
-
-  /**
-   * postContractCall will be triggered after the contract call is executed.
-   *
-   * @param ctx the context of the executed contract call.
-   */
-  postContractCall(ctx: PostContractCallCtx): void;
-
-  /**
-   * postTxExecute will be triggered after the transaction is executed.
-   *
-   * @param ctx the context of the executed transaction.
-   */
-  postTxExecute(ctx: PostTxExecuteCtx): void;
-
-  /**
-   * postTxCommit will be triggered after the transaction is committed.
-   *
-   * @param ctx the context of the finalized transaction and receipt.
-   */
-  postTxCommit(ctx: PostTxCommitCtx): void;
-}
-
-export interface IAspectOperation extends IAspectBase{
+export interface IAspectOperation {
 /**
    * operation is used to execute the logics within the Aspect.
    *
@@ -162,14 +116,17 @@ export class PointCutType {
   static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
   static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
 
-  static readonly ON_TX_VERIFY_METHOD: string = 'onTxVerify';
+  static readonly VERIFY_TX: string = 'verifyTx';
+
   static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
   static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
   static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';
   static readonly POST_TX_EXECUTE_METHOD: string = 'postTxExecute';
-  static readonly ON_TX_COMMIT_METHOD: string = 'onTxCommit';
+  static readonly POST_TX_COMMIT: string = 'postTxCommit';
   static readonly ON_BLOCK_FINALIZE_METHOD: string = 'onBlockFinalize';
 
   static readonly OPERATION_METHOD: string = 'operation';
   static readonly IS_OWNER_METHOD: string = 'isOwner';
+
+  static readonly FILTER_TX: string = 'filterTx'
 }
