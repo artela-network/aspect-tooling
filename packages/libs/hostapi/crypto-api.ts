@@ -1,8 +1,7 @@
-import {AString, AUint8Array, BigInt} from '../common';
-import {UtilApi} from "./util-api";
+import { AString, AUint8Array, BigInt } from '../common';
+import { UtilApi } from './util-api';
 
 declare namespace __CryptoApi__ {
-
   function sha256(dataPtr: i32): i32;
 
   function base64Encode(dataPtr: i32): i32;
@@ -99,12 +98,19 @@ export class CryptoApi {
    * @returns string returns an address, and not an address payable
    */
   public ecRecover(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
-    if (v.countBits() == 0 || r.countBits() == 0 || s.countBits() == 0 || v.countBits() > 256 || r.countBits() > 256 || s.countBits() > 256) {
-     return ""
-   }
-    const vStr = (v.countBits() == 256) ? v.toString(16) : v.toString(16).padStart(64, "0")
-    const rStr = (r.countBits() == 256) ? r.toString(16) : r.toString(16).padStart(64, "0")
-    const sStr = (s.countBits() == 256) ? s.toString(16) : s.toString(16).padStart(64, "0")
+    if (
+      v.countBits() == 0 ||
+      r.countBits() == 0 ||
+      s.countBits() == 0 ||
+      v.countBits() > 256 ||
+      r.countBits() > 256 ||
+      s.countBits() > 256
+    ) {
+      return '';
+    }
+    const vStr = v.countBits() == 256 ? v.toString(16) : v.toString(16).padStart(64, '0');
+    const rStr = r.countBits() == 256 ? r.toString(16) : r.toString(16).padStart(64, '0');
+    const sStr = s.countBits() == 256 ? s.toString(16) : s.toString(16).padStart(64, '0');
 
     //[msgHash 32B][v 32B][r 32B][s 32B]
     const syscallInput = hash + vStr + rStr + sStr;

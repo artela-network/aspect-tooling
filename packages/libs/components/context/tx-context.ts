@@ -1,5 +1,6 @@
 import {
-  EthCallStacks, EthReceipt,
+  EthCallStacks,
+  EthReceipt,
   EthStackTransaction,
   EthStateChangeIndices,
   EthStateChanges,

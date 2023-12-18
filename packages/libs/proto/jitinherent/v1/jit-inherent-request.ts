@@ -10,28 +10,25 @@ export class JitInherentRequest {
     writer.uint32(10);
     writer.bytes(message.sender);
 
-    writer.uint32(18);
-    writer.bytes(message.nonce);
+    writer.uint32(16);
+    writer.uint64(message.nonce);
 
     writer.uint32(26);
-    writer.bytes(message.initCode);
+    writer.bytes(message.nonceKey);
 
     writer.uint32(34);
-    writer.bytes(message.callData);
+    writer.bytes(message.initCode);
 
     writer.uint32(42);
-    writer.bytes(message.callGasLimit);
+    writer.bytes(message.callData);
 
-    writer.uint32(50);
-    writer.bytes(message.verificationGasLimit);
+    writer.uint32(48);
+    writer.uint64(message.callGasLimit);
 
-    writer.uint32(58);
-    writer.bytes(message.maxFeePerGas);
+    writer.uint32(56);
+    writer.uint64(message.verificationGasLimit);
 
     writer.uint32(66);
-    writer.bytes(message.maxPriorityFeePerGas);
-
-    writer.uint32(74);
     writer.bytes(message.paymasterAndData);
   }
 
@@ -47,34 +44,30 @@ export class JitInherentRequest {
           break;
 
         case 2:
-          message.nonce = reader.bytes();
+          message.nonce = reader.uint64();
           break;
 
         case 3:
-          message.initCode = reader.bytes();
+          message.nonceKey = reader.bytes();
           break;
 
         case 4:
-          message.callData = reader.bytes();
+          message.initCode = reader.bytes();
           break;
 
         case 5:
-          message.callGasLimit = reader.bytes();
+          message.callData = reader.bytes();
           break;
 
         case 6:
-          message.verificationGasLimit = reader.bytes();
+          message.callGasLimit = reader.uint64();
           break;
 
         case 7:
-          message.maxFeePerGas = reader.bytes();
+          message.verificationGasLimit = reader.uint64();
           break;
 
         case 8:
-          message.maxPriorityFeePerGas = reader.bytes();
-          break;
-
-        case 9:
           message.paymasterAndData = reader.bytes();
           break;
 
@@ -88,34 +81,31 @@ export class JitInherentRequest {
   }
 
   sender: Uint8Array;
-  nonce: Uint8Array;
+  nonce: u64;
+  nonceKey: Uint8Array;
   initCode: Uint8Array;
   callData: Uint8Array;
-  callGasLimit: Uint8Array;
-  verificationGasLimit: Uint8Array;
-  maxFeePerGas: Uint8Array;
-  maxPriorityFeePerGas: Uint8Array;
+  callGasLimit: u64;
+  verificationGasLimit: u64;
   paymasterAndData: Uint8Array;
 
   constructor(
     sender: Uint8Array = new Uint8Array(0),
-    nonce: Uint8Array = new Uint8Array(0),
+    nonce: u64 = 0,
+    nonceKey: Uint8Array = new Uint8Array(0),
     initCode: Uint8Array = new Uint8Array(0),
     callData: Uint8Array = new Uint8Array(0),
-    callGasLimit: Uint8Array = new Uint8Array(0),
-    verificationGasLimit: Uint8Array = new Uint8Array(0),
-    maxFeePerGas: Uint8Array = new Uint8Array(0),
-    maxPriorityFeePerGas: Uint8Array = new Uint8Array(0),
+    callGasLimit: u64 = 0,
+    verificationGasLimit: u64 = 0,
     paymasterAndData: Uint8Array = new Uint8Array(0),
   ) {
     this.sender = sender;
     this.nonce = nonce;
+    this.nonceKey = nonceKey;
     this.initCode = initCode;
     this.callData = callData;
     this.callGasLimit = callGasLimit;
     this.verificationGasLimit = verificationGasLimit;
-    this.maxFeePerGas = maxFeePerGas;
-    this.maxPriorityFeePerGas = maxPriorityFeePerGas;
     this.paymasterAndData = paymasterAndData;
   }
 }
