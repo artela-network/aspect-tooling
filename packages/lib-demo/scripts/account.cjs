@@ -22,7 +22,7 @@ async function f() {
 
     // receiver is the EOA address or contract address that receive native tokens
     //--pkfile ./build/privateKey.txt
-    let privateFile = String(argv.pkfile)
+    let privateFile = String(argv.skfile)
     if (!privateFile || privateFile === 'undefined') {
         privateFile = "privateKey.txt"
     }

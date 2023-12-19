@@ -1,7 +1,9 @@
 #bash
-rm -rf ./node_modules
-npm install
-rm -rf ./build
+
+rm -rf ./build/*.wasm
+rm -rf ./build/*.wasm.map
+rm -rf ./build/*.js
+rm -rf ./build/*.d.ts
 for file in ./aspect/*.ts
 do
     if test -f $file

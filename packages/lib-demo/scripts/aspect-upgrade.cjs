@@ -65,9 +65,8 @@ async function deploy() {
 
 
     // to deploy aspect
-    let aspect = new web3.atl.Aspect();
+    let aspect = new web3.atl.Aspect(aspectId);
     let deploy = await aspect.upgrade({
-        aspectId:aspectId,
         data: '0x' + aspectCode,
         properties: [{'key': 'owner', 'value': sender.address}],
         joinPoints:["PreContractCall"]

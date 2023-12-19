@@ -9,7 +9,7 @@ import {
     PostContractCallCtx,
     sys
 } from '@artela/aspect-libs';
-import {HoneyPotState} from './honeypot-storage';
+import {HoneyPotState} from './contract/honeypot-storage';
 
 class GuardByCountAspect implements IPostContractCallJP {
     isOwner(sender: string): bool {
