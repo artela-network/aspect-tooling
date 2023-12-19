@@ -1,135 +1,24 @@
 
-
-# Sample Aspect
-
-## Instruction
-
-This is a sample project of Artela Aspect. 
-
-## Files
-
-```bash
-.
-├── README.md
-├── asconfig.json
-├── assembly
-│   ├── aspect                 <-- Your aspect code resides here
-│   │   └── aspect.ts          <-- Entry functions for the aspect
-│   └── index.ts
-├── contracts                  <-- Place your smart contracts here
-├── scripts                    <-- Utilitity scripts, including deploying, binding and etc.
-│   ├── aspect-deploy.cjs
-│   ├── bind.cjs
-│   ├── contract-call.cjs
-│   └── contract-deploy.cjs
-...
+```shell
+./aspect/   => write aspect code here
+./contracts/ => write Contract code here
 ```
 
-## Commands
-
-
-### 1.Create a account
-
-```solidity
-  npm run account:create  -- --skfile {file_path}
-```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-
-
-### 2. Build contract
-
-```solidity
-   npm run contract:build
-```
-> The compiled product is placed in the `build/contract` directory.
-
-
-### 3. Deploy contract
-
-```bash
-  npm run contract:deploy -- --skfile {privateKey-path} \                        
-                           --abi ./build/contract/xxx.abi \                          
-                           --bytecode ./build/contract/xxx.bin \     
-                           --args [..] \                     
-                           --gas 200000 
-                           
-```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-> * --abi : contract abi path.
-> * --bytecode:  contract bytecode path.
-> * --args : If your contract's constructor requires input parameters, use `--args '[1, "a"]'` (optional).
-> * --gas : e.g., `200000` (optional,default value `7000000`) 
-
-
-### 4. Build Aspect
-
-```bash
-   npm run aspect:build
+## build Aspect
+```shell
+sh build.sh 
 ```
 
-> The compiled product is placed in the `build` directory.
+## create an account
+```shell
+npm run account:create -- --skfile ./{xxxx}.txt
 
-
-### 5. Deploy Aspect
-
-```bash
-  npm run aspect:deploy -- --skfile {privateKey-path} \                                                
-                         --wasm ./build/release.wasm \
-                         --gas 200000  
 ```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-> * --wasm : wasm path.
-> * --gas : like `200000`,(optional,default value `7000000`).
 
-
-### 6. Contract Bind Aspect
-
-```bash
-  npm run contract:bind -- --skfile {privateKey-path} \                          
-                         --contract {smart-contract-address} \
-                         --abi ./build/contract/xxx.abi \                        
-                         --aspectId {aspect-Id} \                          
-                         --gas 200000 
-```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-> * --abi : contract abi path.
-> * --contract:  smart contract address.
-> * --aspectId:  aspect id.
-> * --gas : like `200000`,(optional,default value `7000000`).
-
-
-### 7. Contract Call
+## add money to an account
 
 ```shell
-  npm run contract:call -- --skfile {privateKey-path}    \     
-                         --contract {smart-contract-address}  \                         
-                         --abi ./build/contract/xxx.abi   \                                    
-                         --method {method-name}  \   
-                         --args [..]
-                         --gas 200000 
+
+ node scripts/account.cjs --skfile ./xxxx}.txt
+
 ```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-> * --abi : contract abi path.
-> * --contract:  smart contract address.
-> * --method:  method name.
-> * --args : If your contract's constructor requires input parameters, use `--args '[1, "a"]'` (optional).
-> * --gas : like `200000`,(optional,default value `7000000`).
-
-
-### 8. Send Transaction
-
-```shell
-  npm run contract:send -- --skfile {privateKey-path}    \     
-                         --contract {smart-contract-address}  \                         
-                         --abi ./build/contract/xxx.abi   \                                    
-                         --method {method-name}  \   
-                         --args [..]
-                         --gas 200000 
-```
-> * --skfile : privateKey path for sender. (optional,default value `./privateKey.txt`).
-> * --abi : contract abi path.
-> * --contract:  smart contract address.
-> * --method:  method name.
-> * --args : If your contract's constructor requires input parameters, use `--args '[1, "a"]'` (optional).
-> * --gas : like `200000`,(optional,default value `7000000`).
-

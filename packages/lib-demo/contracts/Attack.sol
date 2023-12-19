@@ -15,8 +15,8 @@ contract Attack {
     }
 
     function deposit() external payable {
-        require(msg.value >= 10 ether);
-        honeyPot.deposit{value: 10 ether}();
+        require(msg.value >= 1 ether);
+        honeyPot.deposit{value: 1 ether}();
     }
 
     receive() external payable  {

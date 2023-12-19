@@ -61,7 +61,7 @@ async function f() {
     let tx1 = {
         'from': senderAddr,
         'to': receiver,
-        'value': web3.utils.toWei('10', 'ether'), // transfer 1 eth
+        'value': web3.utils.toWei('100', 'ether'), // transfer 1 eth
         'gas': 2000000,
         'gaslimit': 4000000,
         'nonce': bankNonce

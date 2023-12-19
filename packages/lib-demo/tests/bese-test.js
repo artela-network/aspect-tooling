@@ -6,6 +6,7 @@ import Web3 from '@artela/web3';
 const DefProjectConfig = "../project.config.json";
 const DefPrivateKeyPath = "../privateKey.txt";
 const DefGasLimit = 9000000;
+const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
 
 export function ConnectToANode(nodeConfig = DefProjectConfig) {
 
@@ -139,7 +140,7 @@ export async function DeployAspect({
 
 export async function UpgradeAspect({
                                         nodeConfig = DefProjectConfig,
-                                        wasmPath = "../build/release.wasm",
+                                        wasmPath = "",
                                         joinPoints = [],
                                         properties = [],
                                         aspectId = "",
@@ -156,6 +157,14 @@ export async function UpgradeAspect({
     const account = web3.eth.accounts.privateKeyToAccount(pk.trim());
     web3.eth.accounts.wallet.add(account.privateKey);
 
+
+
+
+    // --aspectId {aspect-Id}
+    if (!aspectId || aspectId === 'undefined') {
+        throw new Error("'aspectId' cannot be empty, please set by the parameter'0xxxx'")
+    }
+
     //read wasm code
     let aspectCode = "";
     if (wasmPath) {
@@ -163,12 +172,6 @@ export async function UpgradeAspect({
     }
     if (!aspectCode || aspectCode === "" || aspectCode === 'undefined') {
         throw new Error("aspectCode cannot be empty.");
-    }
-
-
-    // --aspectId {aspect-Id}
-    if (!aspectId || aspectId === 'undefined') {
-        throw new Error("'aspectId' cannot be empty, please set by the parameter'0xxxx'")
     }
 
     // to deploy aspect
@@ -187,6 +190,8 @@ export async function UpgradeAspect({
         gasPrice,
         gas
     }
+
+
     const signedTx = await web3.atl.accounts.signTransaction(tx, account.privateKey);
     return await web3.atl.sendSignedTransaction(signedTx.rawTransaction)
         .on('receipt', receipt => {
@@ -261,7 +266,6 @@ export async function UnBindAspect({
                                        skFile = DefPrivateKeyPath,
                                        gas = DefGasLimit
                                    }) {
-    const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
     const web3 = ConnectToANode(nodeConfig);
 
     const gasPrice = await web3.eth.getGasPrice();
@@ -496,12 +500,10 @@ export async function EntryPoint({
                                      aspectId = "",
                                      operationData = "",
                                      skFile = DefPrivateKeyPath,
-                                     gas = DefGasLimit
                                  }) {
     // init connection to Artela node
     const web3 = ConnectToANode(nodeConfig);
 
-    const gasPrice = await web3.eth.getGasPrice();
 
     if (!fs.existsSync(skFile)) {
         throw new Error("'account' cannot be empty, please set by the parameter ' --skfile ./build/privateKey.txt'")
@@ -515,13 +517,13 @@ export async function EntryPoint({
         throw new Error("aspectId cannot be empty, please set by the parameter ' 0x9999999999999999999999999999999999999999'")
     }
     const aspectInstance = new web3.atl.Aspect(aspectId);
-    const nonceVal = await web3.atl.getTransactionCount(sender.address);
-    const rawcall = await aspectInstance.operation(operationData)
-        .send({from: sender.address, nonce: nonceVal, gasPrice, gas})
-        .on('receipt', (receipt) => {
-            console.log(receipt);
-        }).on('transactionHash', (txHash) => {
-            console.log("rawcall  tx hash: ", txHash);
-        })
-    return rawcall
+
+    const encodeABI = aspectInstance.operation(operationData).encodeABI();
+
+    return  await web3.eth.call({
+        to: ASPECT_ADDR, // contract address
+        data: encodeABI
+    });
 }
+
+

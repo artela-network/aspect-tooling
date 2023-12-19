@@ -56,7 +56,7 @@ const aspectAccount = web3Node.eth.accounts.privateKeyToAccount(pk.trim());
 web3Node.eth.accounts.wallet.add(aspectAccount.privateKey);
 
 const aspect = await DeployAspect({
-    wasmPath: "../build/guard-by-count.wasm",
+    wasmPath: "../build/guard-by-lock.wasm",
     skFile: "../aspect_accounts.txt",
     joinPoints: ["PreContractCall", "PostContractCall"],
     properties: [{'key': 'HoneyPotAddr', 'value': honeyPotResult.contractAddress}, {
