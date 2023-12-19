@@ -15,8 +15,8 @@ import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
 const toolVersion = '^0.0.50';
 const libVersion = '^0.0.29';
-const web3Version = '^1.9.18';
-const web3UtilVersion = '^1.9.8';
+const web3Version = '^1.9.20';
+const web3UtilVersion = '^1.9.19';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -340,7 +340,7 @@ export default class Init extends Command {
         updated = true;
       }
       if (!dependencies['@artela/web3-eth']) {
-        dependencies['@artela/web3-eth'] = web3Version;
+        dependencies['@artela/web3-eth'] = web3UtilVersion;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
@@ -395,7 +395,7 @@ export default class Init extends Command {
               '@artela/aspect-libs': libVersion,
               '@artela/web3': web3Version,
               '@artela/web3-atl': web3Version,
-              '@artela/web3-eth': web3Version,
+              '@artela/web3-eth': web3UtilVersion,
               '@artela/web3-utils': web3UtilVersion,
               '@assemblyscript/loader': '^0.27.5',
               'as-proto': '^1.3.0',

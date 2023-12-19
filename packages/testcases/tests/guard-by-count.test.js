@@ -3,8 +3,7 @@ import {
     ConnectToANode,
     DeployAspect,
     DeployContract,
-    SendTx,
-    UpgradeAspect
+    SendTx
 } from "./bese-test.js";
 import fs from "fs";
 
