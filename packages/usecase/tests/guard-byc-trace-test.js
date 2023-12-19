@@ -66,13 +66,13 @@ const aspect = await DeployAspect({
 
 console.log("==deploy Aspect Result== ", aspect)
 
-// const upgradeResult= await UpgradeAspect({
-//     wasmPath: "../build/guard-by-count.wasm",
-//     aspectId: aspect.aspectAddress,
-//     skFile: "../aspect_accounts.txt",
-//     properties: [{'key': 'owner', 'value': aspect.form}]
-// })
-// console.log("==deploy Aspect Result== ", upgradeResult)
+const upgradeResult= await UpgradeAspect({
+    wasmPath: "../build/guard-by-count.wasm",
+    aspectId: aspect.aspectAddress,
+    skFile: "../aspect_accounts.txt",
+    properties: [{'key': 'owner', 'value': aspect.form}]
+})
+console.log("==deploy Aspect Result== ", upgradeResult)
 
 
 const bindResult = await BindAspect({

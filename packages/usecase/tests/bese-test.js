@@ -290,10 +290,10 @@ export async function UnBindAspect({
 
     const aspectContract = new web3.atl.aspectCore();
     // bind the smart contract with aspect
-    const bind = await aspectContract.unbind({
+    const bind = await aspectContract.methods.unbind(
         aspectId,
-        contract,
-    })
+        contract
+    )
 
     const tx = {
         from: sender.address,
@@ -304,11 +304,7 @@ export async function UnBindAspect({
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
-    await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
-        .on('receipt', receipt => {
-            console.log(receipt);
-        });
-    return true
+    return await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 }
 
 
@@ -335,7 +331,7 @@ export async function AspectsOf({
 
     var aspectCore = web3.atl.aspectCore();
 
-    return await aspectCore.methods["aspectsOf"](contract).call()
+    return await aspectCore.methods.aspectsOf(contract).call()
 }
 
 export async function VersionOf({
