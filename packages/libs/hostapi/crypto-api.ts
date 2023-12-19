@@ -1,8 +1,7 @@
-import {AString, AUint8Array, BigInt} from '../common';
-import {UtilApi} from "./util-api";
+import { AString, AUint8Array, BigInt } from '../common';
+import { UtilApi } from './util-api';
 
 declare namespace __CryptoApi__ {
-
   function sha256(dataPtr: i32): i32;
 
   function base64Encode(dataPtr: i32): i32;
@@ -98,21 +97,28 @@ export class CryptoApi {
    *
    * @returns string returns an address, and not an address payable
    */
-  public ecRecover2(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
-    if (v.countBits() == 0 || r.countBits() == 0 || s.countBits() == 0 || v.countBits() > 256 || r.countBits() > 256 || s.countBits() > 256) {
-     return ""
-   }
-    const vStr = (v.countBits() == 256) ? v.toString(16) : v.toString(16).padStart(64, "0")
-    const rStr = (r.countBits() == 256) ? r.toString(16) : r.toString(16).padStart(64, "0")
-    const sStr = (s.countBits() == 256) ? s.toString(16) : s.toString(16).padStart(64, "0")
+  public ecRecover(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
+    if (
+      v.countBits() == 0 ||
+      r.countBits() == 0 ||
+      s.countBits() == 0 ||
+      v.countBits() > 256 ||
+      r.countBits() > 256 ||
+      s.countBits() > 256
+    ) {
+      return '';
+    }
+    const vStr = v.countBits() == 256 ? v.toString(16) : v.toString(16).padStart(64, '0');
+    const rStr = r.countBits() == 256 ? r.toString(16) : r.toString(16).padStart(64, '0');
+    const sStr = s.countBits() == 256 ? s.toString(16) : s.toString(16).padStart(64, '0');
 
     //[msgHash 32B][v 32B][r 32B][s 32B]
     const syscallInput = hash + vStr + rStr + sStr;
-    const ret = this.ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
+    const ret = this._ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
     return UtilApi.instance().uint8ArrayToHex(ret);
   }
 
-  public ecRecover(data: Uint8Array): Uint8Array {
+  private _ecRecover(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.ecRecover(dataPtr);
     const resRaw = new AUint8Array();
