@@ -4,7 +4,6 @@ import {
     DeployAspect,
     DeployContract,
     SendTx,
-    UpgradeAspect
 } from "./bese-test.js";
 import fs from "fs";
 

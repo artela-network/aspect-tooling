@@ -20,10 +20,10 @@
   "license": "ISC",
   "dependencies": {
     "@artela/aspect-libs": "file:../libs",
-    "@artela/web3": "^1.9.20",
-    "@artela/web3-atl": "^1.9.20",
-    "@artela/web3-eth": "^1.9.19",
-    "@artela/web3-utils": "^1.9.19",
+    "@artela/web3": "file:/Users/admin/mytech/go-work/src/github.com/artela-network/artela-web3.js/packages/web3/lib",
+    "@artela/web3-atl": "file:/Users/admin/mytech/go-work/src/github.com/artela-network/artela-web3.js/packages/web3-atl/lib",
+    "@artela/web3-eth": "file:/Users/admin/mytech/go-work/src/github.com/artela-network/artela-web3.js/packages/web3-eth/lib",
+    "@artela/web3-utils": "file:/Users/admin/mytech/go-work/src/github.com/artela-network/artela-web3.js/packages/web3-utils/lib",
     "@assemblyscript/loader": "^0.27.5",
     "as-proto": "^1.3.0"
   },
