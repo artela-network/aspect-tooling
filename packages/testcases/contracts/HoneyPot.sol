@@ -23,9 +23,9 @@ contract HoneyPot {
         uint bal = balances[msg.sender];
         require(bal > 0);
 
-        (bool sent, ) = msg.sender.call{value: bal}("");
+        (bool sent,) = msg.sender.call{value: bal}("");
         require(sent, "Failed to send Ether");
-        address sender=msg.sender;
+        address sender = msg.sender;
         balances[sender] = 0;
     }
 }

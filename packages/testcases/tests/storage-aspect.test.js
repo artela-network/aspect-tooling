@@ -1,10 +1,10 @@
 import {BindAspect, ContractCall, DeployAspect, DeployContract, SendTx} from "./bese-test.js";
 import assert from "assert";
 
-const result=await DeployContract({
-    abiPath:"../build/contract/Storage.abi", bytePath:"../build/contract/Storage.bin"
+const result = await DeployContract({
+    abiPath: "../build/contract/Storage.abi", bytePath: "../build/contract/Storage.bin"
 })
-assert.ok(result.contractAddress,"Deploy Storage Contract fail");
+assert.ok(result.contractAddress, "Deploy Storage Contract fail");
 console.log("==deploy  Storage Contract Result== ", result)
 //
 // let dcResult = await DeployContract({
@@ -16,13 +16,13 @@ console.log("==deploy  Storage Contract Result== ", result)
 
 const aspect = await DeployAspect({
     wasmPath: "../build/storage-aspect.wasm",
-    joinPoints: [  "PreTxExecute", "PostTxExecute"],
+    joinPoints: ["PreTxExecute", "PostTxExecute"],
     properties: [{'key': 'ScheduleTo', 'value': result.contractAddress},
         {'key': 'Broker', 'value': result.from},
         {'key': 'binding', 'value': result.contractAddress},
         {'key': 'owner', 'value': result.from}],
 })
-assert.ok(aspect.aspectAddress,"Deploy storage-aspect  fail");
+assert.ok(aspect.aspectAddress, "Deploy storage-aspect  fail");
 
 console.log("==deploy Aspect Result== ", aspect)
 
@@ -43,28 +43,31 @@ const storeVal = await SendTx({
 console.log("==== storeVal===", storeVal);
 
 
-const callVal = await ContractCall({contract:result.contractAddress,
+const callVal = await ContractCall({
+    contract: result.contractAddress,
     abiPath: "../build/contract/Storage.abi",
-    method:"retrieve"
+    method: "retrieve"
 });
 console.log("==== reuslt===" + callVal);
-assert.strictEqual(callVal,"100","Contract Call result fail")
+assert.strictEqual(callVal, "100", "Contract Call result fail")
 
-const getValue = await ContractCall({contract:result.contractAddress,
+const getValue = await ContractCall({
+    contract: result.contractAddress,
     abiPath: "../build/contract/Storage.abi",
-    method:"getAspectContext",
-    args:[aspect.aspectAddress, "aspectSetKey"]
+    method: "getAspectContext",
+    args: [aspect.aspectAddress, "aspectSetKey"]
 });
 
 console.log("==== getAspectContext from aspect preTxExecute set  ===" + getValue);
-assert.strictEqual(getValue,"HelloWord","getAspectContext from aspect preTxExecute set fail")
+assert.strictEqual(getValue, "HelloWord", "getAspectContext from aspect preTxExecute set fail")
 
 
-const setValue = await ContractCall({contract:result.contractAddress,
+const setValue = await ContractCall({
+    contract: result.contractAddress,
     abiPath: "../build/contract/Storage.abi",
-    method:"setAspectContext",
-    args:["contractSetKey", "HelloAspect"]
+    method: "setAspectContext",
+    args: ["contractSetKey", "HelloAspect"]
 });
 console.log("==== setAspectContext for aspect postTxExecute  ===" + setValue);
-assert.strictEqual(setValue,true,"setAspectContext from aspect postTxExecute set fail")
+assert.strictEqual(setValue, true, "setAspectContext from aspect postTxExecute set fail")
 

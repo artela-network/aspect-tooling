@@ -1,14 +1,4 @@
-import {
-    IAspectOperation,
-    OperationCtx,
-    PostContractCallCtx,
-    PostTxCommitCtx,
-    PostTxExecuteCtx,
-    PreContractCallCtx,
-    PreTxExecuteCtx,
-    sys,entryPoint,execute, allocate,
-    VerifyTxCtx,
-} from "@artela/aspect-libs";
+import {allocate, entryPoint, execute, sys, VerifyTxCtx,} from "@artela/aspect-libs";
 import {ITransactionVerifier} from "@artela/aspect-libs/types/aspect-interface";
 
 /**
@@ -20,7 +10,7 @@ import {ITransactionVerifier} from "@artela/aspect-libs/types/aspect-interface";
  * You can implement corresponding interfaces: IAspectTransaction, IAspectBlock,IAspectOperation or both to tell Artela which
  * type of Aspect you are implementing.
  */
- class Aspect implements ITransactionVerifier {
+class Aspect implements ITransactionVerifier {
     verifyTx(ctx: VerifyTxCtx, validationData: Uint8Array): Uint8Array {
         const account = sys.aspect.property.get<string>("verifyAccount");
         return sys.utils.hexToUint8Array(account)
@@ -41,6 +31,7 @@ import {ITransactionVerifier} from "@artela/aspect-libs/types/aspect-interface";
     }
 
 }
+
 // 2.register aspect Instance
 const aspect = new Aspect()
 entryPoint.setAspect(aspect)

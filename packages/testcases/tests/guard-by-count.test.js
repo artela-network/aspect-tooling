@@ -16,7 +16,7 @@ const honeyPotResult = await DeployContract({
     abiPath: "../build/contract/HoneyPot.abi", bytePath: "../build/contract/HoneyPot.bin"
 })
 console.log("==deploy HoneyPot Contract Result== ", honeyPotResult)
-assert.ok(honeyPotResult.contractAddress,"deploy honeyPot Contract fail")
+assert.ok(honeyPotResult.contractAddress, "deploy honeyPot Contract fail")
 
 // Deploy HoneyPot Contract
 const storeVal = await SendTx({
@@ -27,10 +27,9 @@ const storeVal = await SendTx({
 });
 
 const balance = await web3Node.atl.getBalance(honeyPotResult.contractAddress);
-assert.strictEqual(balance,'1000000000000000000',"honeyPot balance not as expected")
+assert.strictEqual(balance, '1000000000000000000', "honeyPot balance not as expected")
 
 console.log("==== HoneyPot balance ===", balance);
-
 
 
 const attackResult = await DeployContract({
@@ -39,7 +38,7 @@ const attackResult = await DeployContract({
     skFile: '../attack_accounts.txt',
     args: [honeyPotResult.contractAddress]
 })
-assert.ok(attackResult.contractAddress,"deploy Attack Contract fail")
+assert.ok(attackResult.contractAddress, "deploy Attack Contract fail")
 console.log("==deploy Attack Contract Result== ", attackResult)
 
 const attackTx = await SendTx({
@@ -51,7 +50,7 @@ const attackTx = await SendTx({
 });
 console.log("==== attackTx ===", attackTx);
 
-const pk = fs.readFileSync( "../aspect_accounts.txt", 'utf-8');
+const pk = fs.readFileSync("../aspect_accounts.txt", 'utf-8');
 const aspectAccount = web3Node.eth.accounts.privateKeyToAccount(pk.trim());
 web3Node.eth.accounts.wallet.add(aspectAccount.privateKey);
 
@@ -61,9 +60,10 @@ const aspect = await DeployAspect({
     joinPoints: ["PreContractCall", "PostContractCall"],
     properties: [{'key': 'HoneyPotAddr', 'value': honeyPotResult.contractAddress}, {
         'key': 'binding',
-        'value': honeyPotResult.contractAddress,},{'key': 'owner', 'value': aspectAccount.address}],
+        'value': honeyPotResult.contractAddress,
+    }, {'key': 'owner', 'value': aspectAccount.address}],
 })
-assert.ok(aspect.aspectAddress,"deploy guard-by-count Aspect fail")
+assert.ok(aspect.aspectAddress, "deploy guard-by-count Aspect fail")
 console.log("==deploy Aspect Result== ", aspect)
 
 // const upgradeResult= await UpgradeAspect({
@@ -86,7 +86,7 @@ console.log("==bind Aspect Result== ", bindResult)
 try {
     const attackSendTx = await SendTx({
         contract: honeyPotResult.contractAddress,
-        skFile:"../attack_accounts.txt",
+        skFile: "../attack_accounts.txt",
         abiPath: "../build/contract/Attack.abi",
         method: "attack",
     });
@@ -107,8 +107,8 @@ try {
 // The balance of Attach to remain at 0 ETH.
 const honeyPotBalance = await web3Node.atl.getBalance(honeyPotResult.contractAddress);
 const attackNewBalance = await web3Node.atl.getBalance(attackResult.contractAddress);
-assert.strictEqual(honeyPotBalance,'2000000000000000000',"honeyPotBalance  not as expected")
-assert.strictEqual(attackNewBalance,'0',"Attack balance not as expected")
+assert.strictEqual(honeyPotBalance, '2000000000000000000', "honeyPotBalance  not as expected")
+assert.strictEqual(attackNewBalance, '0', "Attack balance not as expected")
 
 console.log("==== honeyPotContract  balance info===" + web3Node.utils.fromWei(honeyPotBalance, 'ether') + ' ETH')
 console.log("==== attackAddress  balance info===" + web3Node.utils.fromWei(attackNewBalance, 'ether') + ' ETH')

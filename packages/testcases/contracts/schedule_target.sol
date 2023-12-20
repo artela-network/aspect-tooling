@@ -17,7 +17,7 @@ contract ScheduleTarget {
      * @param num value to store
      */
     function store(uint256 num) public {
-        number = number+num;
+        number = number + num;
     }
 
     /**

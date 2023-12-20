@@ -6,7 +6,6 @@ import {
     DeployContract,
     UnBindAspect,
 } from "./bese-test.js";
-import fs from "fs";
 
 const web3Node = ConnectToANode();
 
@@ -15,7 +14,6 @@ const honeyPotResult = await DeployContract({
     abiPath: "../build/contract/HoneyPot.abi", bytePath: "../build/contract/HoneyPot.bin"
 })
 console.log("==deploy HoneyPot Contract Result== ", honeyPotResult)
-
 
 
 const aspect = await DeployAspect({
@@ -53,13 +51,12 @@ console.log("==bind Aspect Result== ", bindEoaResult)
 
 await new Promise(r => setTimeout(r, 9000));
 
-const aspectof =await AspectsOf({contract:honeyPotResult.contractAddress});
+const aspectof = await AspectsOf({contract: honeyPotResult.contractAddress});
 console.log("==bind aspectof== ", aspectof)
 
 
-const aspectAddrof =await BoundAddressesOf({aspectId:aspect.aspectAddress});
+const aspectAddrof = await BoundAddressesOf({aspectId: aspect.aspectAddress});
 console.log("==bind BoundAddressesOf Result== ", aspectAddrof)
-
 
 
 const unbindResult = await UnBindAspect({
@@ -70,7 +67,7 @@ const unbindResult = await UnBindAspect({
 console.log("==unbind Aspect Result== ", unbindResult)
 await new Promise(r => setTimeout(r, 5000));
 
-const aspectAddr =await BoundAddressesOf({aspectId:aspect.aspectAddress});
+const aspectAddr = await BoundAddressesOf({aspectId: aspect.aspectAddress});
 console.log("==get BoundAddressesOf Result== ", aspectAddr)
 
 

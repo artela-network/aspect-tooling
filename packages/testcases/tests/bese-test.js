@@ -5,7 +5,7 @@ import Web3 from '@artela/web3';
 
 const DefProjectConfig = "../project.config.json";
 const DefPrivateKeyPath = "../privateKey.txt";
-const DefGasLimit = 9000000;
+const DefGasLimit = 9_000_000;
 const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
 
 export function ConnectToANode(nodeConfig = DefProjectConfig) {
@@ -38,8 +38,8 @@ export async function DeployContract({
     const web3 = ConnectToANode(nodeConfig);
 
     const deployParams = {
-        data:null,
-        arguments:null,
+        data: null,
+        arguments: null,
     }
 
     let byteTxt = fs.readFileSync(bytePath, "utf-8").toString().trim();
@@ -49,7 +49,7 @@ export async function DeployContract({
     if (byteTxt.startsWith("0x")) {
         byteTxt = byteTxt.slice(2);
     }
-    if(byteTxt) {
+    if (byteTxt) {
         deployParams.data = byteTxt.trim()
     }
     if (args) {
@@ -133,7 +133,7 @@ export async function DeployAspect({
         gas
     }
     const signedTx = await web3.atl.accounts.signTransaction(tx, account.privateKey);
-    return  await web3.atl.sendSignedTransaction(signedTx.rawTransaction);
+    return await web3.atl.sendSignedTransaction(signedTx.rawTransaction);
 
 }
 
@@ -156,8 +156,6 @@ export async function UpgradeAspect({
     const pk = fs.readFileSync(skFile, 'utf-8');
     const account = web3.eth.accounts.privateKeyToAccount(pk.trim());
     web3.eth.accounts.wallet.add(account.privateKey);
-
-
 
 
     // --aspectId {aspect-Id}
@@ -436,7 +434,7 @@ export async function SendTx({
                                  args = [],
                                  skFile = DefPrivateKeyPath,
                                  gas = DefGasLimit,
-                                 value=""
+                                 value = ""
                              }) {
     // init connection to Artela node
     const web3 = ConnectToANode(nodeConfig);
@@ -478,8 +476,8 @@ export async function SendTx({
         gasPrice,
         gas
     }
-    if(value!==""){
-        tx.value=value
+    if (value !== "") {
+        tx.value = value
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
@@ -516,7 +514,7 @@ export async function EntryPoint({
 
     const encodeABI = aspectInstance.operation(operationData).encodeABI();
 
-    return  await web3.eth.call({
+    return await web3.eth.call({
         to: ASPECT_ADDR, // contract address
         data: encodeABI
     });

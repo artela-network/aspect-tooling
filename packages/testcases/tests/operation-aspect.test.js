@@ -7,7 +7,7 @@ const aspect = await DeployAspect({
 })
 
 console.log("==deploy Aspect Result== ", aspect)
-assert.ok(aspect.aspectAddress,"deploy Aspect fail")
+assert.ok(aspect.aspectAddress, "deploy Aspect fail")
 
 
 const rawcall = await EntryPoint({
@@ -16,6 +16,6 @@ const rawcall = await EntryPoint({
 })
 const web3 = ConnectToANode();
 
-const rest=web3.eth.abi.decodeParameter('string', rawcall);
-console.log(rawcall,rest)
-assert.strictEqual(rest,"test")
+const rest = web3.eth.abi.decodeParameter('string', rawcall);
+console.log(rawcall, rest)
+assert.strictEqual(rest, "test")

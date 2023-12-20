@@ -12,6 +12,7 @@ import {MessageUtil} from "../common";
 
 const messageUtil = MessageUtil.instance();
 export const entryPoint = new EntryPoint();
+
 export function execute(methodPtr: i32, argPtr: i32): i32 {
     return entryPoint.execute(methodPtr, argPtr);
 }

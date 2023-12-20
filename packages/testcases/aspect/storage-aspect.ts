@@ -19,7 +19,6 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
     }
 
 
-
     preTxExecute(ctx: PreTxExecuteCtx): void {
         //for smart contract call
         ctx.aspect.transientStorage<string>("aspectSetKey").set<string>("HelloWord")
@@ -27,9 +26,9 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
 
     postTxExecute(ctx: PostTxExecuteCtx): void {
         const to = ctx.tx.content.unwrap()!.to;
-        const value = ctx.aspect.transientStorage<string>("contractSetKey",to).unwrap();
+        const value = ctx.aspect.transientStorage<string>("contractSetKey", to).unwrap();
         //when contract setAspectContext this value equals  `HelloAspect`
-        sys.log("==postTxExecute=="+value)
+        sys.log("==postTxExecute==" + value)
     }
 
 
