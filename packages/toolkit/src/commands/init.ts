@@ -15,7 +15,7 @@ import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
 const toolVersion = '^0.0.50';
 const libVersion = '^0.0.29';
-const web3Version = '^1.9.20';
+const web3Version = '^1.9.21';
 const web3UtilVersion = '^1.9.19';
 
 export default class Init extends Command {
