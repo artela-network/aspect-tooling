@@ -29,7 +29,7 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
         const to = ctx.tx.content.unwrap()!.to;
         const value = ctx.aspect.transientStorage<string>("contractSetKey",to).unwrap();
         //when contract setAspectContext this value equals  `HelloAspect`
-        sys.log("===="+value)
+        sys.log("==postTxExecute=="+value)
     }
 
 

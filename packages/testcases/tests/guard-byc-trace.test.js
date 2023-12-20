@@ -7,6 +7,7 @@ import {
     UpgradeAspect
 } from "./bese-test.js";
 import fs from "fs";
+import assert from "assert";
 
 const web3Node = ConnectToANode();
 
@@ -15,6 +16,7 @@ const honeyPotResult = await DeployContract({
     abiPath: "../build/contract/HoneyPot.abi", bytePath: "../build/contract/HoneyPot.bin"
 })
 console.log("==deploy HoneyPot Contract Result== ", honeyPotResult)
+assert.ok(honeyPotResult.contractAddress,"deploy HoneyPot contract fail")
 
 // Deploy HoneyPot Contract
 const storeVal = await SendTx({
@@ -26,8 +28,7 @@ const storeVal = await SendTx({
 console.log("==== HoneyPot ===", storeVal);
 const balance = await web3Node.atl.getBalance(honeyPotResult.contractAddress);
 console.log("==== HoneyPot balance ===", balance);
-
-
+assert.strictEqual(balance,'1000000000000000000',"honeyPot balance not as expected");
 
 const attackResult = await DeployContract({
     abiPath: "../build/contract/Attack.abi",
@@ -37,6 +38,7 @@ const attackResult = await DeployContract({
 })
 
 console.log("==deploy Attack Contract Result== ", attackResult)
+assert.ok(attackResult.contractAddress,"Attack Contract deploy fail");
 
 const attackTx = await SendTx({
     contract: attackResult.contractAddress,
@@ -49,6 +51,7 @@ console.log("==== attackTx ===", attackTx);
 
 const attackBalance = await web3Node.atl.getBalance(attackResult.contractAddress);
 console.log("==== HoneyPot balance ===", attackBalance);
+assert.strictEqual(balance,'0',"Attack balance not as expected");
 
 
 const pk = fs.readFileSync( "../aspect_accounts.txt", 'utf-8');
@@ -65,6 +68,8 @@ const aspect = await DeployAspect({
 })
 
 console.log("==deploy Aspect Result== ", aspect)
+assert.ok(aspect.aspectAddress,"guard-by-trace Aspect deploy fail");
+
 
 const upgradeResult= await UpgradeAspect({
     wasmPath: "../build/guard-by-count.wasm",
@@ -84,7 +89,7 @@ console.log("==bind Aspect Result== ", bindResult)
 
 
 try {
-    let attackSendTx = await SendTx({
+    const attackSendTx = await SendTx({
         contract: honeyPotResult.contractAddress,
         skFile:"../attack_accounts.txt",
         abiPath: "../build/contract/Attack.abi",
@@ -107,7 +112,8 @@ try {
 // The balance of Attach to remain at 0 ETH.
 const honeyPotBalance = await web3Node.atl.getBalance(honeyPotResult.contractAddress);
 const attackNewBalance = await web3Node.atl.getBalance(attackResult.contractAddress);
-
+assert.strictEqual(honeyPotBalance,'2000000000000000000',"honeyPotBalance  not as expected")
+assert.strictEqual(attackNewBalance,'0',"Attack balance not as expected")
 console.log("==== honeyPotContract  balance info===" + web3Node.utils.fromWei(honeyPotBalance, 'ether') + ' ETH')
 console.log("==== attackAddress  balance info===" + web3Node.utils.fromWei(attackNewBalance, 'ether') + ' ETH')
 
