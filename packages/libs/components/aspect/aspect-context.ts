@@ -1,8 +1,8 @@
-import { ContextKey, ConvertUtil, ErrLoadRuntimeCtxValue } from '../../common';
-import { MutableAspectValue } from './aspect-state-interface';
-import { SetNameSpace, StringData } from '../../proto';
-import { Protobuf } from 'as-proto/assembly';
-import { RuntimeContextApi } from '../../hostapi';
+import {ContextKey, ConvertUtil, ErrLoadRuntimeCtxValue} from '../../common';
+import {MutableAspectValue} from './aspect-state-interface';
+import {SetNameSpace, StringData} from '../../proto';
+import {Protobuf} from 'as-proto/assembly';
+import {RuntimeContextApi} from '../../hostapi';
 
 const runtimeContext = RuntimeContextApi.instance();
 const utils = new ConvertUtil();
@@ -32,7 +32,7 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
   private val: T;
   private loaded: boolean = false;
 
-  constructor(private readonly key: string, private readonly aspectId: string = '') {
+  constructor(private readonly key: string, private readonly prefix: string = '') {
     this.val = utils.fromString<T>('');
   }
 
@@ -42,7 +42,10 @@ export class TransientStorageValue<T> implements MutableAspectValue<T> {
   }
 
   reload(): void {
-    const path = ContextKey.tx.context.property(this.key).toString();
+    let path = ContextKey.tx.context.property(this.key).toString();
+    if (this.prefix.length > 0) {
+      path = path + '^' + this.prefix
+    }
     const response = runtimeContext.get(path);
     if (!response.result!.success) {
       throw ErrLoadRuntimeCtxValue;
