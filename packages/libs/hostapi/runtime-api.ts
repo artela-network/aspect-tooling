@@ -1,7 +1,7 @@
 import { AString, AUint8Array } from '../common';
 
 declare namespace __RuntimeContextApi__ {
-  function get(query: i32): i32;
+  function get(ctxKey: i32): i32;
 }
 
 export class RuntimeContextApi {

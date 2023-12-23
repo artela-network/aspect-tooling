@@ -1,5 +1,4 @@
-import { AUint8Array, BigInt } from '../common';
-import { UtilApi } from './util-api';
+import { AUint8Array, BigInt, hexToUint8Array, uint8ArrayToHex } from '../common';
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
@@ -74,8 +73,8 @@ export class CryptoApi {
 
     //[msgHash 32B][v 32B][r 32B][s 32B]
     const syscallInput = hash + vStr + rStr + sStr;
-    const ret = this._ecRecover(UtilApi.instance().hexToUint8Array(syscallInput));
-    return UtilApi.instance().uint8ArrayToHex(ret);
+    const ret = this._ecRecover(hexToUint8Array(syscallInput));
+    return uint8ArrayToHex(ret);
   }
 
   private _ecRecover(data: Uint8Array): Uint8Array {
