@@ -203,7 +203,8 @@ export function toUint8Array<T>(value: T): Uint8Array {
   let valueBuffer: Uint8Array | null = null;
   if (value instanceof string) valueBuffer = stringToUint8Array(<string>value);
   if (value instanceof bool) valueBuffer = booleanToUint8Array(<bool>value);
-  if (value instanceof BigInt) valueBuffer = value.toUint8ArrayWithSign();
+  if (value instanceof BigInt) valueBuffer = (<BigInt>value).toUint8ArrayWithSign();
+  if (value instanceof Uint8Array) valueBuffer = value as Uint8Array;
   if (value instanceof i8) valueBuffer = BigInt.fromInt16(<i16>value).toUint8Array();
   if (value instanceof u8) valueBuffer = BigInt.fromUInt16(<u16>value).toUint8Array();
   if (value instanceof i16) valueBuffer = BigInt.fromInt16(<i16>value).toUint8Array();
@@ -237,6 +238,7 @@ export function fromUint8Array<T>(value: Uint8Array): T {
     return BigInt.fromUint8Array(value).toUInt64() as T;
   if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 8)
     return BigInt.fromUint8Array(value).toInt64() as T;
+  if (idof<T>() == idof<Uint8Array>()) return value as T;
   if (idof<T>() == idof<BigInt>()) return changetype<T>(BigInt.fromUint8ArrayWithSign(value));
   if (idof<T>() == idof<string>()) return changetype<T>(uint8ArrayToString(value));
 

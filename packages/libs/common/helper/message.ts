@@ -1,7 +1,7 @@
 import { Protobuf } from 'as-proto/assembly';
 import { Any } from '../../proto';
 import { Writer } from 'as-proto/assembly/Writer';
-import { ABool, AString } from '../wraptypes/basic-types';
+import { ABool, AUint8Array } from '../wraptypes/basic-types';
 
 export class MessageUtil {
   private static _instance: MessageUtil | null;
@@ -14,8 +14,8 @@ export class MessageUtil {
     return this._instance!;
   }
 
-  public LoadInputString(argPtr: i32): string {
-    const arg = new AString();
+  public LoadInputBytes(argPtr: i32): Uint8Array {
+    const arg = new AUint8Array();
     arg.load(argPtr);
     return arg.get();
   }

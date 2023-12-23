@@ -1,11 +1,19 @@
 // The entry file of your WebAssembly module.
 
-import {allocate, entryPoint, execute, IAspectOperation, OperationCtx, sys} from '@artela/aspect-libs';
+import {
+    allocate,
+    entryPoint,
+    execute,
+    IAspectOperation,
+    OperationInput,
+    stringToUint8Array,
+    sys
+} from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
-    operation(ctx: OperationCtx, data: Uint8Array): Uint8Array {
-        sys.require(data.length > 0, "data is lost")
-        return sys.utils.stringToUint8Array('test');
+    operation(input: OperationInput): Uint8Array {
+        sys.require(input.callData!.length > 0, "data is lost")
+        return stringToUint8Array('test');
     }
 }
 

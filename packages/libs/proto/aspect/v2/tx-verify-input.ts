@@ -27,6 +27,9 @@ export class TxVerifyInput {
 
     writer.uint32(26);
     writer.bytes(message.validationData);
+
+    writer.uint32(34);
+    writer.bytes(message.callData);
   }
 
   static decode(reader: Reader, length: i32): TxVerifyInput {
@@ -48,6 +51,10 @@ export class TxVerifyInput {
           message.validationData = reader.bytes();
           break;
 
+        case 4:
+          message.callData = reader.bytes();
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -60,14 +67,17 @@ export class TxVerifyInput {
   tx: NoFromTxInput | null;
   block: BlockInput | null;
   validationData: Uint8Array;
+  callData: Uint8Array;
 
   constructor(
     tx: NoFromTxInput | null = null,
     block: BlockInput | null = null,
     validationData: Uint8Array = new Uint8Array(0),
+    callData: Uint8Array = new Uint8Array(0),
   ) {
     this.tx = tx;
     this.block = block;
     this.validationData = validationData;
+    this.callData = callData;
   }
 }

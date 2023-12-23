@@ -81,7 +81,7 @@ export class EntryPoint {
 
   private isOwner(argPtr: i32): i32 {
     if (this.aspectBase != null) {
-      const arg = messageUtil.LoadInputString(argPtr);
+      const arg = messageUtil.LoadInputBytes(argPtr);
       const out = this.aspectBase!.isOwner(arg);
       return messageUtil.StoreOutputBool(out);
     }

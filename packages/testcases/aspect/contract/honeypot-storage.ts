@@ -1,4 +1,5 @@
 import {
+    arrayCopyPush,
     BigInt,
     ethereum,
     EthStateChange,
@@ -6,15 +7,13 @@ import {
     StateChange,
     StateChangeProperties,
     StateKey,
-    sys,
-    TraceCtx,
+    uint8ArrayToHex,
 } from '@artela/aspect-libs';
 
 export namespace HoneyPotState {
     export class balances_MappingValue extends StateChange<BigInt> {
-        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
+        constructor(addr: string, indices: Uint8Array[] = []) {
             const stateChangeProperties = new StateChangeProperties(
-                ctx,
                 addr,
                 'HoneyPot.balances',
                 indices,
@@ -23,16 +22,15 @@ export namespace HoneyPotState {
         }
 
         override unmarshalState(raw: EthStateChange): State<BigInt> {
-            const valueHex = sys.utils.uint8ArrayToHex(raw.value);
+            const valueHex = uint8ArrayToHex(raw.value);
             const value = BigInt.fromString(valueHex, 16);
-            return new State(raw.account, value, raw.callIndex);
+            return new State(uint8ArrayToHex(raw.account), value, raw.callIndex);
         }
     }
 
     export class balances extends StateKey<string> {
-        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
+        constructor(addr: string, indices: Uint8Array[] = []) {
             const stateChangeProperties = new StateChangeProperties(
-                ctx,
                 addr,
                 'HoneyPot.balances',
                 indices,
@@ -43,9 +41,8 @@ export namespace HoneyPotState {
         @operator('[]')
         get(key: string): balances_MappingValue {
             return new balances_MappingValue(
-                this.__properties__.ctx,
                 this.__properties__.account,
-                sys.utils.arrayCopyPush(this.__properties__.indices, this.parseKey(key)),
+                arrayCopyPush(this.__properties__.indices, this.parseKey(key)),
             );
         }
 
@@ -59,23 +56,22 @@ export namespace HoneyPotState {
 
         childChangeAt(index: u64): balances_MappingValue {
             return new balances_MappingValue(
-                this.__properties__.ctx,
                 this.__properties__.account,
-                sys.utils.arrayCopyPush(this.__properties__.indices, this.__children__[index]),
+                arrayCopyPush(this.__properties__.indices, this.__children__[index]),
             );
         }
     }
 
     export class _balance_ extends StateChange<BigInt> {
-        constructor(ctx: TraceCtx, addr: string, indices: Uint8Array[] = []) {
-            const stateChangeProperties = new StateChangeProperties(ctx, addr, '.balances', indices);
+        constructor(addr: string, indices: Uint8Array[] = []) {
+            const stateChangeProperties = new StateChangeProperties(addr, '.balances', indices);
             super(stateChangeProperties);
         }
 
         override unmarshalState(raw: EthStateChange): State<BigInt> {
-            const valueHex = sys.utils.uint8ArrayToHex(raw.value);
+            const valueHex = uint8ArrayToHex(raw.value);
             const value = BigInt.fromString(valueHex, 16);
-            return new State(raw.account, value, raw.callIndex);
+            return new State(uint8ArrayToHex(raw.account), value, raw.callIndex);
         }
     }
 }

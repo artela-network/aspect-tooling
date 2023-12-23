@@ -14,7 +14,7 @@ export interface IAspectBase {
    * @param sender the sender of the transaction, hex string format with 0x prefix.
    * @returns true if the sender is the owner of the contract, otherwise false.
    */
-  isOwner(sender: string): bool;
+  isOwner(sender: Uint8Array): bool;
 }
 
 export interface ITransactionVerifier extends IAspectBase {

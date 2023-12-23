@@ -14,6 +14,7 @@ import {
   AspectProperty,
   ImmutableAspectState,
   MutableAspectState,
+  TransientStorage,
 } from './components';
 
 export namespace sys {
@@ -53,6 +54,6 @@ export namespace sys {
     export const readonlyState = ImmutableAspectState.instance();
     export const property = AspectProperty.instance();
 
-    export const transientStorage = AspectTransientStorageApi.instance();
+    export const transientStorage = TransientStorage.instance();
   }
 }

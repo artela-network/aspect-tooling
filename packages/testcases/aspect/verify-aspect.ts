@@ -1,4 +1,4 @@
-import {allocate, entryPoint, execute, sys, VerifyTxCtx,} from "@artela/aspect-libs";
+import {allocate, entryPoint, execute, sys, TxVerifyInput,} from "@artela/aspect-libs";
 import {ITransactionVerifier} from "@artela/aspect-libs/types/aspect-interface";
 
 /**
@@ -11,9 +11,8 @@ import {ITransactionVerifier} from "@artela/aspect-libs/types/aspect-interface";
  * type of Aspect you are implementing.
  */
 class Aspect implements ITransactionVerifier {
-    verifyTx(ctx: VerifyTxCtx, validationData: Uint8Array): Uint8Array {
-        const account = sys.aspect.property.get<string>("verifyAccount");
-        return sys.utils.hexToUint8Array(account)
+    verifyTx(input: TxVerifyInput): Uint8Array {
+        return sys.aspect.property.get<Uint8Array>("verifyAccount");
     }
 
     /**
@@ -25,7 +24,7 @@ class Aspect implements ITransactionVerifier {
      * @param sender address of the operation initiator
      * @return true if check success, false if check fail
      */
-    isOwner(sender: string): bool {
+    isOwner(sender: Uint8Array): bool {
         // always return false on isOwner can make the Aspect immutable
         return true;
     }

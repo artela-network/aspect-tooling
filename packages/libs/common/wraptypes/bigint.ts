@@ -51,9 +51,9 @@ export class BigInt {
   }
 
   static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-    const res = new BigInt(Math.ceil(bytes.length / 4), isNegative);
-    let digit = 0;
-    let shift = 0;
+    const res = new BigInt((bytes.length + <i32>3) / <i32>4, isNegative);
+    let digit: u8 = 0;
+    let shift: u8 = 0;
 
     for (let i = 0; i < bytes.length; ++i) {
       digit |= bytes[i] << shift;
