@@ -23,7 +23,8 @@ Delete `build/contract/Attack_storage.json` after compilation, as this file cann
  npm run account:create -- --skfile ./aspect_accounts.txt
  npm run account:create -- --skfile ./attack_accounts.txt
 ```
-完成后会有三把 private Key
+there will be three private Key when completed 
+
 1. ./privateKey.txt 
 2. ./aspect_accounts.txt
 3. ./attack_accounts.txt
