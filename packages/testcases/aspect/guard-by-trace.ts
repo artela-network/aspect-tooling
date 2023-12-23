@@ -11,7 +11,7 @@ import {
 } from '@artela/aspect-libs';
 import {HoneyPotState} from './contract/honeypot-storage';
 
-class GuardByCountAspect implements IPostContractCallJP {
+class GuardBTraceAspect implements IPostContractCallJP {
     isOwner(sender: string): bool {
         const value = sys.aspect.property.get<string>('owner');
         return !!value.includes(sender);
@@ -40,7 +40,7 @@ class GuardByCountAspect implements IPostContractCallJP {
 }
 
 // 2.register aspect Instance
-const aspect = new GuardByCountAspect()
+const aspect = new GuardBTraceAspect()
 entryPoint.setAspect(aspect)
 
 // 3.must export it

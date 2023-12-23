@@ -50,8 +50,8 @@ const attackTx = await SendTx({
 console.log("==== attackTx ===", attackTx);
 
 const attackBalance = await web3Node.atl.getBalance(attackResult.contractAddress);
-console.log("==== HoneyPot balance ===", attackBalance);
-assert.strictEqual(balance, '0', "Attack balance not as expected");
+console.log("==== Attack balance ===", attackBalance);
+assert.strictEqual(attackBalance, '0', "Attack balance not as expected");
 
 
 const pk = fs.readFileSync("../aspect_accounts.txt", 'utf-8');
@@ -61,7 +61,7 @@ web3Node.eth.accounts.wallet.add(aspectAccount.privateKey);
 const aspect = await DeployAspect({
     wasmPath: "../build/guard-by-trace.wasm",
     skFile: "../aspect_accounts.txt",
-    joinPoints: ["PreContractCall", "PostContractCall"],
+    joinPoints: ["PostContractCall"],
     properties: [{'key': 'HoneyPotAddr', 'value': honeyPotResult.contractAddress}, {
         'key': 'binding',
         'value': honeyPotResult.contractAddress,
@@ -76,9 +76,9 @@ const upgradeResult = await UpgradeAspect({
     wasmPath: "../build/guard-by-count.wasm",
     aspectId: aspect.aspectAddress,
     skFile: "../aspect_accounts.txt",
-    properties: [{'key': 'owner', 'value': aspect.form}]
+    properties: [{'key': 'owner', 'value': honeyPotResult.from}]
 })
-console.log("==deploy Aspect Result== ", upgradeResult)
+console.log("==Upgrade Aspect Result== ", upgradeResult)
 
 
 const bindResult = await BindAspect({

@@ -87,3 +87,7 @@ proto/scheduler/*
 build
 
 docs
+packages/testcases/*.txt
+attack_accounts.txt
+privateKey.txt
+aspect_accounts.txt
