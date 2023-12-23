@@ -4,7 +4,7 @@
 const fs = require('fs');
 const Web3 = require("@artela/web3");
 var argv = require('yargs')
-    .string('pkfile')
+    .string('skfile')
     .argv;
 
 
@@ -17,7 +17,6 @@ async function f() {
         process.exit(0)
     }
     const web3 = new Web3(node);
-    // 发送方的私钥和地址 alice
 
 
     // receiver is the EOA address or contract address that receive native tokens
@@ -41,10 +40,9 @@ async function f() {
     web3.atl.accounts.wallet.add(account.privateKey);
     console.log("address: ", account.address);
 
-// 接收方地址
-    const receiver = account.address; // 接收者的以太坊地址
+    const receiver = account.address;
 
-    // let sender = web3.eth.accounts.privateKeyToAccount("0x10f6f65b1f97c467c31a91a868cb78518327fed95e3ebfbad131d8cbd12c219f");
+    // let sender = web3.eth.accounts.privateKeyToAccount("{private-key-have-Token}");
     // let senderAddr = sender.address
 
      let accounts = await web3.eth.getAccounts();

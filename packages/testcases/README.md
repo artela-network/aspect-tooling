@@ -6,20 +6,39 @@
 
 ## build Aspect
 ```shell
-
 sh build.sh 
 ```
 
-## create an account
-```shell
-npm run account:create -- --skfile ./{xxxx}.txt
 
+## build Contract
+```shell
+ npm run contract:build
 ```
+Delete `build/contract/Attack_storage.json` after compilation, as this file cannot generate aspect gen
+
+
+## create account for test
+```shell
+ npm run account:create
+ npm run account:create -- --skfile ./aspect_accounts.txt
+ npm run account:create -- --skfile ./attack_accounts.txt
+```
+完成后会有三把 private Key
+1. ./privateKey.txt 
+2. ./aspect_accounts.txt
+3. ./attack_accounts.txt
+
 
 ## add money to an account
 
 ```shell
-
  node scripts/account.cjs --skfile ./xxxx}.txt
+ 
+```
 
+## execute test case
+
+```shell
+cd test
+node *.test.js
 ```
