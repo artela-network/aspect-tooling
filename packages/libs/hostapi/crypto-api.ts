@@ -1,16 +1,8 @@
-import { AString, AUint8Array, BigInt } from '../common';
+import { AUint8Array, BigInt } from '../common';
 import { UtilApi } from './util-api';
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
-
-  function base64Encode(dataPtr: i32): i32;
-
-  function base64Decode(dataPtr: i32): i32;
-
-  function base58Encode(dataPtr: i32): i32;
-
-  function base58Decode(dataPtr: i32): i32;
 
   function ripemd160(dataPtr: i32): i32;
 
@@ -42,38 +34,6 @@ export class CryptoApi {
   public sha256(data: Uint8Array): Uint8Array {
     const dataPtr = new AUint8Array(data).store();
     const resPtr = __CryptoApi__.sha256(dataPtr);
-    const resRaw = new AUint8Array();
-    resRaw.load(resPtr);
-    return resRaw.body;
-  }
-
-  public base64Encode(data: Uint8Array): string {
-    const dataPtr = new AUint8Array(data).store();
-    const resPtr = __CryptoApi__.base64Encode(dataPtr);
-    const resRaw = new AString();
-    resRaw.load(resPtr);
-    return resRaw.body;
-  }
-
-  public base64Decode(data: string): Uint8Array {
-    const dataPtr = new AString(data).store();
-    const resPtr = __CryptoApi__.base64Decode(dataPtr);
-    const resRaw = new AUint8Array();
-    resRaw.load(resPtr);
-    return resRaw.body;
-  }
-
-  public base58Encode(data: Uint8Array): string {
-    const dataPtr = new AUint8Array(data).store();
-    const resPtr = __CryptoApi__.base58Encode(dataPtr);
-    const resRaw = new AString();
-    resRaw.load(resPtr);
-    return resRaw.body;
-  }
-
-  public base58Decode(data: string): Uint8Array {
-    const dataPtr = new AString(data).store();
-    const resPtr = __CryptoApi__.base58Decode(dataPtr);
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
     return resRaw.body;

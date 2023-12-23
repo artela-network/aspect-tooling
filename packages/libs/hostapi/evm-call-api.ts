@@ -1,10 +1,10 @@
 import { Protobuf } from 'as-proto/assembly';
 import { AUint8Array } from '../common';
 import {
-  EthMessage,
-  EthMessageCallResult,
   JitInherentRequest,
   JitInherentResponse,
+  StaticCallRequest,
+  StaticCallResult,
 } from '../proto';
 
 declare namespace __EvmCallApi__ {
@@ -25,15 +25,15 @@ export class EvmCallApi {
     return this._instance!;
   }
 
-  public staticCall(request: EthMessage): EthMessageCallResult {
-    const encoded = Protobuf.encode(request, EthMessage.encode);
+  public staticCall(request: StaticCallRequest): StaticCallResult {
+    const encoded = Protobuf.encode(request, StaticCallRequest.encode);
     const input = new AUint8Array();
     input.set(encoded);
     const inputPtr = input.store();
     const ret = __EvmCallApi__.staticCall(inputPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
-    return Protobuf.decode<EthMessageCallResult>(bytes.get(), EthMessageCallResult.decode);
+    return Protobuf.decode<StaticCallResult>(bytes.get(), StaticCallResult.decode);
   }
 
   public jitCall(request: JitInherentRequest): JitInherentResponse {

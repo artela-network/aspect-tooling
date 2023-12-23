@@ -8,4 +8,3 @@ export * from './abi';
 
 export * from './authority-base';
 export * from './errors';
-export * from './key-path';

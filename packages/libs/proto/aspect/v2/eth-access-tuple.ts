@@ -8,13 +8,13 @@ import { Writer, Reader } from 'as-proto/assembly';
 export class EthAccessTuple {
   static encode(message: EthAccessTuple, writer: Writer): void {
     writer.uint32(10);
-    writer.string(message.address);
+    writer.bytes(message.address);
 
     const storageKeys = message.storageKeys;
     if (storageKeys.length !== 0) {
       for (let i: i32 = 0; i < storageKeys.length; ++i) {
         writer.uint32(18);
-        writer.string(storageKeys[i]);
+        writer.bytes(storageKeys[i]);
       }
     }
   }
@@ -27,11 +27,11 @@ export class EthAccessTuple {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.address = reader.string();
+          message.address = reader.bytes();
           break;
 
         case 2:
-          message.storageKeys.push(reader.string());
+          message.storageKeys.push(reader.bytes());
           break;
 
         default:
@@ -43,10 +43,10 @@ export class EthAccessTuple {
     return message;
   }
 
-  address: string;
-  storageKeys: Array<string>;
+  address: Uint8Array;
+  storageKeys: Array<Uint8Array>;
 
-  constructor(address: string = '', storageKeys: Array<string> = []) {
+  constructor(address: Uint8Array = new Uint8Array(0), storageKeys: Array<Uint8Array> = []) {
     this.address = address;
     this.storageKeys = storageKeys;
   }

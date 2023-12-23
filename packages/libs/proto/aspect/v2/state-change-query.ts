@@ -5,21 +5,26 @@
 
 import { Writer, Reader } from 'as-proto/assembly';
 
-export class EthStateChange {
-  static encode(message: EthStateChange, writer: Writer): void {
+export class StateChangeQuery {
+  static encode(message: StateChangeQuery, writer: Writer): void {
     writer.uint32(10);
     writer.bytes(message.account);
 
     writer.uint32(18);
-    writer.bytes(message.value);
+    writer.string(message.stateVarName);
 
-    writer.uint32(24);
-    writer.uint64(message.callIndex);
+    const indices = message.indices;
+    if (indices.length !== 0) {
+      for (let i: i32 = 0; i < indices.length; ++i) {
+        writer.uint32(26);
+        writer.bytes(indices[i]);
+      }
+    }
   }
 
-  static decode(reader: Reader, length: i32): EthStateChange {
+  static decode(reader: Reader, length: i32): StateChangeQuery {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new EthStateChange();
+    const message = new StateChangeQuery();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
@@ -29,11 +34,11 @@ export class EthStateChange {
           break;
 
         case 2:
-          message.value = reader.bytes();
+          message.stateVarName = reader.string();
           break;
 
         case 3:
-          message.callIndex = reader.uint64();
+          message.indices.push(reader.bytes());
           break;
 
         default:
@@ -46,16 +51,16 @@ export class EthStateChange {
   }
 
   account: Uint8Array;
-  value: Uint8Array;
-  callIndex: u64;
+  stateVarName: string;
+  indices: Array<Uint8Array>;
 
   constructor(
     account: Uint8Array = new Uint8Array(0),
-    value: Uint8Array = new Uint8Array(0),
-    callIndex: u64 = 0,
+    stateVarName: string = '',
+    indices: Array<Uint8Array> = [],
   ) {
     this.account = account;
-    this.value = value;
-    this.callIndex = callIndex;
+    this.stateVarName = stateVarName;
+    this.indices = indices;
   }
 }

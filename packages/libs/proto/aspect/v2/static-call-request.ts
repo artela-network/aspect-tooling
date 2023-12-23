@@ -5,39 +5,34 @@
 
 import { Writer, Reader } from 'as-proto/assembly';
 
-export class EthLog {
-  static encode(message: EthLog, writer: Writer): void {
+export class StaticCallRequest {
+  static encode(message: StaticCallRequest, writer: Writer): void {
     writer.uint32(10);
-    writer.bytes(message.address);
+    writer.bytes(message.from);
 
-    const topics = message.topics;
-    if (topics.length !== 0) {
-      for (let i: i32 = 0; i < topics.length; ++i) {
-        writer.uint32(18);
-        writer.bytes(topics[i]);
-      }
-    }
+    writer.uint32(18);
+    writer.bytes(message.to);
 
     writer.uint32(26);
     writer.bytes(message.data);
 
     writer.uint32(32);
-    writer.uint64(message.index);
+    writer.uint64(message.gas);
   }
 
-  static decode(reader: Reader, length: i32): EthLog {
+  static decode(reader: Reader, length: i32): StaticCallRequest {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new EthLog();
+    const message = new StaticCallRequest();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.address = reader.bytes();
+          message.from = reader.bytes();
           break;
 
         case 2:
-          message.topics.push(reader.bytes());
+          message.to = reader.bytes();
           break;
 
         case 3:
@@ -45,7 +40,7 @@ export class EthLog {
           break;
 
         case 4:
-          message.index = reader.uint64();
+          message.gas = reader.uint64();
           break;
 
         default:
@@ -57,20 +52,20 @@ export class EthLog {
     return message;
   }
 
-  address: Uint8Array;
-  topics: Array<Uint8Array>;
+  from: Uint8Array;
+  to: Uint8Array;
   data: Uint8Array;
-  index: u64;
+  gas: u64;
 
   constructor(
-    address: Uint8Array = new Uint8Array(0),
-    topics: Array<Uint8Array> = [],
+    from: Uint8Array = new Uint8Array(0),
+    to: Uint8Array = new Uint8Array(0),
     data: Uint8Array = new Uint8Array(0),
-    index: u64 = 0,
+    gas: u64 = 0,
   ) {
-    this.address = address;
-    this.topics = topics;
+    this.from = from;
+    this.to = to;
     this.data = data;
-    this.index = index;
+    this.gas = gas;
   }
 }

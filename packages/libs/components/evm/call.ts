@@ -5,13 +5,7 @@ import {
   JitInherentResponse,
 } from '../../proto';
 import { EvmCallApi, UtilApi } from '../../hostapi';
-import {
-  BigInt,
-  ethereum,
-  JustInTimeCallable,
-  NotAuthorizedFail,
-  StaticCallable,
-} from '../../common';
+import { ethereum, JustInTimeCallable, NotAuthorizedFail, StaticCallable } from '../../common';
 
 export class StaticCaller {
   private static _instance: StaticCaller | null;
