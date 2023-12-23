@@ -1,7 +1,7 @@
 import { AString, AUint8Array } from '../common';
 
 declare namespace __AspectPropertyApi__ {
-  function get(aspectId: i32, key: i32): i32;
+  function get(key: i32): i32;
 }
 
 export class AspectPropertyApi {
@@ -16,14 +16,11 @@ export class AspectPropertyApi {
     return this._instance!;
   }
 
-  public get(aspectId: Uint8Array, key: string): Uint8Array {
-    const inputAspectId = new AUint8Array();
-    inputAspectId.set(aspectId);
-    const aspectIdPtr = inputAspectId.store();
+  public get(key: string): Uint8Array {
     const inputKey = new AString();
     inputKey.set(key);
     const keyPtr = inputKey.store();
-    const ret = __AspectPropertyApi__.get(aspectIdPtr, keyPtr);
+    const ret = __AspectPropertyApi__.get(keyPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
     return bytes.get();

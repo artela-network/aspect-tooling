@@ -1,131 +1,94 @@
 import {
-    OnBlockFinalizeCtx,
-    OnBlockInitializeCtx,
-    OperationCtx,
-    PostContractCallCtx,
-    PostTxCommitCtx,
-    PostTxExecuteCtx,
-    PreContractCallCtx,
-    PreTxExecuteCtx,
-} from '.';
-import {VerifyTxCtx} from './paramter/verify-tx-ctx';
+  OperationInput,
+  PostContractCallInput,
+  PostTxExecuteInput,
+  PreContractCallInput,
+  PreTxExecuteInput,
+  TxVerifyInput,
+} from '../proto';
 
 export interface IAspectBase {
-    /**
-     * isOwner is used to check whether the sender is the owner of the contract.
-     *
-     * @param sender the sender of the transaction, hex string format with 0x prefix.
-     * @returns true if the sender is the owner of the contract, otherwise false.
-     */
-    isOwner(sender: string): bool;
-}
-
-export interface IAspectBlock extends IAspectBase {
-    /**
-     * onBlockInitialize is called when the block proposal is prepared.
-     *
-     * @param ctx the context of the block proposal.
-     */
-    onBlockInitialize(ctx: OnBlockInitializeCtx): void;
-
-    /**
-     * onBlockFinalize is called when the block is finalized.
-     *
-     * @param ctx the context of the finalized block.
-     */
-    onBlockFinalize(ctx: OnBlockFinalizeCtx): void;
+  /**
+   * isOwner is used to check whether the sender is the owner of the contract.
+   *
+   * @param sender the sender of the transaction, hex string format with 0x prefix.
+   * @returns true if the sender is the owner of the contract, otherwise false.
+   */
+  isOwner(sender: string): bool;
 }
 
 export interface ITransactionVerifier extends IAspectBase {
-    /**
-     * verifyTx is used to verify the transaction. If the transaction is valid,
-     * an ethereum address will be returned. Otherwise, you can either call revert or return empty data
-     * to end the transaction.
-     *
-     * @param ctx the context of the transaction to be verified.
-     * @param validationData the validation data of the transaction to determine the transaction sender.
-     */
-    verifyTx(ctx: VerifyTxCtx, validationData: Uint8Array): Uint8Array;
-}
-
-
-export interface IPostTxCommitJP extends IAspectBase {
-
-    /**
-     * postTxCommit will be triggered after the transaction is committed.
-     *
-     * @param ctx the context of the finalized transaction and receipt.
-     */
-    postTxCommit(ctx: PostTxCommitCtx): void;
+  /**
+   * verifyTx is used to verify the transaction. If the transaction is valid,
+   * an ethereum address will be returned. Otherwise, you can either call revert or return empty data
+   * to end the transaction.
+   *
+   * @param input the input for the transaction verification.
+   */
+  verifyTx(input: TxVerifyInput): Uint8Array;
 }
 
 export interface IPreTxExecuteJP extends IAspectBase {
-
-    /**
-     * preTxExecute will be triggered before the transaction is executed.
-     *
-     * @param ctx the context of the transaction to be executed.
-     */
-    preTxExecute(ctx: PreTxExecuteCtx): void;
+  /**
+   * preTxExecute will be triggered before the transaction is executed.
+   *
+   * @param input context information of current join point.
+   */
+  preTxExecute(input: PreTxExecuteInput): void;
 }
 
 export interface IPreContractCallJP extends IAspectBase {
-
-    /**
-     * preContractCall will be triggered before the contract call is executed.
-     *
-     * @param ctx the context of the contract call.
-     */
-    preContractCall(ctx: PreContractCallCtx): void;
+  /**
+   * preContractCall will be triggered before the contract call is executed.
+   *
+   * @param input context information of current join point.
+   */
+  preContractCall(input: PreContractCallInput): void;
 }
 
 export interface IPostContractCallJP extends IAspectBase {
-
-    /**
-     * postContractCall will be triggered after the contract call is executed.
-     *
-     * @param ctx the context of the executed contract call.
-     */
-    postContractCall(ctx: PostContractCallCtx): void;
+  /**
+   * postContractCall will be triggered after the contract call is executed.
+   *
+   * @param input context information of current join point.
+   */
+  postContractCall(input: PostContractCallInput): void;
 }
 
 export interface IPostTxExecuteJP extends IAspectBase {
-
-    /**
-     * postTxExecute will be triggered after the transaction is executed.
-     *
-     * @param ctx the context of the executed transaction.
-     */
-    postTxExecute(ctx: PostTxExecuteCtx): void;
+  /**
+   * postTxExecute will be triggered after the transaction is executed.
+   *
+   * @param input context information of current join point.
+   */
+  postTxExecute(input: PostTxExecuteInput): void;
 }
 
-
 export interface IAspectOperation {
-    /**
-     * operation is used to execute the logics within the Aspect.
-     *
-     * @param ctx the context of the operation.
-     * @param data the data of the operation input.
-     * @return the data of the operation output.
-     */
-    operation(ctx: OperationCtx, data: Uint8Array): Uint8Array;
+  /**
+   * operation is used to execute the logics within the Aspect.
+   *
+   * @param input input data for the operation.
+   * @return the data of the operation output.
+   */
+  operation(input: OperationInput): Uint8Array;
 }
 
 export class PointCutType {
-    static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
-    static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
+  static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
+  static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
 
-    static readonly VERIFY_TX: string = 'verifyTx';
+  static readonly VERIFY_TX: string = 'verifyTx';
 
-    static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
-    static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
-    static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';
-    static readonly POST_TX_EXECUTE_METHOD: string = 'postTxExecute';
-    static readonly POST_TX_COMMIT: string = 'postTxCommit';
-    static readonly ON_BLOCK_FINALIZE_METHOD: string = 'onBlockFinalize';
+  static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
+  static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
+  static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';
+  static readonly POST_TX_EXECUTE_METHOD: string = 'postTxExecute';
+  static readonly POST_TX_COMMIT: string = 'postTxCommit';
+  static readonly ON_BLOCK_FINALIZE_METHOD: string = 'onBlockFinalize';
 
-    static readonly OPERATION_METHOD: string = 'operation';
-    static readonly IS_OWNER_METHOD: string = 'isOwner';
+  static readonly OPERATION_METHOD: string = 'operation';
+  static readonly IS_OWNER_METHOD: string = 'isOwner';
 
-    static readonly FILTER_TX: string = 'filterTx'
+  static readonly FILTER_TX: string = 'filterTx';
 }

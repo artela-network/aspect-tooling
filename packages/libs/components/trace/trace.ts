@@ -1,5 +1,12 @@
-import { EthStateChange } from '../../proto';
-import { TraceCtx } from '../authority-base';
+import {
+  EthStateChange,
+  EthStateChangeIndices,
+  EthStateChanges,
+  StateChangeQuery,
+} from '../../proto';
+import { TraceApi } from '../../hostapi';
+import { hexToUint8Array } from '../../common';
+import { Protobuf } from 'as-proto/assembly';
 
 export class State<T> {
   readonly account: string;
@@ -19,13 +26,21 @@ export abstract class StateChange<T> {
   protected constructor(protected readonly properties: StateChangeProperties) {
     this.changes = new Array<State<T>>();
 
-    const changes = this.properties.ctx.stateChanges(
-      this.properties.account,
-      this.properties.stateVar,
-      this.properties.indices,
+    const response = TraceApi.instance().queryStateChange(
+      new StateChangeQuery(
+        hexToUint8Array(this.properties.account),
+        this.properties.stateVar,
+        this.properties.indices,
+      ),
     );
-    for (let i = 0; i < changes.all.length; i++) {
-      this.changes.push(this.unmarshalState(changes.all[i]));
+
+    if (response.length == 0) {
+      this.changes = [];
+    } else {
+      const changes = Protobuf.decode<EthStateChanges>(response, EthStateChanges.decode);
+      for (let i = 0; i < changes.all.length; i++) {
+        this.changes.push(this.unmarshalState(changes.all[i]));
+      }
     }
   }
 
@@ -46,7 +61,6 @@ export abstract class StateChange<T> {
 
 export class StateChangeProperties {
   constructor(
-    readonly ctx: TraceCtx,
     readonly account: string,
     readonly stateVar: string,
     readonly indices: Uint8Array[] = [],
@@ -57,14 +71,21 @@ export abstract class StateKey<K> {
   protected readonly __children__: Uint8Array[];
 
   protected constructor(protected readonly __properties__: StateChangeProperties) {
-    const children = __properties__.ctx.stateChangeIndices(
-      __properties__.account,
-      __properties__.stateVar,
-      __properties__.indices || [],
+    const response = TraceApi.instance().queryStateChange(
+      new StateChangeQuery(
+        hexToUint8Array(__properties__.account),
+        __properties__.stateVar,
+        __properties__.indices || [],
+      ),
     );
-    if (children == null) {
+
+    if (response.length == 0) {
       this.__children__ = [];
     } else {
+      const children = Protobuf.decode<EthStateChangeIndices>(
+        response,
+        EthStateChangeIndices.decode,
+      );
       this.__children__ = children.indices;
     }
   }

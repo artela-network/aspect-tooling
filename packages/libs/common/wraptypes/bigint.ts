@@ -50,6 +50,67 @@ export class BigInt {
     throw new TypeError('Unsupported generic type ' + nameof<T>(val));
   }
 
+  static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+    const res = new BigInt(Math.ceil(bytes.length / 4), isNegative);
+    let digit = 0;
+    let shift = 0;
+
+    for (let i = 0; i < bytes.length; ++i) {
+      digit |= bytes[i] << shift;
+      shift += 8;
+      if (shift === 32) {
+        res.d[res.n++] = digit;
+        digit = 0;
+        shift = 0;
+      }
+    }
+
+    if (shift > 0) {
+      res.d[res.n++] = digit;
+    }
+
+    res.trimLeadingZeros();
+    return res;
+  }
+
+  toUint8Array(): Uint8Array {
+    const byteArray = new Uint8Array(this.n * 4);
+    let byteIndex = 0;
+
+    for (let i = 0; i < this.n; ++i) {
+      const digit = this.d[i];
+      for (let shift = 0; shift < 32; shift += 8) {
+        byteArray[byteIndex++] = (digit >> shift) & 0xff;
+      }
+    }
+
+    return byteArray;
+  }
+
+  toUint8ArrayWithSign(): Uint8Array {
+    const byteArray = new Uint8Array(this.n * 4 + 1);
+    byteArray[0] = this.isNeg ? 0xff : 0x00;
+
+    let byteIndex = 1;
+    for (let i = 0; i < this.n; ++i) {
+      const digit = this.d[i];
+      for (let shift = 0; shift < 32; shift += 8) {
+        byteArray[byteIndex++] = (digit >> shift) & 0xff;
+      }
+    }
+
+    return byteArray;
+  }
+
+  static fromUint8ArrayWithSign(bytes: Uint8Array): BigInt {
+    if (bytes.length === 0) {
+      throw new Error('Empty byte array');
+    }
+
+    const isNegative = bytes[0] === 0xff;
+    return this.fromUint8Array(bytes.subarray(1), isNegative);
+  }
+
   static fromString(bigInteger: string, radix: i32 = 10): BigInt {
     if (radix < 2 || radix > 16) {
       throw new RangeError('BigInt only reads strings of radix 2 through 16');
@@ -254,6 +315,26 @@ export class BigInt {
     return res;
   }
 
+  toInt8(): i8 {
+    if (this.n == 0) return 0;
+    const bitCount = this.countBits();
+    if (bitCount > 8)
+      throw new Error(`Integer overflow: cannot output i8 from a BigInt with ${bitCount} bits`);
+
+    const result = <i8>(this.d[0] & 0xff);
+    return this.isNeg ? -result : result;
+  }
+
+  toInt16(): i16 {
+    if (this.n == 0) return 0;
+    const bitCount = this.countBits();
+    if (bitCount > 16)
+      throw new Error(`Integer overflow: cannot output i16 from a BigInt with ${bitCount} bits`);
+
+    const result = <i16>(this.d[0] & 0xff_ff);
+    return this.isNeg ? -result : result;
+  }
+
   toInt32(): i32 {
     if (this.n <= 1) {
       return this.n == 0 ? <i32>0 : <i32>this.d[0] * (this.isNeg ? -1 : 1);
@@ -288,6 +369,28 @@ export class BigInt {
       throw new Error('Signed integer overflow');
     }
     return result;
+  }
+
+  toUInt8(): u8 {
+    if (this.isNeg) throw new Error('Cannot cast negative integer to u8');
+    if (this.n == 0) return 0;
+
+    const bitCount = this.countBits();
+    if (bitCount > 8)
+      throw new Error(`Integer overflow: cannot output u8 from a BigInt with ${bitCount} bits`);
+
+    return <u8>(this.d[0] & 0xff);
+  }
+
+  toUInt16(): u16 {
+    if (this.isNeg) throw new Error('Cannot cast negative integer to u16');
+    if (this.n == 0) return 0;
+
+    const bitCount = this.countBits();
+    if (bitCount > 16)
+      throw new Error(`Integer overflow: cannot output u16 from a BigInt with ${bitCount} bits`);
+
+    return <u16>(this.d[0] & 0xff_ff);
   }
 
   toUInt32(): u32 {
