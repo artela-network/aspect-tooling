@@ -25,7 +25,7 @@ export function hexToUint8Array(hex: string): Uint8Array {
   const bytes = new Uint8Array(length / 2);
 
   for (let i: i32 = 0, j: i32 = 0; i < length; i += 2, j++) {
-    bytes[j] = U8.parseInt(hex.substr(i, 2), 16);
+    bytes[j] = u8.parse(hex.substr(i, 2), 16);
   }
 
   return bytes;

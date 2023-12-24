@@ -219,7 +219,7 @@ export namespace ethereum {
     }
 
     static fromUint8Array(arr: Uint8Array): Bytes {
-      return changetype<Bytes>(this.fromBuffer(arr, new Bytes(arr.length << 1)));
+      return changetype<Bytes>(this.fromBuffer(arr.buffer, new Bytes(arr.length << 1)));
     }
 
     encodeHex(): string {
@@ -261,7 +261,7 @@ export namespace ethereum {
 
     static fromUint8Array(arr: Uint8Array): ethereum.String {
       return changetype<ethereum.String>(
-        this.fromBuffer(arr, new ethereum.String(arr.length << 1)),
+        this.fromBuffer(arr.buffer, new ethereum.String(arr.length << 1)),
       );
     }
 
@@ -306,7 +306,7 @@ export namespace ethereum {
 
     static fromUint8Array(arr: Uint8Array, size: u8 = 32): BytesN {
       assert(size <= 32 && size > 0, 'invalid byte size');
-      return changetype<BytesN>(this.fromBuffer(arr, new BytesN(size)));
+      return changetype<BytesN>(this.fromBuffer(arr.buffer, new BytesN(size)));
     }
 
     public typeName(): string {
@@ -366,7 +366,7 @@ export namespace ethereum {
     }
 
     protected static fromUint8ArrayWithBuffer(arr: Uint8Array, buffer: Number): Number {
-      return changetype<Number>(this.fromBuffer(arr, buffer, true));
+      return changetype<Number>(this.fromBuffer(arr.buffer, buffer, true));
     }
 
     static fromI8(x: i8, bitSize: u16 = 256): Number {
