@@ -45,9 +45,13 @@ export namespace sys {
     export const trace = TraceApi.instance();
   }
   export namespace aspect {
-    export const id = AspectContext.instance().id;
+    export function id(): string {
+      return AspectContext.instance().id;
+    }
 
-    export const version = AspectContext.instance().version;
+    export function version(): u64 {
+      return AspectContext.instance().version;
+    }
 
     export const mutableState = MutableAspectState.instance();
 
