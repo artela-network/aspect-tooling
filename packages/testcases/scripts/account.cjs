@@ -5,6 +5,7 @@ const fs = require('fs');
 const Web3 = require("@artela/web3");
 var argv = require('yargs')
     .string('skfile')
+    .string('from')
     .argv;
 
 
@@ -18,14 +19,10 @@ async function f() {
     }
     const web3 = new Web3(node);
 
-
-    // receiver is the EOA address or contract address that receive native tokens
-    //--pkfile ./build/privateKey.txt
     let privateFile = String(argv.skfile)
     if (!privateFile || privateFile === 'undefined') {
         privateFile = "privateKey.txt"
     }
-
     console.log("=== " + privateFile)
     let account;
     if (fs.existsSync(privateFile)) {
@@ -42,15 +39,20 @@ async function f() {
 
     const receiver = account.address;
 
-    // let sender = web3.eth.accounts.privateKeyToAccount("{private-key-have-Token}");
-    // let senderAddr = sender.address
 
-     let accounts = await web3.eth.getAccounts();
-     let senderAddr= accounts[0]
+
+    let accounts = await web3.eth.getAccounts();
+    let senderAddr = accounts[0]
+
+    let from = String(argv.from)
+    if (from && from!=="undefined") {
+        let sender = web3.eth.accounts.privateKeyToAccount(from);
+        senderAddr = sender.address
+    }
 
     // retrieve current nonce
-    var balance = await web3.eth.getBalance(senderAddr);
-    console.log('===account balance:' + balance);
+    const balance = await web3.eth.getBalance(senderAddr);
+    console.log('===sender balance:' + balance);
 
 
     // transfer account from bank to local account
@@ -70,6 +72,11 @@ async function f() {
         console.log('transferred from bank to local account');
         console.log(receipt);
     });
+
+    // retrieve current nonce
+    const receiverBalance = await web3.eth.getBalance(receiver);
+    console.log('===receiver balance:' + receiverBalance);
+
 }
 
 f().then();
