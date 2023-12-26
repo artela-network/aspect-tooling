@@ -1,5 +1,4 @@
 [submodule "aspect-core"]
 	path = aspect-core
 	url = https://github.com/artela-network/aspect-core.git
-	branch = refactor/hostapi-and-context
-; 	tag = v0.4.2-beta
+	tag = v0.4.7-beta
