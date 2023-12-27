@@ -2,7 +2,7 @@ import { AUint8Array } from '../common';
 import { CallTreeQuery, StateChangeQuery } from '../proto';
 import { Protobuf } from 'as-proto/assembly';
 
-declare namespace __TraceApi___ {
+declare namespace __TraceApi__ {
   function queryStateChange(query: i32): i32;
   function queryCallTree(query: i32): i32;
 }
@@ -24,7 +24,7 @@ export class TraceApi {
     const rawRequest = new AUint8Array();
     rawRequest.set(rawQuery);
     const inPtr = rawRequest.store();
-    const ret = __TraceApi___.queryStateChange(inPtr);
+    const ret = __TraceApi__.queryStateChange(inPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
     return bytes.get();
@@ -35,7 +35,7 @@ export class TraceApi {
     const rawRequest = new AUint8Array();
     rawRequest.set(rawQuery);
     const inPtr = rawRequest.store();
-    const ret = __TraceApi___.queryCallTree(inPtr);
+    const ret = __TraceApi__.queryCallTree(inPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
     return bytes.get();
