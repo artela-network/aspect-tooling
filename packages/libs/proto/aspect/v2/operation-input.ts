@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { WithFromTxInput } from './with-from-tx-input';
-import { BlockInput } from './block-input';
+import { BlockInput } from "./block-input";
+import { WithFromTxInput } from "./with-from-tx-input";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class OperationInput {
   static encode(message: OperationInput, writer: Writer): void {
@@ -64,10 +64,18 @@ export class OperationInput {
   constructor(
     tx: WithFromTxInput | null = null,
     block: BlockInput | null = null,
-    callData: Uint8Array = new Uint8Array(0),
+    callData: Uint8Array = new Uint8Array(0)
   ) {
     this.tx = tx;
     this.block = block;
     this.callData = callData;
   }
+}
+
+export function encodeOperationInput(message: OperationInput): Uint8Array {
+  return Protobuf.encode(message, OperationInput.encode);
+}
+
+export function decodeOperationInput(buffer: Uint8Array): OperationInput {
+  return Protobuf.decode<OperationInput>(buffer, OperationInput.decode);
 }

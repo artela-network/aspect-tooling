@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class StaticCallResult {
   static encode(message: StaticCallResult, writer: Writer): void {
@@ -49,9 +49,21 @@ export class StaticCallResult {
   vmError: string;
   gasLeft: u64;
 
-  constructor(ret: Uint8Array = new Uint8Array(0), vmError: string = '', gasLeft: u64 = 0) {
+  constructor(
+    ret: Uint8Array = new Uint8Array(0),
+    vmError: string = "",
+    gasLeft: u64 = 0
+  ) {
     this.ret = ret;
     this.vmError = vmError;
     this.gasLeft = gasLeft;
   }
+}
+
+export function encodeStaticCallResult(message: StaticCallResult): Uint8Array {
+  return Protobuf.encode(message, StaticCallResult.encode);
+}
+
+export function decodeStaticCallResult(buffer: Uint8Array): StaticCallResult {
+  return Protobuf.decode<StaticCallResult>(buffer, StaticCallResult.decode);
 }

@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthLog } from './eth-log';
+import { EthLog } from "./eth-log";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthReceipt {
   static encode(message: EthReceipt, writer: Writer): void {
@@ -76,7 +76,7 @@ export class EthReceipt {
     cumulativeGasUsed: u64 = 0,
     logsBloom: Uint8Array = new Uint8Array(0),
     effectiveGasPrice: Uint8Array = new Uint8Array(0),
-    logs: Array<EthLog> = [],
+    logs: Array<EthLog> = []
   ) {
     this.status = status;
     this.cumulativeGasUsed = cumulativeGasUsed;
@@ -84,4 +84,12 @@ export class EthReceipt {
     this.effectiveGasPrice = effectiveGasPrice;
     this.logs = logs;
   }
+}
+
+export function encodeEthReceipt(message: EthReceipt): Uint8Array {
+  return Protobuf.encode(message, EthReceipt.encode);
+}
+
+export function decodeEthReceipt(buffer: Uint8Array): EthReceipt {
+  return Protobuf.decode<EthReceipt>(buffer, EthReceipt.decode);
 }

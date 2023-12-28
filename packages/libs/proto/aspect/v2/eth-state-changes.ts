@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthStateChange } from './eth-state-change';
+import { EthStateChange } from "./eth-state-change";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthStateChanges {
   static encode(message: EthStateChanges, writer: Writer): void {
@@ -42,4 +42,12 @@ export class EthStateChanges {
   constructor(all: Array<EthStateChange> = []) {
     this.all = all;
   }
+}
+
+export function encodeEthStateChanges(message: EthStateChanges): Uint8Array {
+  return Protobuf.encode(message, EthStateChanges.encode);
+}
+
+export function decodeEthStateChanges(buffer: Uint8Array): EthStateChanges {
+  return Protobuf.decode<EthStateChanges>(buffer, EthStateChanges.decode);
 }

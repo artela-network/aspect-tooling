@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class StateChangeQuery {
   static encode(message: StateChangeQuery, writer: Writer): void {
@@ -56,11 +56,19 @@ export class StateChangeQuery {
 
   constructor(
     account: Uint8Array = new Uint8Array(0),
-    stateVarName: string = '',
-    indices: Array<Uint8Array> = [],
+    stateVarName: string = "",
+    indices: Array<Uint8Array> = []
   ) {
     this.account = account;
     this.stateVarName = stateVarName;
     this.indices = indices;
   }
+}
+
+export function encodeStateChangeQuery(message: StateChangeQuery): Uint8Array {
+  return Protobuf.encode(message, StateChangeQuery.encode);
+}
+
+export function decodeStateChangeQuery(buffer: Uint8Array): StateChangeQuery {
+  return Protobuf.decode<StateChangeQuery>(buffer, StateChangeQuery.decode);
 }

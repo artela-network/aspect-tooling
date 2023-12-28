@@ -18,19 +18,17 @@ import {
     PreContractCallInput,
     PreTxExecuteInput,
     StringArrayData,
-    StringData,
     stringToUint8Array,
     sys,
     TxVerifyInput,
     uint8ArrayToHex,
-    uint8ArrayToString,
     UintData
 } from "@artela/aspect-libs";
 import {Protobuf} from "as-proto/assembly";
 
 class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
     verifyTx(input: TxVerifyInput): Uint8Array {
-        const logPrefix = "$$ContextKey-verifyTx==";
+        const logPrefix = "|||-verifyTx==";
         sys.log(logPrefix + " -----------------------")
 
         const isCall = sys.hostApi.runtimeContext.get("isCall");
@@ -316,7 +314,7 @@ class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractC
      */
 
     preTxExecute(input: PreTxExecuteInput): void {
-        const logPrefix = "$$ContextKey-PreTxExecute$$==";
+        const logPrefix = "|||-PreTxExecute$$==";
         sys.log(logPrefix + " -----------------------")
 
         const isCall = sys.hostApi.runtimeContext.get("isCall");
@@ -638,7 +636,7 @@ class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractC
      * @param input
      */
     postTxExecute(input: PostTxExecuteInput): void {
-        const logPrefix = "$$ContextKey-postTxExecute$$==";
+        const logPrefix = "|||-postTxExecute$$==";
         sys.log(logPrefix + " -----------------------")
 
 
@@ -983,7 +981,7 @@ class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractC
      * @param input
      */
     postContractCall(input: PostContractCallInput): void {
-        const logPrefix = "$$ContextKey-postContractCall$$==";
+        const logPrefix = "|||-postContractCall$$==";
         sys.log(logPrefix + " -----------------------")
 
         const isCall = sys.hostApi.runtimeContext.get("isCall");
@@ -1330,7 +1328,7 @@ class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractC
      * @param input
      */
     preContractCall(input: PreContractCallInput): void {
-        const logPrefix = "$$ContextKey-preContractCall$$==";
+        const logPrefix = "|||-preContractCall$$==";
         sys.log(logPrefix + " -----------------------")
 
 

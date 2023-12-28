@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { NoFromTxInput } from './no-from-tx-input';
-import { BlockInput } from './block-input';
+import { BlockInput } from "./block-input";
+import { NoFromTxInput } from "./no-from-tx-input";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class TxVerifyInput {
   static encode(message: TxVerifyInput, writer: Writer): void {
@@ -73,11 +73,19 @@ export class TxVerifyInput {
     tx: NoFromTxInput | null = null,
     block: BlockInput | null = null,
     validationData: Uint8Array = new Uint8Array(0),
-    callData: Uint8Array = new Uint8Array(0),
+    callData: Uint8Array = new Uint8Array(0)
   ) {
     this.tx = tx;
     this.block = block;
     this.validationData = validationData;
     this.callData = callData;
   }
+}
+
+export function encodeTxVerifyInput(message: TxVerifyInput): Uint8Array {
+  return Protobuf.encode(message, TxVerifyInput.encode);
+}
+
+export function decodeTxVerifyInput(buffer: Uint8Array): TxVerifyInput {
+  return Protobuf.decode<TxVerifyInput>(buffer, TxVerifyInput.decode);
 }

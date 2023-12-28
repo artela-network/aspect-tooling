@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class PreExecMessageInput {
   static encode(message: PreExecMessageInput, writer: Writer): void {
@@ -79,7 +79,7 @@ export class PreExecMessageInput {
     index: u64 = 0,
     data: Uint8Array = new Uint8Array(0),
     value: Uint8Array = new Uint8Array(0),
-    gas: u64 = 0,
+    gas: u64 = 0
   ) {
     this.from = from;
     this.to = to;
@@ -88,4 +88,19 @@ export class PreExecMessageInput {
     this.value = value;
     this.gas = gas;
   }
+}
+
+export function encodePreExecMessageInput(
+  message: PreExecMessageInput
+): Uint8Array {
+  return Protobuf.encode(message, PreExecMessageInput.encode);
+}
+
+export function decodePreExecMessageInput(
+  buffer: Uint8Array
+): PreExecMessageInput {
+  return Protobuf.decode<PreExecMessageInput>(
+    buffer,
+    PreExecMessageInput.decode
+  );
 }

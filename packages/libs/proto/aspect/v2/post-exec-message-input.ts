@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class PostExecMessageInput {
   static encode(message: PostExecMessageInput, writer: Writer): void {
@@ -97,7 +97,7 @@ export class PostExecMessageInput {
     value: Uint8Array = new Uint8Array(0),
     gas: u64 = 0,
     ret: Uint8Array = new Uint8Array(0),
-    error: string = '',
+    error: string = ""
   ) {
     this.from = from;
     this.to = to;
@@ -108,4 +108,19 @@ export class PostExecMessageInput {
     this.ret = ret;
     this.error = error;
   }
+}
+
+export function encodePostExecMessageInput(
+  message: PostExecMessageInput
+): Uint8Array {
+  return Protobuf.encode(message, PostExecMessageInput.encode);
+}
+
+export function decodePostExecMessageInput(
+  buffer: Uint8Array
+): PostExecMessageInput {
+  return Protobuf.decode<PostExecMessageInput>(
+    buffer,
+    PostExecMessageInput.decode
+  );
 }

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class WithFromTxInput {
   static encode(message: WithFromTxInput, writer: Writer): void {
@@ -52,10 +52,18 @@ export class WithFromTxInput {
   constructor(
     hash: Uint8Array = new Uint8Array(0),
     to: Uint8Array = new Uint8Array(0),
-    from: Uint8Array = new Uint8Array(0),
+    from: Uint8Array = new Uint8Array(0)
   ) {
     this.hash = hash;
     this.to = to;
     this.from = from;
   }
+}
+
+export function encodeWithFromTxInput(message: WithFromTxInput): Uint8Array {
+  return Protobuf.encode(message, WithFromTxInput.encode);
+}
+
+export function decodeWithFromTxInput(buffer: Uint8Array): WithFromTxInput {
+  return Protobuf.decode<WithFromTxInput>(buffer, WithFromTxInput.decode);
 }

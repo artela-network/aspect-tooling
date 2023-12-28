@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class CallTreeQuery {
   static encode(message: CallTreeQuery, writer: Writer): void {
@@ -36,4 +36,12 @@ export class CallTreeQuery {
   constructor(callIdx: i64 = 0) {
     this.callIdx = callIdx;
   }
+}
+
+export function encodeCallTreeQuery(message: CallTreeQuery): Uint8Array {
+  return Protobuf.encode(message, CallTreeQuery.encode);
+}
+
+export function decodeCallTreeQuery(buffer: Uint8Array): CallTreeQuery {
+  return Protobuf.decode<CallTreeQuery>(buffer, CallTreeQuery.decode);
 }

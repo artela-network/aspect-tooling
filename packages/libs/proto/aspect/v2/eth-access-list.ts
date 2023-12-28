@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthAccessTuple } from './eth-access-tuple';
+import { EthAccessTuple } from "./eth-access-tuple";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthAccessList {
   static encode(message: EthAccessList, writer: Writer): void {
@@ -25,7 +25,9 @@ export class EthAccessList {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accessList.push(EthAccessTuple.decode(reader, reader.uint32()));
+          message.accessList.push(
+            EthAccessTuple.decode(reader, reader.uint32())
+          );
           break;
 
         default:
@@ -42,4 +44,12 @@ export class EthAccessList {
   constructor(accessList: Array<EthAccessTuple> = []) {
     this.accessList = accessList;
   }
+}
+
+export function encodeEthAccessList(message: EthAccessList): Uint8Array {
+  return Protobuf.encode(message, EthAccessList.encode);
+}
+
+export function decodeEthAccessList(buffer: Uint8Array): EthAccessList {
+  return Protobuf.decode<EthAccessList>(buffer, EthAccessList.decode);
 }

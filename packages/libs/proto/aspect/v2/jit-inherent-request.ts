@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class JitInherentRequest {
   static encode(message: JitInherentRequest, writer: Writer): void {
@@ -97,7 +97,7 @@ export class JitInherentRequest {
     callData: Uint8Array = new Uint8Array(0),
     callGasLimit: u64 = 0,
     verificationGasLimit: u64 = 0,
-    paymasterAndData: Uint8Array = new Uint8Array(0),
+    paymasterAndData: Uint8Array = new Uint8Array(0)
   ) {
     this.sender = sender;
     this.nonce = nonce;
@@ -108,4 +108,16 @@ export class JitInherentRequest {
     this.verificationGasLimit = verificationGasLimit;
     this.paymasterAndData = paymasterAndData;
   }
+}
+
+export function encodeJitInherentRequest(
+  message: JitInherentRequest
+): Uint8Array {
+  return Protobuf.encode(message, JitInherentRequest.encode);
+}
+
+export function decodeJitInherentRequest(
+  buffer: Uint8Array
+): JitInherentRequest {
+  return Protobuf.decode<JitInherentRequest>(buffer, JitInherentRequest.decode);
 }

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class BlockInput {
   static encode(message: BlockInput, writer: Writer): void {
@@ -36,4 +36,12 @@ export class BlockInput {
   constructor(number: u64 = 0) {
     this.number = number;
   }
+}
+
+export function encodeBlockInput(message: BlockInput): Uint8Array {
+  return Protobuf.encode(message, BlockInput.encode);
+}
+
+export function decodeBlockInput(buffer: Uint8Array): BlockInput {
+  return Protobuf.decode<BlockInput>(buffer, BlockInput.decode);
 }

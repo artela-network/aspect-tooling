@@ -8,7 +8,7 @@ import {
     OperationInput,
     PostTxExecuteInput,
     PreTxExecuteInput, stringToUint8Array,
-    sys, uint8ArrayToHex, uint8ArrayToString
+    sys, toUint8Array, uint8ArrayToHex, uint8ArrayToString,
 } from "@artela/aspect-libs";
 
 
@@ -28,6 +28,8 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IAspectOp
 
     operation(input: OperationInput): Uint8Array{
         const STATE_KEY = "stateKey";
+
+
 
         let number =sys.aspect.mutableState.get<i64>(STATE_KEY).unwrap();
         number = number + 10

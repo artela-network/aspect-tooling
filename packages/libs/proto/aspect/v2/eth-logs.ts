@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { EthLog } from './eth-log';
+import { EthLog } from "./eth-log";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthLogs {
   static encode(message: EthLogs, writer: Writer): void {
@@ -42,4 +42,12 @@ export class EthLogs {
   constructor(logs: Array<EthLog> = []) {
     this.logs = logs;
   }
+}
+
+export function encodeEthLogs(message: EthLogs): Uint8Array {
+  return Protobuf.encode(message, EthLogs.encode);
+}
+
+export function decodeEthLogs(buffer: Uint8Array): EthLogs {
+  return Protobuf.decode<EthLogs>(buffer, EthLogs.decode);
 }

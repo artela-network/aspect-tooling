@@ -51,12 +51,13 @@ export class BigInt {
   }
 
   static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+
     const res = new BigInt((bytes.length + <i32>3) / <i32>4, isNegative);
-    let digit: u8 = 0;
+    let digit: u32 = 0;
     let shift: u8 = 0;
 
     for (let i = 0; i < bytes.length; ++i) {
-      digit |= bytes[i] << shift;
+      digit |= <u32>bytes[i] << shift;
       shift += 8;
       if (shift === 32) {
         res.d[res.n++] = digit;

@@ -3,10 +3,10 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { WithFromTxInput } from './with-from-tx-input';
-import { BlockInput } from './block-input';
-import { ReceiptInput } from './receipt-input';
+import { BlockInput } from "./block-input";
+import { ReceiptInput } from "./receipt-input";
+import { WithFromTxInput } from "./with-from-tx-input";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class PostTxExecuteInput {
   static encode(message: PostTxExecuteInput, writer: Writer): void {
@@ -70,10 +70,22 @@ export class PostTxExecuteInput {
   constructor(
     tx: WithFromTxInput | null = null,
     block: BlockInput | null = null,
-    receipt: ReceiptInput | null = null,
+    receipt: ReceiptInput | null = null
   ) {
     this.tx = tx;
     this.block = block;
     this.receipt = receipt;
   }
+}
+
+export function encodePostTxExecuteInput(
+  message: PostTxExecuteInput
+): Uint8Array {
+  return Protobuf.encode(message, PostTxExecuteInput.encode);
+}
+
+export function decodePostTxExecuteInput(
+  buffer: Uint8Array
+): PostTxExecuteInput {
+  return Protobuf.decode<PostTxExecuteInput>(buffer, PostTxExecuteInput.decode);
 }

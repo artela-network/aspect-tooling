@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class UintData {
   static encode(message: UintData, writer: Writer): void {
@@ -36,4 +36,12 @@ export class UintData {
   constructor(data: u64 = 0) {
     this.data = data;
   }
+}
+
+export function encodeUintData(message: UintData): Uint8Array {
+  return Protobuf.encode(message, UintData.encode);
+}
+
+export function decodeUintData(buffer: Uint8Array): UintData {
+  return Protobuf.decode<UintData>(buffer, UintData.decode);
 }

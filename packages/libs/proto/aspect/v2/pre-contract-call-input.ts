@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
-import { PreExecMessageInput } from './pre-exec-message-input';
-import { BlockInput } from './block-input';
+import { BlockInput } from "./block-input";
+import { PreExecMessageInput } from "./pre-exec-message-input";
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class PreContractCallInput {
   static encode(message: PreContractCallInput, writer: Writer): void {
@@ -53,8 +53,26 @@ export class PreContractCallInput {
   call: PreExecMessageInput | null;
   block: BlockInput | null;
 
-  constructor(call: PreExecMessageInput | null = null, block: BlockInput | null = null) {
+  constructor(
+    call: PreExecMessageInput | null = null,
+    block: BlockInput | null = null
+  ) {
     this.call = call;
     this.block = block;
   }
+}
+
+export function encodePreContractCallInput(
+  message: PreContractCallInput
+): Uint8Array {
+  return Protobuf.encode(message, PreContractCallInput.encode);
+}
+
+export function decodePreContractCallInput(
+  buffer: Uint8Array
+): PreContractCallInput {
+  return Protobuf.decode<PreContractCallInput>(
+    buffer,
+    PreContractCallInput.decode
+  );
 }

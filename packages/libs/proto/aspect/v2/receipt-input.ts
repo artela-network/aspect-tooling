@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class ReceiptInput {
   static encode(message: ReceiptInput, writer: Writer): void {
@@ -36,4 +36,12 @@ export class ReceiptInput {
   constructor(status: u64 = 0) {
     this.status = status;
   }
+}
+
+export function encodeReceiptInput(message: ReceiptInput): Uint8Array {
+  return Protobuf.encode(message, ReceiptInput.encode);
+}
+
+export function decodeReceiptInput(buffer: Uint8Array): ReceiptInput {
+  return Protobuf.decode<ReceiptInput>(buffer, ReceiptInput.decode);
 }
