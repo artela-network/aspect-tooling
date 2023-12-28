@@ -33,7 +33,7 @@ there will be three private Key when completed
 ## add money to an account
 
 ```shell
- node scripts/account.cjs --skfile ./xxxx}.txt
+ node scripts/transfer.cjs --skfile ./xxxx}.txt
  
 ```
 

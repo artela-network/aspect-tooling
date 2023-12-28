@@ -3,6 +3,7 @@ import {
     ConnectToANode,
     DeployAspect,
     DeployContract,
+    UpgradeAspect,
     SendTx,
 } from "./bese-test.js";
 import fs from "fs";
@@ -70,13 +71,13 @@ const aspect = await DeployAspect({
 assert.ok(aspect.aspectAddress, "deploy aspect fail")
 console.log("==deploy Aspect Result== ", aspect)
 
-// const upgradeResult= await UpgradeAspect({
-//     wasmPath: "../build/guard-by-count.wasm",
-//     aspectId: aspect.aspectAddress,
-//     skFile: "../aspect_accounts.txt",
-//     properties: [{'key': 'owner', 'value': aspect.from}]
-// })
-// console.log("==deploy Aspect Result== ", upgradeResult)
+const upgradeResult= await UpgradeAspect({
+    wasmPath: "../build/guard-by-lock.wasm",
+    aspectId: aspect.aspectAddress,
+    skFile: "../aspect_accounts.txt",
+    properties: [{'key': 'owner', 'value': aspect.from}]
+})
+console.log("==deploy Aspect Result== ", upgradeResult)
 
 
 const bindResult = await BindAspect({

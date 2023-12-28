@@ -72,13 +72,13 @@ console.log("==deploy Aspect Result== ", aspect)
 assert.ok(aspect.aspectAddress, "guard-by-trace Aspect deploy fail");
 
 
-const upgradeResult = await UpgradeAspect({
-    wasmPath: "../build/guard-by-count.wasm",
-    aspectId: aspect.aspectAddress,
-    skFile: "../aspect_accounts.txt",
-    properties: [{'key': 'owner', 'value': honeyPotResult.from}]
-})
-console.log("==Upgrade Aspect Result== ", upgradeResult)
+// const upgradeResult = await UpgradeAspect({
+//     wasmPath: "../build/guard-by-count.wasm",
+//     aspectId: aspect.aspectAddress,
+//     skFile: "../aspect_accounts.txt",
+//     properties: [{'key': 'owner', 'value': honeyPotResult.from}]
+// })
+// console.log("==Upgrade Aspect Result== ", upgradeResult)
 
 
 const bindResult = await BindAspect({

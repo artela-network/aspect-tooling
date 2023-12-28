@@ -244,8 +244,8 @@ class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractC
 
 
     isOwner(sender: Uint8Array): bool {
-        const value = sys.aspect.property.get<Uint8Array>("owner")
-        return !!uint8ArrayToHex(value).includes(uint8ArrayToString(sender));
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
     /**

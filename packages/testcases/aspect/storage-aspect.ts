@@ -8,7 +8,6 @@ import {
     PreTxExecuteInput,
     sys,
     uint8ArrayToHex,
-    uint8ArrayToString
 } from "@artela/aspect-libs";
 
 
@@ -16,8 +15,8 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
 
 
     isOwner(sender: Uint8Array): bool {
-        const value = sys.aspect.property.get<Uint8Array>("owner")
-        return !!uint8ArrayToHex(value).includes(uint8ArrayToString(sender));
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
 
