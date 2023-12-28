@@ -33,6 +33,7 @@ import {Protobuf} from "as-proto/assembly/Protobuf";
         /// statedb hostapi
         ///
         sys.log("call statedb hostapi");
+        //todo
         const balance = sys.hostApi.stateDb.balance(hexToUint8Array("0xE2AF7C239b4F2800a2F742d406628b4fc4b8a0d4"));
         const state = sys.hostApi.stateDb.stateAt(hexToUint8Array("0xE2AF7C239b4F2800a2F742d406628b4fc4b8a0d4"), stringToUint8Array(""));
         const codeHash = sys.hostApi.stateDb.codeHash(hexToUint8Array("0xE2AF7C239b4F2800a2F742d406628b4fc4b8a0d4"));
@@ -80,6 +81,7 @@ import {Protobuf} from "as-proto/assembly/Protobuf";
         ///
         sys.hostApi.util.log("call other calls");
         let ethMessage = new StaticCallRequest();
+        ///todo
         let staticCallresult = sys.hostApi.evmCall.staticCall(ethMessage)
 
         let request = new JitCallBuilder()
