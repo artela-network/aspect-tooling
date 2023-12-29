@@ -7,7 +7,7 @@ import {
     PostTxExecuteInput, PreContractCallInput,
     PreTxExecuteInput, PostContractCallInput,
     sys,
-    uint8ArrayToHex, toUint8Array, uint8ArrayToString,
+    uint8ArrayToHex,
 } from "@artela/aspect-libs";
 
 
@@ -32,9 +32,6 @@ import {
         sys.log("==postTxExecute==" + value)
     }
     preContractCall(ctx: PreContractCallInput): void {
-
-
-        sys.log("|||preContractCall 1")
         const val = sys.aspect.mutableState.get<i32>("state-key");
         let n1 = val.unwrap();
         sys.log("|||preContractCall before value: " + n1.toString());
@@ -43,7 +40,6 @@ import {
         sys.log("|||preContractCall after value: " + n2.toString());
     }
     postContractCall(ctx: PostContractCallInput): void {
-        sys.log("|||postContractCall 1")
         const val = sys.aspect.mutableState.get<i32>("state-key");
         let n1 = val.unwrap();
         sys.log("|||postContractCall before value: " + n1.toString());

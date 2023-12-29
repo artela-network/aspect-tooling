@@ -1,5 +1,4 @@
-import {AString, AUint8Array, uint8ArrayToHex} from '../common';
-import {UtilApi} from "./util-api";
+import {AString, AUint8Array} from '../common';
 
 declare namespace __RuntimeContextApi__ {
   function get(ctxKey: i32): i32;
@@ -24,9 +23,6 @@ export class RuntimeContextApi {
     const ret = __RuntimeContextApi__.get(inPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
-
-    UtilApi.instance().log("|||Context get "+uint8ArrayToHex(bytes.get()))
     return bytes.get();
-
   }
 }

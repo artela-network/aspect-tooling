@@ -4,7 +4,6 @@ import {
     DeployAspect,
     DeployContract,
     SendTx,
-    UpgradeAspect
 } from "./bese-test.js";
 import fs from "fs";
 import assert from "assert";
@@ -58,6 +57,7 @@ const pk = fs.readFileSync("../aspect_accounts.txt", 'utf-8');
 const aspectAccount = web3Node.eth.accounts.privateKeyToAccount(pk.trim());
 web3Node.eth.accounts.wallet.add(aspectAccount.privateKey);
 
+const textEncoder = new TextEncoder();
 const aspect = await DeployAspect({
     wasmPath: "../build/guard-by-trace.wasm",
     skFile: "../aspect_accounts.txt",
@@ -65,7 +65,9 @@ const aspect = await DeployAspect({
     properties: [{'key': 'HoneyPotAddr', 'value': honeyPotResult.contractAddress}, {
         'key': 'binding',
         'value': honeyPotResult.contractAddress,
-    }, {'key': 'owner', 'value': aspectAccount.address}],
+    }, {'key': 'owner', 'value': aspectAccount.address},
+        {'key': 'mytest-key', 'value': textEncoder.encode("test abc ")},
+    ],
 })
 
 console.log("==deploy Aspect Result== ", aspect)

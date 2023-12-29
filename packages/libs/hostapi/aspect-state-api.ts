@@ -26,7 +26,6 @@ export class AspectStateApi {
     const ret = __AspectStateApi__.get(inPtr);
     const bytes = new AUint8Array();
     bytes.load(ret);
-    UtilApi.instance().log("|||lib get "+uint8ArrayToHex(bytes.get()))
     return bytes.get();
   }
 

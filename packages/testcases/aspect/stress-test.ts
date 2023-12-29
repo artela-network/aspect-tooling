@@ -26,7 +26,6 @@ import {Protobuf} from "as-proto/assembly/Protobuf";
         const encodedHex = hexToUint8Array(hexStr);
         const decodedHex =uint8ArrayToHex(encodedHex);
         sys.require(decodedHex != hexStr, "hexToUint8Array or uint8ArrayToHex error");
-        sys.log("---calling aspect PreContractCallCtx");
         // sys.hostApi.util.revert("error message");
 
         ///

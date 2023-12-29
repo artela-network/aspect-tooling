@@ -1,7 +1,6 @@
 import { ErrParseValueFail } from '../errors';
 import { ethereum } from '../abi';
 import { BigInt } from '../wraptypes/bigint';
-import {sys} from "../../package";
 
 export function uint8ArrayToHex(data: Uint8Array, prefix: string = ''): string {
   const hexChars = '0123456789abcdef';
@@ -206,18 +205,16 @@ export function toUint8Array<T>(value: T): Uint8Array {
   if (value instanceof bool) valueBuffer = booleanToUint8Array(<bool>value);
   if (value instanceof BigInt) valueBuffer = (<BigInt>value).toUint8ArrayWithSign();
   if (value instanceof Uint8Array) valueBuffer = value as Uint8Array;
-  if (value instanceof i8) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign(); sys.log("|||i16 "+ <i16>value.toString());}
-  if (value instanceof u8){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();sys.log("|||u16 "+<u16>value.toString());}
-  if (value instanceof i16) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign();sys.log("|||i16 "+<i16>value.toString());}
-  if (value instanceof u16){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();sys.log("|||u16 "+<u16>value.toString());}
+  if (value instanceof i8) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign(); }
+  if (value instanceof u8){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();}
+  if (value instanceof i16) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign();}
+  if (value instanceof u16){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();}
   if (value instanceof i32) {
-    valueBuffer = BigInt.fromInt32(<i32>value).toUint8ArrayWithSign()
-    sys.hostApi.aspectState.set("xxxx",valueBuffer);
-    sys.log("|||i32 "+ value.toString() + uint8ArrayToString(valueBuffer) );
+    valueBuffer = BigInt.fromInt32(<i32>value).toUint8ArrayWithSign();
   }
-  if (value instanceof u32) {valueBuffer = BigInt.fromUInt32(<u32>value).toUint8ArrayWithSign();sys.log("|||u32 "+<u32>value.toString());}
-  if (value instanceof i64){ valueBuffer = BigInt.fromInt64(<i64>value).toUint8ArrayWithSign();sys.log("|||i64 "+<i64>value.toString());}
-  if (value instanceof u64){ valueBuffer = BigInt.fromUInt64(<u64>value).toUint8ArrayWithSign();sys.log("|||u64 "+<u64>value.toString());}
+  if (value instanceof u32) {valueBuffer = BigInt.fromUInt32(<u32>value).toUint8ArrayWithSign();}
+  if (value instanceof i64){ valueBuffer = BigInt.fromInt64(<i64>value).toUint8ArrayWithSign();}
+  if (value instanceof u64){ valueBuffer = BigInt.fromUInt64(<u64>value).toUint8ArrayWithSign();}
 
   if (valueBuffer == null) {
     valueBuffer = new Uint8Array(0);
@@ -229,32 +226,21 @@ export function fromUint8Array<T>(value: Uint8Array): T {
 
   if (isBoolean<T>()) return changetype<T>(value.length > 0 && value[0] > 0);
   if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 1) {
-    sys.log("|||test u8 "+ value.toString())
     return BigInt.fromUint8ArrayWithSign(value).toUInt8() as T;
   }
   if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 1) {
-    sys.log("|||test i8"+ value.toString())
-
     return BigInt.fromUint8ArrayWithSign(value).toInt8() as T;
   }
   if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 2) {
-    sys.log("|||test u16"+ value.toString())
     return BigInt.fromUint8ArrayWithSign(value).toUInt16() as T;
   }
   if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 2) {
-    sys.log("|||test i16"+ value.toString())
-
     return BigInt.fromUint8ArrayWithSign(value).toInt16() as T;
   }
   if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 4) {
-    sys.log("|||test u32"+ value.toString())
     return BigInt.fromUint8ArrayWithSign(value).toUInt32() as T;
   }
   if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 4) {
-    sys.log("|||test i32 "+ value.toString())
-    sys.log("|||test i32  fromUint8Array"+BigInt.fromUint8Array(value).toString())
-    sys.log("|||test i32  toInt32() "+BigInt.fromUint8Array(value).toInt32().toString())
-
     return BigInt.fromUint8ArrayWithSign(value).toInt32() as T;
   }
   if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 8)
@@ -262,11 +248,9 @@ export function fromUint8Array<T>(value: Uint8Array): T {
   if (isInteger<T>() && isSigned<T>() && sizeof<T>() == 8)
     return BigInt.fromUint8ArrayWithSign(value).toInt64() as T;
   if (idof<T>() == idof<Uint8Array>()) {
-    sys.log("||| from Uint8Array"+ value.toString())
     return value as T;
   }
   if (idof<T>() == idof<BigInt>()) {
-    sys.log("||| from BigInt"+ value.toString())
     return changetype<T>(BigInt.fromUint8ArrayWithSign(value));
   }
   if (idof<T>() == idof<string>()) return changetype<T>(uint8ArrayToString(value));
