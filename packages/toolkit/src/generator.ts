@@ -49,8 +49,9 @@ export default class Generator {
             StateChange,
             StateKey,
             StateChangeProperties,
-            TraceCtx,
-            sys
+            stringToUint8Array,
+            arrayCopyPush,
+            uint8ArrayToHex
         } from "@artela/aspect-libs";
     `;
 

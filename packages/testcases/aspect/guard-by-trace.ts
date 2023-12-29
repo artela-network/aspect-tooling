@@ -6,27 +6,36 @@ import {
     entryPoint,
     execute,
     IPostContractCallJP,
-    PostContractCallCtx,
-    sys
+    PostContractCallInput,
+    sys,
+    uint8ArrayToHex,
 } from '@artela/aspect-libs';
 import {HoneyPotState} from './contract/honeypot-storage';
 
 class GuardBTraceAspect implements IPostContractCallJP {
-    isOwner(sender: string): bool {
-        const value = sys.aspect.property.get<string>('owner');
-        return !!value.includes(sender);
+    isOwner(sender: Uint8Array): bool {
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
-    postContractCall(ctx: PostContractCallCtx): void {
+    postContractCall(input: PostContractCallInput): void {
+
+        const mytest = sys.aspect.property.get<string>("mytest-key");
+        sys.require(mytest==="test abc ","failed to get property key.")
+
         // 1.Calculate the eth balance change of DeFi SmartContract(HoneyPot) before and after tx.
-        const sysBalance = new HoneyPotState._balance_(ctx.trace, ctx.currentCall.to);
+        const to = uint8ArrayToHex(input.call!.to);
+        const from = uint8ArrayToHex(input.call!.from);
+        const sysBalance = new HoneyPotState._balance_(to);
         const deltaSys = sysBalance.current()!.sub(sysBalance.original());
 
         // 2.Calculate the financial change of withdrawer in DeFi SmartContract(HoneyPot) before and after tx.
-        const contractState = new HoneyPotState.balances(ctx.trace, ctx.currentCall.to);
+        const contractState = new HoneyPotState.balances(to);
 
         let deltaUser = BigInt.ZERO;
-        const fromState = contractState.get(ctx.currentCall.from);
+
+        const fromState = contractState.get(from);
+
         const current = fromState.current();
         const original = fromState.original();
         if (current && original) {

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthStateChangeIndices {
   static encode(message: EthStateChangeIndices, writer: Writer): void {
@@ -41,4 +41,19 @@ export class EthStateChangeIndices {
   constructor(indices: Array<Uint8Array> = []) {
     this.indices = indices;
   }
+}
+
+export function encodeEthStateChangeIndices(
+  message: EthStateChangeIndices
+): Uint8Array {
+  return Protobuf.encode(message, EthStateChangeIndices.encode);
+}
+
+export function decodeEthStateChangeIndices(
+  buffer: Uint8Array
+): EthStateChangeIndices {
+  return Protobuf.decode<EthStateChangeIndices>(
+    buffer,
+    EthStateChangeIndices.decode
+  );
 }

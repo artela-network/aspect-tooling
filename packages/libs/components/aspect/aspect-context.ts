@@ -1,23 +1,24 @@
-import {ContextKey, ConvertUtil, ErrLoadRuntimeCtxValue} from '../../common';
-import {MutableAspectValue} from './aspect-state-interface';
-import {SetNameSpace, StringData} from '../../proto';
-import {Protobuf} from 'as-proto/assembly';
-import {RuntimeContextApi} from '../../hostapi';
+import { uint8ArrayToHex } from '../../common';
+import { RuntimeContextApi } from '../../hostapi';
+import { Protobuf } from 'as-proto/assembly';
+import { BytesData, UintData } from '../../proto';
 
-const runtimeContext = RuntimeContextApi.instance();
-const utils = new ConvertUtil();
+const runtimeContextApi = RuntimeContextApi.instance();
 
 export class AspectContext {
   private static _instance: AspectContext | null;
 
   private constructor() {}
 
-  public transientStorage<T>(key: string, aspectId: string = ''): TransientStorageValue<T> {
-    return new TransientStorageValue(key, aspectId);
+  public get id(): string {
+    const raw = runtimeContextApi.get('aspect.id');
+    const id = Protobuf.decode<BytesData>(raw, BytesData.decode).data;
+    return uint8ArrayToHex(id);
   }
 
-  get id(): string {
-    return runtimeContext.aspectId();
+  public get version(): u64 {
+    const raw = runtimeContextApi.get('aspect.version');
+    return Protobuf.decode<UintData>(raw, UintData.decode).data;
   }
 
   public static instance(): AspectContext {
@@ -25,45 +26,5 @@ export class AspectContext {
       this._instance = new AspectContext();
     }
     return this._instance!;
-  }
-}
-
-export class TransientStorageValue<T> implements MutableAspectValue<T> {
-  private val: T;
-  private loaded: boolean = false;
-
-  constructor(private readonly key: string, private readonly prefix: string = '') {
-    this.val = utils.fromString<T>('');
-  }
-
-  set<T>(value: T): bool {
-    const dataStr = utils.toString(value);
-    return runtimeContext.set(SetNameSpace.SetAspectContext, this.key, dataStr);
-  }
-
-  reload(): void {
-    let path = ContextKey.tx.context.property(this.key).toString();
-    if (this.prefix.length > 0) {
-      path = path + '^' + this.prefix
-    }
-    const response = runtimeContext.get(path);
-    if (!response.result!.success) {
-      throw ErrLoadRuntimeCtxValue;
-    }
-
-    this.val = utils.fromString<T>(
-      response.data == null
-        ? ''
-        : Protobuf.decode<StringData>(response.data!.value, StringData.decode).data,
-    );
-    this.loaded = true;
-  }
-
-  unwrap(): T {
-    if (!this.loaded) {
-      this.reload();
-    }
-
-    return this.val;
   }
 }

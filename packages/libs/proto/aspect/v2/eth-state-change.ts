@@ -3,12 +3,12 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Writer, Reader } from 'as-proto/assembly';
+import { Protobuf, Reader, Writer } from "as-proto/assembly";
 
 export class EthStateChange {
   static encode(message: EthStateChange, writer: Writer): void {
     writer.uint32(10);
-    writer.string(message.account);
+    writer.bytes(message.account);
 
     writer.uint32(18);
     writer.bytes(message.value);
@@ -25,7 +25,7 @@ export class EthStateChange {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.account = reader.string();
+          message.account = reader.bytes();
           break;
 
         case 2:
@@ -45,13 +45,25 @@ export class EthStateChange {
     return message;
   }
 
-  account: string;
+  account: Uint8Array;
   value: Uint8Array;
   callIndex: u64;
 
-  constructor(account: string = '', value: Uint8Array = new Uint8Array(0), callIndex: u64 = 0) {
+  constructor(
+    account: Uint8Array = new Uint8Array(0),
+    value: Uint8Array = new Uint8Array(0),
+    callIndex: u64 = 0
+  ) {
     this.account = account;
     this.value = value;
     this.callIndex = callIndex;
   }
+}
+
+export function encodeEthStateChange(message: EthStateChange): Uint8Array {
+  return Protobuf.encode(message, EthStateChange.encode);
+}
+
+export function decodeEthStateChange(buffer: Uint8Array): EthStateChange {
+  return Protobuf.decode<EthStateChange>(buffer, EthStateChange.decode);
 }

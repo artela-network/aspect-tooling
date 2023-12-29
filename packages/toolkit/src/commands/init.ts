@@ -13,10 +13,9 @@ import {ContractCallTmpl} from '../tmpl/scripts/contract-call';
 import {ContractSendTmpl} from '../tmpl/scripts/contract-send';
 import {CreateAccountTmpl} from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.50';
-const libVersion = '^0.0.29';
-const web3Version = '^1.9.21';
-const web3UtilVersion = '^1.9.19';
+const toolVersion = '^0.0.51';
+const libVersion = '^0.0.30';
+const web3Version = '^1.9.22';
 
 export default class Init extends Command {
     static description = 'init aspect project in a directory.';
@@ -288,17 +287,17 @@ export default class Init extends Command {
             }
             if (!scripts['contract:build']) {
                 scripts['contract:build'] =
-                    'solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
+                    'solc -o ./build/contract/ --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
                 pkg['scripts'] = scripts;
                 updated = true;
             }
             if (!scripts['build']) {
-                scripts['build'] = 'npm run contract:build && npm run aspect:gen && npm run aspect:build';
+                scripts['build'] = 'npm run contract:build && npm run aspect:build';
                 pkg['scripts'] = scripts;
                 updated = true;
             }
             if (!scripts['aspect:gen']) {
-                scripts['aspect:gen'] = 'aspect-tool generate -i ./build/contract -o ./aspect/contract';
+                scripts['aspect:gen'] = 'aspect-tool generate -i ./build/contract -o ./aspect';
                 pkg['scripts'] = scripts;
                 updated = true;
             }
@@ -331,21 +330,6 @@ export default class Init extends Command {
             }
             if (!dependencies['@artela/web3']) {
                 dependencies['@artela/web3'] = web3Version;
-                pkg['dependencies'] = dependencies;
-                updated = true;
-            }
-            if (!dependencies['@artela/web3-atl']) {
-                dependencies['@artela/web3-atl'] = web3Version;
-                pkg['dependencies'] = dependencies;
-                updated = true;
-            }
-            if (!dependencies['@artela/web3-eth']) {
-                dependencies['@artela/web3-eth'] = web3UtilVersion;
-                pkg['dependencies'] = dependencies;
-                updated = true;
-            }
-            if (!dependencies['@artela/web3-utils']) {
-                dependencies['@artela/web3-utils'] = web3UtilVersion;
                 pkg['dependencies'] = dependencies;
                 updated = true;
             }
@@ -394,9 +378,6 @@ export default class Init extends Command {
                         dependencies: {
                             '@artela/aspect-libs': libVersion,
                             '@artela/web3': web3Version,
-                            '@artela/web3-atl': web3Version,
-                            '@artela/web3-eth': web3UtilVersion,
-                            '@artela/web3-utils': web3UtilVersion,
                             '@assemblyscript/loader': '^0.27.5',
                             'as-proto': '^1.3.0',
                         },

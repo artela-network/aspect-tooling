@@ -16,7 +16,7 @@ console.log("==deploy  Storage Contract Result== ", result)
 
 const aspect = await DeployAspect({
     wasmPath: "../build/storage-aspect.wasm",
-    joinPoints: ["PreTxExecute", "PostTxExecute"],
+    joinPoints: ["PreTxExecute", "PostTxExecute", "PreContractCall", "PostContractCall"],
     properties: [{'key': 'ScheduleTo', 'value': result.contractAddress},
         {'key': 'Broker', 'value': result.from},
         {'key': 'binding', 'value': result.contractAddress},
@@ -39,9 +39,7 @@ const storeVal = await SendTx({
     method: "store",
     args: [100]
 });
-
 console.log("==== storeVal===", storeVal);
-
 
 const callVal = await ContractCall({
     contract: result.contractAddress,

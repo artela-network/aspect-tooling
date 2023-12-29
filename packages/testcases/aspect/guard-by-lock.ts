@@ -6,41 +6,42 @@ import {
     execute,
     IPostContractCallJP,
     IPreContractCallJP,
-    PostContractCallCtx,
-    PreContractCallCtx,
+    PostContractCallInput,
+    PreContractCallInput,
     sys,
+    uint8ArrayToHex, uint8ArrayToString,
 } from '@artela/aspect-libs';
 
 class GuardByCountAspect implements IPostContractCallJP, IPreContractCallJP {
-    isOwner(sender: string): bool {
-        const value = sys.aspect.property.get<string>('owner');
-        return !!value.includes(sender);
+    isOwner(sender: Uint8Array): bool {
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
 
-    _CONTEXT_KEY: string = '{InnerTxToAddr}_LOCK';
-    _NOT_ENTERED: string = '0';
-    _ENTERED: string = '1';
+    readonly _CONTEXT_KEY: string = '{InnerTxToAddr}_LOCK';
+    readonly _NOT_ENTERED: string = '0';
+    readonly _ENTERED: string = '1';
 
-    preContractCall(ctx: PreContractCallCtx): void {
-        const curContract = ctx.currentCall.to.toString();
+    preContractCall(input: PreContractCallInput): void {
+        const curContract = uint8ArrayToHex(input.call!.to);
         const reentKey = this._CONTEXT_KEY.replace('{InnerTxToAddr}', curContract);
 
         // 2.Check if another transaction has already occupied.
-        if (this._ENTERED == ctx.aspect.transientStorage<string>(reentKey).unwrap()) {
+        if (this._ENTERED == sys.aspect.transientStorage.get<string>(reentKey).unwrap()) {
             sys.revert('revert');
         }
         // 3.Set reentrant lock entered.
-        ctx.aspect.transientStorage<string>(reentKey).set<string>(this._ENTERED);
+        sys.aspect.transientStorage.get<string>(reentKey).set<string>(this._ENTERED);
     }
 
-    postContractCall(ctx: PostContractCallCtx): void {
+    postContractCall(input: PostContractCallInput): void {
         // 1.Get reentrant lock key of current contract.
-        const curContract = ctx.currentCall.to.toString();
+        const curContract = uint8ArrayToHex(input.call!.to);
         const reentKey = this._CONTEXT_KEY.replace('{InnerTxToAddr}', curContract);
 
         // 2.Set reentrant lock not entered.
-        ctx.aspect.transientStorage<string>(reentKey).set<string>(this._NOT_ENTERED);
+        sys.aspect.transientStorage.get<string>(reentKey).set<string>(this._NOT_ENTERED);
     }
 
 }

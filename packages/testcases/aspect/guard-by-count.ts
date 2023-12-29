@@ -2,30 +2,36 @@
 // The entry file of your WebAssembly module.
 
 import {
-    PostContractCallCtx,
-    PreContractCallCtx,
-    sys, entryPoint, execute, allocate, IPostContractCallJP, IPreContractCallJP,
+    allocate,
+    entryPoint,
+    execute,
+    IPostContractCallJP,
+    IPreContractCallJP,
+    PostContractCallInput,
+    PreContractCallInput,
+    sys,
+    uint8ArrayToHex, uint8ArrayToString,
 } from '@artela/aspect-libs';
 
 class GuardByCountAspect implements IPostContractCallJP, IPreContractCallJP {
-    isOwner(sender: string): bool {
-        const value = sys.aspect.property.get<string>('owner');
-        return value.includes(sender);
+    isOwner(sender: Uint8Array): bool {
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
 
     CONTEXT_KEY: String = '{InnerTxToAddr}_CALL_COUNT';
 
-    preContractCall(ctx: PreContractCallCtx): void {
-        const contextKey = this.CONTEXT_KEY.replace('{InnerTxToAddr}', ctx.currentCall.to.toString());
-        let callCount = ctx.aspect.transientStorage<u64>(contextKey).unwrap();
-        callCount = callCount + 1;
-        ctx.aspect.transientStorage<u64>(contextKey).set<u64>(callCount);
+    preContractCall(input: PreContractCallInput): void {
+        const contextKey = this.CONTEXT_KEY.replace('{InnerTxToAddr}', uint8ArrayToHex(input.call!.to));
+        const callCount = sys.aspect.transientStorage.get<u64>(contextKey);
+        const count = callCount.unwrap() + 1;
+        callCount.set<u64>(count);
     }
 
-    postContractCall(ctx: PostContractCallCtx): void {
-        const contextKey = this.CONTEXT_KEY.replace('{InnerTxToAddr}', ctx.currentCall.to.toString());
-        const callCount = ctx.aspect.transientStorage<u64>(contextKey).unwrap();
+    postContractCall(input: PostContractCallInput): void {
+        const contextKey = this.CONTEXT_KEY.replace('{InnerTxToAddr}', uint8ArrayToHex(input.call!.to));
+        const callCount = sys.aspect.transientStorage.get<u64>(contextKey).unwrap();
         // If the call count large than 1, mark the transaction as failed.
         if (callCount > 1) {
             sys.revert('multiple inner tx calls');

@@ -1,8 +1,12 @@
-import { ConvertUtil } from '../../helper/convert';
 import { CryptoApi } from '../../../hostapi';
+import {
+  encodeStringUTF8,
+  hexToUint8Array,
+  stringToUint8Array,
+  uint8ArrayToHex,
+} from '../../helper/convert';
 
 const crypto = CryptoApi.instance();
-const utils = new ConvertUtil();
 
 export namespace ethereum {
   export function parseMethodSig(calldata: Uint8Array): string {
@@ -10,11 +14,11 @@ export namespace ethereum {
       return '';
     }
 
-    return utils.uint8ArrayToHex(calldata.slice(0, 4));
+    return uint8ArrayToHex(calldata.slice(0, 4));
   }
 
   export function computeMethodSig(method: string): string {
-    return utils.uint8ArrayToHex(crypto.keccak(utils.stringToUint8Array(method)).slice(0, 4));
+    return uint8ArrayToHex(crypto.keccak(stringToUint8Array(method)).slice(0, 4));
   }
 
   export function abiEncode(method: string, types: Type[]): string {
@@ -160,7 +164,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return utils.hexToUint8Array(this.encodeHex());
+      return hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -215,7 +219,7 @@ export namespace ethereum {
     }
 
     static fromUint8Array(arr: Uint8Array): Bytes {
-      return changetype<Bytes>(this.fromBuffer(arr, new Bytes(arr.length << 1)));
+      return changetype<Bytes>(this.fromBuffer(arr.buffer, new Bytes(arr.length << 1)));
     }
 
     encodeHex(): string {
@@ -223,7 +227,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return utils.hexToUint8Array(this.encodeHex());
+      return hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -247,7 +251,7 @@ export namespace ethereum {
   export class String extends Bytes {
     static fromString(str: string): ethereum.String {
       return changetype<ethereum.String>(
-        this.fromBuffer(utils.encodeStringUTF8(str), new ethereum.String(str.length)),
+        this.fromBuffer(encodeStringUTF8(str), new ethereum.String(str.length)),
       );
     }
 
@@ -257,7 +261,7 @@ export namespace ethereum {
 
     static fromUint8Array(arr: Uint8Array): ethereum.String {
       return changetype<ethereum.String>(
-        this.fromBuffer(arr, new ethereum.String(arr.length << 1)),
+        this.fromBuffer(arr.buffer, new ethereum.String(arr.length << 1)),
       );
     }
 
@@ -302,7 +306,7 @@ export namespace ethereum {
 
     static fromUint8Array(arr: Uint8Array, size: u8 = 32): BytesN {
       assert(size <= 32 && size > 0, 'invalid byte size');
-      return changetype<BytesN>(this.fromBuffer(arr, new BytesN(size)));
+      return changetype<BytesN>(this.fromBuffer(arr.buffer, new BytesN(size)));
     }
 
     public typeName(): string {
@@ -362,7 +366,7 @@ export namespace ethereum {
     }
 
     protected static fromUint8ArrayWithBuffer(arr: Uint8Array, buffer: Number): Number {
-      return changetype<Number>(this.fromBuffer(arr, buffer, true));
+      return changetype<Number>(this.fromBuffer(arr.buffer, buffer, true));
     }
 
     static fromI8(x: i8, bitSize: u16 = 256): Number {
@@ -664,7 +668,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return utils.hexToUint8Array(this.encodeHex());
+      return hexToUint8Array(this.encodeHex());
     }
 
     typeName(): string {
@@ -776,7 +780,7 @@ export namespace ethereum {
     }
 
     encodeUint8Array(): Uint8Array {
-      return utils.hexToUint8Array(this.encodeHex());
+      return hexToUint8Array(this.encodeHex());
     }
   }
 }

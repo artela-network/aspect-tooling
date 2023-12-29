@@ -505,6 +505,7 @@ export async function EntryPoint({
     const pk = fs.readFileSync(skFile, 'utf-8');
     const sender = web3.eth.accounts.privateKeyToAccount(pk.trim());
     web3.eth.accounts.wallet.add(sender.privateKey);
+    const gasPrice = await web3.eth.getGasPrice();
 
     // --contract 0x9999999999999999999999999999999999999999
     if (!aspectId) {
@@ -513,6 +514,22 @@ export async function EntryPoint({
     const aspectInstance = new web3.atl.Aspect(aspectId);
 
     const encodeABI = aspectInstance.operation(operationData).encodeABI();
+
+
+    const tx = {
+        from: sender.address,
+        to: ASPECT_ADDR,
+        data: encodeABI,
+        gasPrice,
+       gas: 900_000
+    }
+
+    const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
+
+    await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+        .on('receipt', receipt => {
+            console.log(receipt);
+        });
 
     return await web3.eth.call({
         to: ASPECT_ADDR, // contract address

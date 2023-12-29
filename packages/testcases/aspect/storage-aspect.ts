@@ -1,36 +1,49 @@
 import {
     allocate,
     entryPoint,
-    execute,
-    IPostTxExecuteJP,
+    execute, IPostContractCallJP,
+    IPostTxExecuteJP, IPreContractCallJP,
     IPreTxExecuteJP,
-    PostTxExecuteCtx,
-    PreTxExecuteCtx,
-    sys
+    PostTxExecuteInput, PreContractCallInput,
+    PreTxExecuteInput, PostContractCallInput,
+    sys,
+    uint8ArrayToHex,
 } from "@artela/aspect-libs";
 
 
-export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
+ class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP,IPostContractCallJP,IPreContractCallJP {
 
 
-    isOwner(sender: string): bool {
-        const value = sys.aspect.property.get<string>("owner")
-        return !!value.includes(sender);
+    isOwner(sender: Uint8Array): bool {
+        const value = sys.aspect.property.get<Uint8Array>("owner");
+        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
 
-    preTxExecute(ctx: PreTxExecuteCtx): void {
+    preTxExecute(input: PreTxExecuteInput): void {
         //for smart contract call
-        ctx.aspect.transientStorage<string>("aspectSetKey").set<string>("HelloWord")
+        sys.aspect.transientStorage.get<string>("aspectSetKey").set<string>("HelloWord")
     }
 
-    postTxExecute(ctx: PostTxExecuteCtx): void {
-        const to = ctx.tx.content.unwrap()!.to;
-        const value = ctx.aspect.transientStorage<string>("contractSetKey", to).unwrap();
+    postTxExecute(input: PostTxExecuteInput): void {
+        const to = uint8ArrayToHex(input.tx!.to);
+        const value = sys.aspect.transientStorage.get<string>("contractSetKey", to).unwrap();
         //when contract setAspectContext this value equals  `HelloAspect`
         sys.log("==postTxExecute==" + value)
     }
-
+    preContractCall(ctx: PreContractCallInput): void {
+        const val = sys.aspect.mutableState.get<i32>("state-key");
+        let n1 = val.unwrap();
+        sys.log("|||preContractCall before value: " + n1.toString());
+        val.set<i32>(n1+10);
+        let n2 = val.unwrap();
+        sys.log("|||preContractCall after value: " + n2.toString());
+    }
+    postContractCall(ctx: PostContractCallInput): void {
+        const val = sys.aspect.mutableState.get<i32>("state-key");
+        let n1 = val.unwrap();
+        sys.log("|||postContractCall before value: " + n1.toString());
+    }
 
 }
 

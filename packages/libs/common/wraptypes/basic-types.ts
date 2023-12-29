@@ -60,7 +60,7 @@ export class AString {
     this.head.store(ptr);
     let bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
-    let encoded = Uint8Array.wrap(String.UTF8.encode(this.body));
+    const encoded = Uint8Array.wrap(String.UTF8.encode(this.body));
     for (let i = 0; i < encoded.length; i++) {
       memory.fill(bodyPtr, encoded[i], 1);
       bodyPtr++;
@@ -218,5 +218,39 @@ export class AI64 {
   constructor(body: i64 = 0) {
     this.body = body;
     this.head = new header(typeIndex.TypeInt64, 8);
+  }
+}
+
+export class AU64 {
+  public set(data: u64): void {
+    this.body = data;
+    this.head.dataLen = 8;
+  }
+
+  public get(): u64 {
+    return this.body;
+  }
+
+  public load(ptr: i32): void {
+    this.head = new header(0, 0);
+    this.head.load(ptr);
+    const bodyPtr = ptr + this.head.len();
+    this.body = i64.load(bodyPtr);
+  }
+
+  public store(): i32 {
+    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    this.head.store(ptr);
+    const bodyPtr = ptr + this.head.len();
+    i64.store(bodyPtr, this.body);
+    return ptr;
+  }
+
+  head: header;
+  body: u64;
+
+  constructor(body: u64 = 0) {
+    this.body = body;
+    this.head = new header(typeIndex.TypeUint64, 8);
   }
 }
