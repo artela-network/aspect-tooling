@@ -25,7 +25,8 @@
     "@artela/web3-eth": "1.9.22",
     "@artela/web3-utils": "1.9.22",
     "@assemblyscript/loader": "^0.27.5",
-    "as-proto": "^1.3.0"
+    "as-proto": "^1.3.0",
+    "bignumber.js": "^9.1.2"
   },
   "devDependencies": {
     "@artela/aspect-tool": "file:../toolkit",
