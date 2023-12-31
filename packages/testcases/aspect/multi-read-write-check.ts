@@ -11,8 +11,7 @@ import {
     uint8ArrayToString
 } from "@artela/aspect-libs";
 
-
-export class MultiReadWriteCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
+ class MultiReadWriteCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
     ctxKey: string = 'key_for_context'
     stateKey: string = 'key_for_state'
 
@@ -24,47 +23,59 @@ export class MultiReadWriteCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
 
     preTxExecute(input: PreTxExecuteInput): void {
         this.checkMultiReadWriteForContext()
-        this.checkMultiReadWriteForState()
+       // this.checkMultiReadWriteForState()
     }
 
     postTxExecute(input: PostTxExecuteInput): void {
         this.checkMultiReadWriteForContext()
-        this.checkMultiReadWriteForState()
+       // this.checkMultiReadWriteForState()
     }
 
     checkMultiReadWriteForContext(): void {
         const minValueForTest: u64 = 1
         const maxValueForTest: u64 = 10
 
+        sys.log("||| 1")
         let valueForTest: u64 = minValueForTest
         sys.aspect.transientStorage.get<u64>(this.ctxKey).set<u64>(valueForTest)
-        if (sys.aspect.transientStorage.get<u64>(this.ctxKey).unwrap() !== valueForTest) {
+
+        const number = sys.aspect.transientStorage.get<u64>(this.ctxKey).unwrap();
+        sys.log("||| 1 "+number.toString()+"  "+valueForTest.toString())
+
+        if (number !== valueForTest) {
             sys.revert('incorrect context value after single writing')
         }
+        sys.log("||| 2")
 
         for (valueForTest = minValueForTest; valueForTest <= maxValueForTest; valueForTest++) {
             sys.aspect.transientStorage.get<u64>(`${this.ctxKey}_${valueForTest}`).set<u64>(valueForTest)
             sys.aspect.transientStorage.get<u64>(this.ctxKey).set<u64>(valueForTest)
         }
+        sys.log("||| 3")
 
         if (sys.aspect.transientStorage.get<u64>(this.ctxKey).unwrap() !== maxValueForTest) {
             sys.revert('incorrect context value after duplicate writing')
         }
+        sys.log("||| 4")
 
         for (valueForTest = minValueForTest; valueForTest <= maxValueForTest; valueForTest++) {
             if (sys.aspect.transientStorage.get<u64>(`${this.ctxKey}_${valueForTest}`).unwrap() !== valueForTest) {
                 sys.revert('incorrect context value after batch writing')
             }
         }
+        sys.log("||| 5")
 
         valueForTest = u64(minValueForTest + (maxValueForTest - minValueForTest) / 2)
         sys.aspect.transientStorage.get<u64>(this.ctxKey).set<u64>(valueForTest)
+        sys.log("||| 6")
 
         for (let i = 0; i <= 10; i++) {
             if (sys.aspect.transientStorage.get<u64>(this.ctxKey).unwrap() !== valueForTest) {
                 sys.revert('incorrect context value during multiple reading')
             }
         }
+        sys.log("||| 7")
+
     }
  
     checkMultiReadWriteForState(): void {

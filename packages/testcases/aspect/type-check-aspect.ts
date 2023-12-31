@@ -14,7 +14,7 @@ import {
 } from "@artela/aspect-libs";
 
 
-export class TypeCheckAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
+ class TypeCheckAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
 
 
     isOwner(sender: Uint8Array): bool {

@@ -28,14 +28,12 @@ export class CrossPhaseState implements IPostTxExecuteJP, IPreTxExecuteJP {
 
     postTxExecute(input: PostTxExecuteInput): void {
         const transientStorageResult = sys.aspect.transientStorage.get<string>(this.keyForTest).unwrap()
-        if (transientStorageResult !== this.valueForTest) {
-            sys.revert('incorrect value from transientStorage')
-        }
+        sys.require(transientStorageResult === this.valueForTest,'incorrect value from transientStorage')
+
 
         const mutableStateResult = sys.aspect.mutableState.get<string>(this.keyForTest).unwrap()
-        if (mutableStateResult !== this.valueForTest) {
-            sys.revert('incorrect value from mutableState')
-        }
+        sys.require(mutableStateResult === this.valueForTest,'incorrect value from mutableState')
+
     }
 }
 

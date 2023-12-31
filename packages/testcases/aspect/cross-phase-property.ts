@@ -13,8 +13,7 @@ import {
     uint8ArrayToString
 } from "@artela/aspect-libs";
 
-
-export class CrossPhaseProperty implements IPostTxExecuteJP, IPreTxExecuteJP, ITransactionVerifier {
+ class CrossPhaseProperty implements IPostTxExecuteJP, IPreTxExecuteJP, ITransactionVerifier {
     propKey: string = "verifyAccount"
     stateKeyPrefix: string = "state_key"
 
