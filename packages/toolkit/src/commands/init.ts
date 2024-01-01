@@ -13,8 +13,8 @@ import {ContractCallTmpl} from '../tmpl/scripts/contract-call';
 import {ContractSendTmpl} from '../tmpl/scripts/contract-send';
 import {CreateAccountTmpl} from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.51';
-const libVersion = '^0.0.30';
+const toolVersion = '^0.0.52';
+const libVersion = '^0.0.31';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
