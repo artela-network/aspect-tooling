@@ -6,7 +6,7 @@ import {
     execute,
     IAspectOperation,
     OperationInput, BigInt,
-    sys, hexToUint8Array, uint8ArrayToString, stringToUint8Array, uint8ArrayToHex
+    sys, hexToUint8Array,  uint8ArrayToHex
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
