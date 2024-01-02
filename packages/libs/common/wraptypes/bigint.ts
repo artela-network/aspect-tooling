@@ -1,4 +1,6 @@
 // multiple precision integer
+import { sys } from '../../package';
+
 export class BigInt {
   private d: Uint32Array; // digits
   private n: i32 = 0; // digits used
@@ -51,13 +53,12 @@ export class BigInt {
   }
 
   static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
-
     const res = new BigInt((bytes.length + <i32>3) / <i32>4, isNegative);
     let digit: u32 = 0;
     let shift: u8 = 0;
 
     for (let i = 0; i < bytes.length; ++i) {
-      digit |= <u32>bytes[i] << shift;
+      digit |= (<u32>bytes[i]) << shift;
       shift += 8;
       if (shift === 32) {
         res.d[res.n++] = digit;
@@ -105,9 +106,8 @@ export class BigInt {
 
   static fromUint8ArrayWithSign(bytes: Uint8Array): BigInt {
     if (bytes.length === 0) {
-      throw new Error('Empty byte array');
+      return BigInt.ZERO;
     }
-
     const isNegative = bytes[0] === 0xff;
     return this.fromUint8Array(bytes.subarray(1), isNegative);
   }
@@ -974,8 +974,8 @@ export class BigInt {
       const y: i32 = nSub1 < i ? nSub1 : i; // min
       const x: i32 = i - y;
       /* this is the number of times the loop will iterate, essentially
-               while (x++ < this.n && y-- >= 0) { ... }
-             */
+                     while (x++ < this.n && y-- >= 0) { ... }
+                   */
       const nSubX: i32 = this.n - x;
       const yAdd1: i32 = y + 1;
       let j: i32 = nSubX < yAdd1 ? nSubX : yAdd1; // min

@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { EthStateChange } from "./eth-state-change";
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
+import { EthStateChange } from './eth-state-change';
 
 export class EthStateChanges {
   static encode(message: EthStateChanges, writer: Writer): void {

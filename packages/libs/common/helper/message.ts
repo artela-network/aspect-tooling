@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
-import { Any } from '../../proto';
 import { Writer } from 'as-proto/assembly/Writer';
+import { Any } from '../../proto';
 import { ABool, AUint8Array } from '../wraptypes/basic-types';
 
 export class MessageUtil {

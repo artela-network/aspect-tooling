@@ -205,16 +205,30 @@ export function toUint8Array<T>(value: T): Uint8Array {
   if (value instanceof bool) valueBuffer = booleanToUint8Array(<bool>value);
   if (value instanceof BigInt) valueBuffer = (<BigInt>value).toUint8ArrayWithSign();
   if (value instanceof Uint8Array) valueBuffer = value as Uint8Array;
-  if (value instanceof i8) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign(); }
-  if (value instanceof u8){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();}
-  if (value instanceof i16) {valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign();}
-  if (value instanceof u16){ valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();}
+  if (value instanceof i8) {
+    valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign();
+  }
+  if (value instanceof u8) {
+    valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();
+  }
+  if (value instanceof i16) {
+    valueBuffer = BigInt.fromInt16(<i16>value).toUint8ArrayWithSign();
+  }
+  if (value instanceof u16) {
+    valueBuffer = BigInt.fromUInt16(<u16>value).toUint8ArrayWithSign();
+  }
   if (value instanceof i32) {
     valueBuffer = BigInt.fromInt32(<i32>value).toUint8ArrayWithSign();
   }
-  if (value instanceof u32) {valueBuffer = BigInt.fromUInt32(<u32>value).toUint8ArrayWithSign();}
-  if (value instanceof i64){ valueBuffer = BigInt.fromInt64(<i64>value).toUint8ArrayWithSign();}
-  if (value instanceof u64){ valueBuffer = BigInt.fromUInt64(<u64>value).toUint8ArrayWithSign();}
+  if (value instanceof u32) {
+    valueBuffer = BigInt.fromUInt32(<u32>value).toUint8ArrayWithSign();
+  }
+  if (value instanceof i64) {
+    valueBuffer = BigInt.fromInt64(<i64>value).toUint8ArrayWithSign();
+  }
+  if (value instanceof u64) {
+    valueBuffer = BigInt.fromUInt64(<u64>value).toUint8ArrayWithSign();
+  }
 
   if (valueBuffer == null) {
     valueBuffer = new Uint8Array(0);
@@ -223,7 +237,6 @@ export function toUint8Array<T>(value: T): Uint8Array {
 }
 
 export function fromUint8Array<T>(value: Uint8Array): T {
-
   if (isBoolean<T>()) return changetype<T>(value.length > 0 && value[0] > 0);
   if (isInteger<T>() && !isSigned<T>() && sizeof<T>() == 1) {
     return BigInt.fromUint8ArrayWithSign(value).toUInt8() as T;

@@ -3,9 +3,9 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { BlockInput } from "./block-input";
-import { PostExecMessageInput } from "./post-exec-message-input";
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
+import { BlockInput } from './block-input';
+import { PostExecMessageInput } from './post-exec-message-input';
 
 export class PostContractCallInput {
   static encode(message: PostContractCallInput, writer: Writer): void {
@@ -53,26 +53,16 @@ export class PostContractCallInput {
   call: PostExecMessageInput | null;
   block: BlockInput | null;
 
-  constructor(
-    call: PostExecMessageInput | null = null,
-    block: BlockInput | null = null
-  ) {
+  constructor(call: PostExecMessageInput | null = null, block: BlockInput | null = null) {
     this.call = call;
     this.block = block;
   }
 }
 
-export function encodePostContractCallInput(
-  message: PostContractCallInput
-): Uint8Array {
+export function encodePostContractCallInput(message: PostContractCallInput): Uint8Array {
   return Protobuf.encode(message, PostContractCallInput.encode);
 }
 
-export function decodePostContractCallInput(
-  buffer: Uint8Array
-): PostContractCallInput {
-  return Protobuf.decode<PostContractCallInput>(
-    buffer,
-    PostContractCallInput.decode
-  );
+export function decodePostContractCallInput(buffer: Uint8Array): PostContractCallInput {
+  return Protobuf.decode<PostContractCallInput>(buffer, PostContractCallInput.decode);
 }

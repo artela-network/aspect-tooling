@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class EthAccessTuple {
   static encode(message: EthAccessTuple, writer: Writer): void {
@@ -46,10 +46,7 @@ export class EthAccessTuple {
   address: Uint8Array;
   storageKeys: Array<Uint8Array>;
 
-  constructor(
-    address: Uint8Array = new Uint8Array(0),
-    storageKeys: Array<Uint8Array> = []
-  ) {
+  constructor(address: Uint8Array = new Uint8Array(0), storageKeys: Array<Uint8Array> = []) {
     this.address = address;
     this.storageKeys = storageKeys;
   }

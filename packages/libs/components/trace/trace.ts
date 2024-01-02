@@ -1,12 +1,12 @@
+import { Protobuf } from 'as-proto/assembly';
+import { hexToUint8Array } from '../../common';
+import { TraceApi } from '../../hostapi';
 import {
   EthStateChange,
   EthStateChangeIndices,
   EthStateChanges,
   StateChangeQuery,
 } from '../../proto';
-import { TraceApi } from '../../hostapi';
-import { hexToUint8Array } from '../../common';
-import { Protobuf } from 'as-proto/assembly';
 
 export class State<T> {
   readonly account: string;

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class StaticCallRequest {
   static encode(message: StaticCallRequest, writer: Writer): void {
@@ -61,7 +61,7 @@ export class StaticCallRequest {
     from: Uint8Array = new Uint8Array(0),
     to: Uint8Array = new Uint8Array(0),
     data: Uint8Array = new Uint8Array(0),
-    gas: u64 = 0
+    gas: u64 = 0,
   ) {
     this.from = from;
     this.to = to;
@@ -70,9 +70,7 @@ export class StaticCallRequest {
   }
 }
 
-export function encodeStaticCallRequest(
-  message: StaticCallRequest
-): Uint8Array {
+export function encodeStaticCallRequest(message: StaticCallRequest): Uint8Array {
   return Protobuf.encode(message, StaticCallRequest.encode);
 }
 
