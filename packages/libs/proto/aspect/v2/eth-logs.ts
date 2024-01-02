@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { EthLog } from "./eth-log";
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
+import { EthLog } from './eth-log';
 
 export class EthLogs {
   static encode(message: EthLogs, writer: Writer): void {

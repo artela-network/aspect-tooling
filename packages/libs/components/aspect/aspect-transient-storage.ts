@@ -1,6 +1,6 @@
 import { fromUint8Array, hexToUint8Array, toUint8Array } from '../../common';
-import { MutableAspectValue } from './aspect-state-interface';
 import { AspectTransientStorageApi } from '../../hostapi';
+import { MutableAspectValue } from './aspect-state-interface';
 
 const transientStorageApi = AspectTransientStorageApi.instance();
 

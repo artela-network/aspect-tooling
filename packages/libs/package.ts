@@ -1,4 +1,11 @@
 import {
+  AspectContext,
+  AspectProperty,
+  ImmutableAspectState,
+  MutableAspectState,
+  TransientStorage,
+} from './components';
+import {
   AspectPropertyApi,
   AspectStateApi,
   AspectTransientStorageApi,
@@ -9,13 +16,6 @@ import {
   TraceApi,
   UtilApi,
 } from './hostapi';
-import {
-  AspectContext,
-  AspectProperty,
-  ImmutableAspectState,
-  MutableAspectState,
-  TransientStorage,
-} from './components';
 
 export namespace sys {
   export function require(condition: bool, message: string = ''): void {

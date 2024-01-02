@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class EthLog {
   static encode(message: EthLog, writer: Writer): void {
@@ -66,7 +66,7 @@ export class EthLog {
     address: Uint8Array = new Uint8Array(0),
     topics: Array<Uint8Array> = [],
     data: Uint8Array = new Uint8Array(0),
-    index: u64 = 0
+    index: u64 = 0,
   ) {
     this.address = address;
     this.topics = topics;

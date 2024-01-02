@@ -1,192 +1,196 @@
 import {
-    allocate, BigInt,
-    entryPoint,
-    execute,
-    IPostContractCallJP,
+  allocate,
+  BigInt,
+  entryPoint,
+  execute,
+  IPostContractCallJP,
+  IPostTxExecuteJP,
+  IPreContractCallJP,
+  IPreTxExecuteJP,
+  ITransactionVerifier,
+  PostContractCallInput,
+  PostTxExecuteInput,
+  PreContractCallInput,
+  PreTxExecuteInput,
+  sys,
+  TxVerifyInput,
+  uint8ArrayToHex,
+} from '@artela/aspect-libs';
+
+class ContextAspect
+  implements
     IPostTxExecuteJP,
-    IPreContractCallJP,
     IPreTxExecuteJP,
-    ITransactionVerifier,
-    PostContractCallInput,
-    PostTxExecuteInput,
-    PreContractCallInput,
-    PreTxExecuteInput,
-    sys,
-    TxVerifyInput,
-    uint8ArrayToHex,
-} from "@artela/aspect-libs";
+    IPostContractCallJP,
+    IPreContractCallJP,
+    ITransactionVerifier
+{
+  verifyTx(input: TxVerifyInput): Uint8Array {
+    const sender = sys.aspect.property.get<Uint8Array>('sender');
+    const contract = sys.aspect.property.get<Uint8Array>('contract');
+    const hashKey = sys.aspect.property.get<Uint8Array>('hashKey');
 
-class ContextAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
-    verifyTx(input: TxVerifyInput): Uint8Array {
-        const sender = sys.aspect.property.get<Uint8Array>("sender");
-        const contract = sys.aspect.property.get<Uint8Array>("contract");
-        const hashKey = sys.aspect.property.get<Uint8Array>("hashKey");
+    const nonce = sys.hostApi.stateDb.nonce(sender);
+    sys.log('|||sate nonce ' + nonce.toString());
+    sys.require(nonce > 0, 'invalid nonce.');
 
-        const nonce = sys.hostApi.stateDb.nonce(sender);
-        sys.log("|||sate nonce " + nonce.toString())
-        sys.require(nonce > 0, "invalid nonce.");
+    const balance = sys.hostApi.stateDb.balance(contract);
+    const bigInt = BigInt.fromUint8Array(balance);
+    sys.log('|||sate balance ' + bigInt.toInt64().toString());
+    sys.require(bigInt.toInt64() == 0, 'invalid balance.');
 
-        const balance = sys.hostApi.stateDb.balance(contract);
-        const bigInt = BigInt.fromUint8Array(balance)
-        sys.log("|||sate balance " + bigInt.toInt64().toString())
-        sys.require(bigInt.toInt64()==0, "invalid balance.");
+    const codeSize = sys.hostApi.stateDb.codeSize(contract);
+    sys.log('|||sate codeSize ' + codeSize.toString());
+    sys.require(codeSize > 0, 'invalid codeSize.');
 
-        const codeSize = sys.hostApi.stateDb.codeSize(contract);
-        sys.log("|||sate codeSize " + codeSize.toString())
-        sys.require(codeSize > 0, "invalid codeSize.");
+    const codeHash = sys.hostApi.stateDb.codeHash(contract);
+    sys.log('|||codeHash ' + uint8ArrayToHex(codeHash));
 
-        const codeHash = sys.hostApi.stateDb.codeHash(contract);
-        sys.log("|||codeHash "+uint8ArrayToHex(codeHash))
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
+    sys.log('|||hasSuicided ' + hasSuicided.toString());
+    sys.require(hasSuicided == false, 'invalid hasSuicided.');
 
-        const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
-        sys.log("|||hasSuicided "+hasSuicided.toString())
-        sys.require(hasSuicided==false,"invalid hasSuicided.");
+    const state = sys.hostApi.stateDb.stateAt(contract, hashKey);
+    sys.log('|||sate stateAt ' + uint8ArrayToHex(state));
 
-        const state = sys.hostApi.stateDb.stateAt(contract,hashKey);
-        sys.log("|||sate stateAt " + uint8ArrayToHex(state))
+    sys.require(state.length > 0, 'failed to get state.');
 
-        sys.require(state.length>0,"failed to get state.");
+    return sender;
+  }
 
-        return sender
-    }
+  isOwner(sender: Uint8Array): bool {
+    const value = sys.aspect.property.get<Uint8Array>('owner');
+    return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
+  }
 
-    isOwner(sender: Uint8Array): bool {
-        const value = sys.aspect.property.get<Uint8Array>("owner");
-        return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
-    }
+  preTxExecute(input: PreTxExecuteInput): void {
+    const sender = sys.aspect.property.get<Uint8Array>('sender');
+    const contract = sys.aspect.property.get<Uint8Array>('contract');
+    const hashKey = sys.aspect.property.get<Uint8Array>('hashKey');
 
-    preTxExecute(input: PreTxExecuteInput): void {
+    const nonce = sys.hostApi.stateDb.nonce(sender);
+    sys.log('|||sate nonce ' + nonce.toString());
+    sys.require(nonce > 0, 'invalid nonce.');
 
-        const sender = sys.aspect.property.get<Uint8Array>("sender");
-        const contract = sys.aspect.property.get<Uint8Array>("contract");
-        const hashKey = sys.aspect.property.get<Uint8Array>("hashKey");
+    const balance = sys.hostApi.stateDb.balance(contract);
+    const bigInt = BigInt.fromUint8Array(balance);
+    sys.log('|||sate balance ' + bigInt.toInt64().toString());
+    sys.require(bigInt.toInt64() == 0, 'invalid balance.');
 
-        const nonce = sys.hostApi.stateDb.nonce(sender);
-        sys.log("|||sate nonce " + nonce.toString())
-        sys.require(nonce > 0, "invalid nonce.");
+    const codeSize = sys.hostApi.stateDb.codeSize(contract);
+    sys.log('|||sate codeSize ' + codeSize.toString());
+    sys.require(codeSize > 0, 'invalid codeSize.');
 
-        const balance = sys.hostApi.stateDb.balance(contract);
-        const bigInt = BigInt.fromUint8Array(balance)
-        sys.log("|||sate balance " + bigInt.toInt64().toString())
-        sys.require(bigInt.toInt64()==0, "invalid balance.");
+    const codeHash = sys.hostApi.stateDb.codeHash(contract);
+    sys.log('|||codeHash ' + uint8ArrayToHex(codeHash));
 
-        const codeSize = sys.hostApi.stateDb.codeSize(contract);
-        sys.log("|||sate codeSize " + codeSize.toString())
-        sys.require(codeSize > 0, "invalid codeSize.");
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
+    sys.log('|||hasSuicided ' + hasSuicided.toString());
+    sys.require(hasSuicided == false, 'invalid hasSuicided.');
 
-        const codeHash = sys.hostApi.stateDb.codeHash(contract);
-        sys.log("|||codeHash "+uint8ArrayToHex(codeHash))
+    const state = sys.hostApi.stateDb.stateAt(contract, hashKey);
+    sys.log('|||sate stateAt ' + uint8ArrayToHex(state));
 
-        const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
-        sys.log("|||hasSuicided "+hasSuicided.toString())
-        sys.require(hasSuicided==false,"invalid hasSuicided.");
+    sys.require(state.length > 0, 'failed to get state.');
+  }
 
-        const state = sys.hostApi.stateDb.stateAt(contract,hashKey);
-        sys.log("|||sate stateAt " + uint8ArrayToHex(state))
+  postTxExecute(input: PostTxExecuteInput): void {
+    const sender = sys.aspect.property.get<Uint8Array>('sender');
+    const contract = sys.aspect.property.get<Uint8Array>('contract');
+    const hashKey = sys.aspect.property.get<Uint8Array>('hashKey');
 
-        sys.require(state.length>0,"failed to get state.");
+    const nonce = sys.hostApi.stateDb.nonce(sender);
+    sys.log('|||sate nonce ' + nonce.toString());
+    sys.require(nonce > 0, 'invalid nonce.');
 
-    }
+    const balance = sys.hostApi.stateDb.balance(contract);
+    const bigInt = BigInt.fromUint8Array(balance);
+    sys.log('|||sate balance ' + bigInt.toInt64().toString());
+    sys.require(bigInt.toInt64() == 0, 'invalid balance.');
 
-    postTxExecute(input: PostTxExecuteInput): void {
-        const sender = sys.aspect.property.get<Uint8Array>("sender");
-        const contract = sys.aspect.property.get<Uint8Array>("contract");
-        const hashKey = sys.aspect.property.get<Uint8Array>("hashKey");
+    const codeSize = sys.hostApi.stateDb.codeSize(contract);
+    sys.log('|||sate codeSize ' + codeSize.toString());
+    sys.require(codeSize > 0, 'invalid codeSize.');
 
-        const nonce = sys.hostApi.stateDb.nonce(sender);
-        sys.log("|||sate nonce " + nonce.toString())
-        sys.require(nonce > 0, "invalid nonce.");
+    const codeHash = sys.hostApi.stateDb.codeHash(contract);
+    sys.log('|||codeHash ' + uint8ArrayToHex(codeHash));
 
-        const balance = sys.hostApi.stateDb.balance(contract);
-        const bigInt = BigInt.fromUint8Array(balance)
-        sys.log("|||sate balance " + bigInt.toInt64().toString())
-        sys.require(bigInt.toInt64()==0, "invalid balance.");
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
+    sys.log('|||hasSuicided ' + hasSuicided.toString());
+    sys.require(hasSuicided == false, 'invalid hasSuicided.');
 
-        const codeSize = sys.hostApi.stateDb.codeSize(contract);
-        sys.log("|||sate codeSize " + codeSize.toString())
-        sys.require(codeSize > 0, "invalid codeSize.");
+    const state = sys.hostApi.stateDb.stateAt(contract, hashKey);
+    sys.log('|||sate stateAt ' + uint8ArrayToHex(state));
 
-        const codeHash = sys.hostApi.stateDb.codeHash(contract);
-        sys.log("|||codeHash "+uint8ArrayToHex(codeHash))
+    sys.require(state.length > 0, 'failed to get state.');
+  }
 
-        const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
-        sys.log("|||hasSuicided "+hasSuicided.toString())
-        sys.require(hasSuicided==false,"invalid hasSuicided.");
+  postContractCall(input: PostContractCallInput): void {
+    const sender = sys.aspect.property.get<Uint8Array>('sender');
+    const contract = sys.aspect.property.get<Uint8Array>('contract');
+    const hashKey = sys.aspect.property.get<Uint8Array>('hashKey');
 
-        const state = sys.hostApi.stateDb.stateAt(contract,hashKey);
-        sys.log("|||sate stateAt " + uint8ArrayToHex(state))
+    const nonce = sys.hostApi.stateDb.nonce(sender);
+    sys.log('|||sate nonce ' + nonce.toString());
+    sys.require(nonce > 0, 'invalid nonce.');
 
-        sys.require(state.length>0,"failed to get state.");
-    }
+    const balance = sys.hostApi.stateDb.balance(contract);
+    const bigInt = BigInt.fromUint8Array(balance);
+    sys.log('|||sate balance ' + bigInt.toInt64().toString());
+    sys.require(bigInt.toInt64() == 0, 'invalid balance.');
 
-    postContractCall(input: PostContractCallInput): void {
-        const sender = sys.aspect.property.get<Uint8Array>("sender");
-        const contract = sys.aspect.property.get<Uint8Array>("contract");
-        const hashKey = sys.aspect.property.get<Uint8Array>("hashKey");
+    const codeSize = sys.hostApi.stateDb.codeSize(contract);
+    sys.log('|||sate codeSize ' + codeSize.toString());
+    sys.require(codeSize > 0, 'invalid codeSize.');
 
-        const nonce = sys.hostApi.stateDb.nonce(sender);
-        sys.log("|||sate nonce " + nonce.toString())
-        sys.require(nonce > 0, "invalid nonce.");
+    const codeHash = sys.hostApi.stateDb.codeHash(contract);
+    sys.log('|||codeHash ' + uint8ArrayToHex(codeHash));
 
-        const balance = sys.hostApi.stateDb.balance(contract);
-        const bigInt = BigInt.fromUint8Array(balance)
-        sys.log("|||sate balance " + bigInt.toInt64().toString())
-        sys.require(bigInt.toInt64()==0, "invalid balance.");
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
+    sys.log('|||hasSuicided ' + hasSuicided.toString());
+    sys.require(hasSuicided == false, 'invalid hasSuicided.');
 
-        const codeSize = sys.hostApi.stateDb.codeSize(contract);
-        sys.log("|||sate codeSize " + codeSize.toString())
-        sys.require(codeSize > 0, "invalid codeSize.");
+    const state = sys.hostApi.stateDb.stateAt(contract, hashKey);
+    sys.log('|||sate stateAt ' + uint8ArrayToHex(state));
 
-        const codeHash = sys.hostApi.stateDb.codeHash(contract);
-        sys.log("|||codeHash "+uint8ArrayToHex(codeHash))
+    sys.require(state.length > 0, 'failed to get state.');
+  }
 
-        const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
-        sys.log("|||hasSuicided "+hasSuicided.toString())
-        sys.require(hasSuicided==false,"invalid hasSuicided.");
+  preContractCall(input: PreContractCallInput): void {
+    const sender = sys.aspect.property.get<Uint8Array>('sender');
+    const contract = sys.aspect.property.get<Uint8Array>('contract');
+    const hashKey = sys.aspect.property.get<Uint8Array>('hashKey');
 
-        const state = sys.hostApi.stateDb.stateAt(contract,hashKey);
-        sys.log("|||sate stateAt " + uint8ArrayToHex(state))
+    const nonce = sys.hostApi.stateDb.nonce(sender);
+    sys.log('|||sate nonce ' + nonce.toString());
+    sys.require(nonce > 0, 'invalid nonce.');
 
-        sys.require(state.length>0,"failed to get state.");
-    }
+    const balance = sys.hostApi.stateDb.balance(contract);
+    const bigInt = BigInt.fromUint8Array(balance);
+    sys.log('|||sate balance ' + bigInt.toInt64().toString());
+    sys.require(bigInt.toInt64() == 0, 'invalid balance.');
 
-    preContractCall(input: PreContractCallInput): void {
-        const sender = sys.aspect.property.get<Uint8Array>("sender");
-        const contract = sys.aspect.property.get<Uint8Array>("contract");
-        const hashKey = sys.aspect.property.get<Uint8Array>("hashKey");
+    const codeSize = sys.hostApi.stateDb.codeSize(contract);
+    sys.log('|||sate codeSize ' + codeSize.toString());
+    sys.require(codeSize > 0, 'invalid codeSize.');
 
-        const nonce = sys.hostApi.stateDb.nonce(sender);
-        sys.log("|||sate nonce " + nonce.toString())
-        sys.require(nonce > 0, "invalid nonce.");
+    const codeHash = sys.hostApi.stateDb.codeHash(contract);
+    sys.log('|||codeHash ' + uint8ArrayToHex(codeHash));
 
-        const balance = sys.hostApi.stateDb.balance(contract);
-        const bigInt = BigInt.fromUint8Array(balance)
-        sys.log("|||sate balance " + bigInt.toInt64().toString())
-        sys.require(bigInt.toInt64()==0, "invalid balance.");
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
+    sys.log('|||hasSuicided ' + hasSuicided.toString());
+    sys.require(hasSuicided == false, 'invalid hasSuicided.');
 
-        const codeSize = sys.hostApi.stateDb.codeSize(contract);
-        sys.log("|||sate codeSize " + codeSize.toString())
-        sys.require(codeSize > 0, "invalid codeSize.");
+    const state = sys.hostApi.stateDb.stateAt(contract, hashKey);
+    sys.log('|||sate stateAt ' + uint8ArrayToHex(state));
 
-        const codeHash = sys.hostApi.stateDb.codeHash(contract);
-        sys.log("|||codeHash "+uint8ArrayToHex(codeHash))
-
-        const hasSuicided = sys.hostApi.stateDb.hasSuicided(contract);
-        sys.log("|||hasSuicided "+hasSuicided.toString())
-        sys.require(hasSuicided==false,"invalid hasSuicided.");
-
-        const state = sys.hostApi.stateDb.stateAt(contract,hashKey);
-        sys.log("|||sate stateAt " + uint8ArrayToHex(state))
-
-        sys.require(state.length>0,"failed to get state.");
-    }
-
-
+    sys.require(state.length > 0, 'failed to get state.');
+  }
 }
 
 // 2.register aspect Instance
-const aspect = new ContextAspect()
-entryPoint.setAspect(aspect)
+const aspect = new ContextAspect();
+entryPoint.setAspect(aspect);
 
 // 3.must export it
-export {execute, allocate}
+export { execute, allocate };

@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class BytesArrayData {
   static encode(message: BytesArrayData, writer: Writer): void {

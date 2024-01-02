@@ -1,4 +1,4 @@
-import {AString, AUint8Array} from '../common';
+import { AString, AUint8Array } from '../common';
 
 declare namespace __RuntimeContextApi__ {
   function get(ctxKey: i32): i32;

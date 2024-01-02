@@ -1,5 +1,5 @@
-import {AString, AUint8Array, uint8ArrayToHex} from '../common';
-import {UtilApi} from "./util-api";
+import { AString, AUint8Array, uint8ArrayToHex } from '../common';
+import { UtilApi } from './util-api';
 
 declare namespace __AspectStateApi__ {
   function get(key: i32): i32;

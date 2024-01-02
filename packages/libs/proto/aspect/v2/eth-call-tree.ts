@@ -3,8 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { EthCallMessage } from "./eth-call-message";
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
+import { EthCallMessage } from './eth-call-message';
 
 export class EthCallTree {
   static encode(message: EthCallTree, writer: Writer): void {
@@ -38,11 +38,7 @@ export class EthCallTree {
           let callsValue: EthCallMessage | null = null;
           let callsHasKey: bool = false;
           let callsHasValue: bool = false;
-          for (
-            const end: usize = reader.ptr + reader.uint32();
-            reader.ptr < end;
-
-          ) {
+          for (const end: usize = reader.ptr + reader.uint32(); reader.ptr < end; ) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
               case 1:
@@ -63,12 +59,7 @@ export class EthCallTree {
               message.calls = new Map<u64, EthCallMessage>();
             }
             const calls = message.calls;
-            if (
-              calls !== null &&
-              callsHasKey &&
-              callsHasValue &&
-              callsValue !== null
-            ) {
+            if (calls !== null && callsHasKey && callsHasValue && callsValue !== null) {
               calls.set(callsKey, callsValue);
             }
           }
