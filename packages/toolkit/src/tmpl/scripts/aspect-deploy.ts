@@ -7,6 +7,8 @@ const argv = require('yargs')
     .string('skfile')
     .string('gas')
     .string('wasm')
+    .string('properties')
+    .array('joinPoints')
     .argv;
 
 async function deploy() {
@@ -41,6 +43,17 @@ async function deploy() {
     web3.eth.accounts.wallet.add(sender.privateKey);
 
 
+    const propertiesJson = argv.properties
+    let properties = []
+    if (propertiesJson && propertiesJson !== 'undefined') {
+        properties = JSON.parse(propertiesJson);
+    }
+    const joinPointsJson = argv.joinPoints
+    let joinPoints = []
+    if (joinPointsJson && joinPointsJson !== 'undefined') {
+        joinPoints =joinPointsJson
+    }
+
     //read wasm code
     let aspectCode = "";
     //  --wasm  ./build/release.wasm
@@ -55,12 +68,12 @@ async function deploy() {
         process.exit(0)
     }
 
-
     // to deploy aspect
     let aspect = new web3.atl.Aspect();
     let deploy = await aspect.deploy({
         data: '0x' + aspectCode,
-        properties: [{'key': 'owner', 'value': sender.address}],
+        properties,
+        joinPoints,
         paymaster: sender.address,
         proof: '0x0',
     });
@@ -84,4 +97,5 @@ async function deploy() {
 }
 
 deploy().then();
+
 `;
