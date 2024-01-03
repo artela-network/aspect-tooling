@@ -1,6 +1,6 @@
+import { Protobuf } from 'as-proto/assembly';
 import { uint8ArrayToHex } from '../../common';
 import { RuntimeContextApi } from '../../hostapi';
-import { Protobuf } from 'as-proto/assembly';
 import { BytesData, UintData } from '../../proto';
 
 const runtimeContextApi = RuntimeContextApi.instance();

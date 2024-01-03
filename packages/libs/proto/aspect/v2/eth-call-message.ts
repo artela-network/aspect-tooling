@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class EthCallMessage {
   static encode(message: EthCallMessage, writer: Writer): void {
@@ -126,10 +126,10 @@ export class EthCallMessage {
     value: Uint8Array = new Uint8Array(0),
     ret: Uint8Array = new Uint8Array(0),
     gasUsed: u64 = 0,
-    error: string = "",
+    error: string = '',
     index: u64 = 0,
     parentIndex: i64 = 0,
-    childrenIndices: Array<u64> = []
+    childrenIndices: Array<u64> = [],
   ) {
     this.from = from;
     this.to = to;

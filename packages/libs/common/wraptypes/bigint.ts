@@ -1,5 +1,4 @@
 // multiple precision integer
-import {sys} from "../../package";
 
 export class BigInt {
     private d: Uint32Array; // digits
@@ -52,21 +51,20 @@ export class BigInt {
         throw new TypeError('Unsupported generic type ' + nameof<T>(val));
     }
 
-    static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+  static fromUint8Array(bytes: Uint8Array, isNegative: boolean = false): BigInt {
+    const res = new BigInt((bytes.length + <i32>3) / <i32>4, isNegative);
+    let digit: u32 = 0;
+    let shift: u8 = 0;
 
-        const res = new BigInt((bytes.length + <i32>3) / <i32>4, isNegative);
-        let digit: u32 = 0;
-        let shift: u8 = 0;
-
-        for (let i = 0; i < bytes.length; ++i) {
-            digit |= <u32>bytes[i] << shift;
-            shift += 8;
-            if (shift === 32) {
-                res.d[res.n++] = digit;
-                digit = 0;
-                shift = 0;
-            }
-        }
+    for (let i = 0; i < bytes.length; ++i) {
+      digit |= (<u32>bytes[i]) << shift;
+      shift += 8;
+      if (shift === 32) {
+        res.d[res.n++] = digit;
+        digit = 0;
+        shift = 0;
+      }
+    }
 
         if (shift > 0) {
             res.d[res.n++] = digit;
@@ -105,13 +103,13 @@ export class BigInt {
         return byteArray;
     }
 
-    static fromUint8ArrayWithSign(bytes: Uint8Array): BigInt {
-        if (bytes.length === 0) {
-            return BigInt.ZERO
-        }
-        const isNegative = bytes[0] === 0xff;
-        return this.fromUint8Array(bytes.subarray(1), isNegative);
+  static fromUint8ArrayWithSign(bytes: Uint8Array): BigInt {
+    if (bytes.length === 0) {
+      return BigInt.ZERO;
     }
+    const isNegative = bytes[0] === 0xff;
+    return this.fromUint8Array(bytes.subarray(1), isNegative);
+  }
 
     static fromString(bigInteger: string, radix: i32 = 10): BigInt {
         if (radix < 2 || radix > 16) {
@@ -966,44 +964,44 @@ export class BigInt {
         const size: i32 = this.n + this.n;
         const res = BigInt.getEmptyResultContainer(size, false, size);
 
-        let u: u64 = 0;
-        for (let i = 0; i < size; i++) {
-            /* clear accumulator */
-            let accum: u64 = 0;
-            /* get offsets into the two BigInts */
-            const nSub1: i32 = this.n - 1;
-            const y: i32 = nSub1 < i ? nSub1 : i; // min
-            const x: i32 = i - y;
-            /* this is the number of times the loop will iterate, essentially
+    let u: u64 = 0;
+    for (let i = 0; i < size; i++) {
+      /* clear accumulator */
+      let accum: u64 = 0;
+      /* get offsets into the two BigInts */
+      const nSub1: i32 = this.n - 1;
+      const y: i32 = nSub1 < i ? nSub1 : i; // min
+      const x: i32 = i - y;
+      /* this is the number of times the loop will iterate, essentially
                      while (x++ < this.n && y-- >= 0) { ... }
                    */
-            const nSubX: i32 = this.n - x;
-            const yAdd1: i32 = y + 1;
-            let j: i32 = nSubX < yAdd1 ? nSubX : yAdd1; // min
-            /* now for squaring x can never equal y
-             * we halve the distance since they approach at a rate of 2*
-             * and we have to round because odd cases need to be executed
-             */
-            const shiftedDiff: i32 = (y - x + 1) >> 1;
-            j = j < shiftedDiff ? j : shiftedDiff;
-            /* execute loop */
-            for (let k = 0; k < j; k++) {
-                accum += <u64>this.d[x + k] * this.d[y - k];
-            }
-            /* double the inner product and add carry */
-            accum = accum + accum + u;
-            /* even columns have the square term in them */
-            if (((<u32>i) & 1) == 0) {
-                accum += <u64>this.d[i >> 1] * this.d[i >> 1];
-            }
-            /* store it */
-            res.d[i] = (<u32>accum) & BigInt.digitMask;
-            /* make next carry */
-            u = accum >> BigInt.p;
-        }
-        res.trimLeadingZeros();
-        return res;
+      const nSubX: i32 = this.n - x;
+      const yAdd1: i32 = y + 1;
+      let j: i32 = nSubX < yAdd1 ? nSubX : yAdd1; // min
+      /* now for squaring x can never equal y
+       * we halve the distance since they approach at a rate of 2*
+       * and we have to round because odd cases need to be executed
+       */
+      const shiftedDiff: i32 = (y - x + 1) >> 1;
+      j = j < shiftedDiff ? j : shiftedDiff;
+      /* execute loop */
+      for (let k = 0; k < j; k++) {
+        accum += <u64>this.d[x + k] * this.d[y - k];
+      }
+      /* double the inner product and add carry */
+      accum = accum + accum + u;
+      /* even columns have the square term in them */
+      if (((<u32>i) & 1) == 0) {
+        accum += <u64>this.d[i >> 1] * this.d[i >> 1];
+      }
+      /* store it */
+      res.d[i] = (<u32>accum) & BigInt.digitMask;
+      /* make next carry */
+      u = accum >> BigInt.p;
     }
+    res.trimLeadingZeros();
+    return res;
+  }
 
     sqrt(): BigInt {
         if (this.isNeg) throw new RangeError('Square root of negative numbers is not supported');

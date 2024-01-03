@@ -1,6 +1,6 @@
+import { Protobuf } from 'as-proto/assembly';
 import { AUint8Array } from '../common';
 import { CallTreeQuery, StateChangeQuery } from '../proto';
-import { Protobuf } from 'as-proto/assembly';
 
 declare namespace __TraceApi__ {
   function queryStateChange(query: i32): i32;

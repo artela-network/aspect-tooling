@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class JitInherentResponse {
   static encode(message: JitInherentResponse, writer: Writer): void {
@@ -75,7 +75,7 @@ export class JitInherentResponse {
     txHash: Uint8Array = new Uint8Array(0),
     success: bool = false,
     ret: Uint8Array = new Uint8Array(0),
-    errorMsg: string = ""
+    errorMsg: string = '',
   ) {
     this.jitInherentHashes = jitInherentHashes;
     this.txHash = txHash;
@@ -85,17 +85,10 @@ export class JitInherentResponse {
   }
 }
 
-export function encodeJitInherentResponse(
-  message: JitInherentResponse
-): Uint8Array {
+export function encodeJitInherentResponse(message: JitInherentResponse): Uint8Array {
   return Protobuf.encode(message, JitInherentResponse.encode);
 }
 
-export function decodeJitInherentResponse(
-  buffer: Uint8Array
-): JitInherentResponse {
-  return Protobuf.decode<JitInherentResponse>(
-    buffer,
-    JitInherentResponse.decode
-  );
+export function decodeJitInherentResponse(buffer: Uint8Array): JitInherentResponse {
+  return Protobuf.decode<JitInherentResponse>(buffer, JitInherentResponse.decode);
 }
