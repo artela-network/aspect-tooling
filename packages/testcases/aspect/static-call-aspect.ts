@@ -1,121 +1,148 @@
 import {
-    allocate,
-    entryPoint,
-    execute, IAspectOperation,
-    IPostContractCallJP,
+  allocate,
+  entryPoint,
+  execute,
+  IAspectOperation,
+  IPostContractCallJP,
+  IPostTxExecuteJP,
+  IPreContractCallJP,
+  IPreTxExecuteJP,
+  ITransactionVerifier,
+  OperationInput,
+  PostContractCallInput,
+  PostTxExecuteInput,
+  PreContractCallInput,
+  PreTxExecuteInput,
+  StaticCallRequest,
+  stringToUint8Array,
+  sys,
+  TxVerifyInput,
+  uint8ArrayToHex,
+} from '@artela/aspect-libs';
+
+class StaticCallAspect
+  implements
     IPostTxExecuteJP,
-    IPreContractCallJP,
     IPreTxExecuteJP,
-    ITransactionVerifier, OperationInput,
-    PostContractCallInput,
-    PostTxExecuteInput,
-    PreContractCallInput,
-    PreTxExecuteInput, StaticCallRequest, stringToUint8Array,
-    sys,
-    TxVerifyInput,
-    uint8ArrayToHex,
-} from "@artela/aspect-libs";
+    IPostContractCallJP,
+    IPreContractCallJP,
+    ITransactionVerifier,
+    IAspectOperation
+{
+  isOwner(sender: Uint8Array): bool {
+    return true;
+  }
 
-class StaticCallAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier,IAspectOperation {
-    isOwner(sender: Uint8Array): bool {
-        return true;
-    }
+  postContractCall(input: PostContractCallInput): void {
+    const from = sys.aspect.property.get<Uint8Array>('from');
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
-    postContractCall(input: PostContractCallInput): void {
-        const from = sys.aspect.property.get<Uint8Array>("from");
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
+    const hex = uint8ArrayToHex(staticCallResult.ret);
+    sys.require(
+      hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
+        staticCallResult.vmError === '',
+      'static error: ' + staticCallResult.vmError,
+    );
 
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
-        const hex = uint8ArrayToHex(staticCallResult.ret);
-        sys.require(hex==="0000000000000000000000000000000000000000000000000000000000000064"&& staticCallResult.vmError==="","static error: "+staticCallResult.vmError)
+    sys.log('||| postContractCall staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
+  }
 
+  postTxExecute(input: PostTxExecuteInput): void {
+    const from = sys.aspect.property.get<Uint8Array>('from');
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
-        sys.log("||| postContractCall staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
-    }
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
+    const hex = uint8ArrayToHex(staticCallResult.ret);
+    sys.require(
+      hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
+        staticCallResult.vmError === '',
+      'static error: ' + staticCallResult.vmError,
+    );
 
-    postTxExecute(input: PostTxExecuteInput): void {
-        const from = sys.aspect.property.get<Uint8Array>("from");
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
+    sys.log('||| postTxExecute staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
+  }
 
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
-        const hex = uint8ArrayToHex(staticCallResult.ret);
-        sys.require(hex==="0000000000000000000000000000000000000000000000000000000000000064"&& staticCallResult.vmError==="","static error: "+staticCallResult.vmError)
+  preContractCall(input: PreContractCallInput): void {
+    const from = sys.aspect.property.get<Uint8Array>('from');
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
-        sys.log("||| postTxExecute staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
-    }
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
-    preContractCall(input: PreContractCallInput): void {
-        const from = sys.aspect.property.get<Uint8Array>("from");
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
+    const hex = uint8ArrayToHex(staticCallResult.ret);
+    sys.require(
+      hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
+        staticCallResult.vmError === '',
+      'static error: ' + staticCallResult.vmError,
+    );
 
+    sys.log('||| preContractCall staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
+  }
 
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
+  preTxExecute(input: PreTxExecuteInput): void {
+    const from = sys.aspect.property.get<Uint8Array>('from');
 
-        const hex = uint8ArrayToHex(staticCallResult.ret);
-        sys.require(hex==="0000000000000000000000000000000000000000000000000000000000000064"&& staticCallResult.vmError==="","static error: "+staticCallResult.vmError)
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
-        sys.log("||| preContractCall staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
-    }
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
+    const hex = uint8ArrayToHex(staticCallResult.ret);
+    sys.require(
+      hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
+        staticCallResult.vmError === '',
+      'static error: ' + staticCallResult.vmError,
+    );
 
-    preTxExecute(input: PreTxExecuteInput): void {
-        const from = sys.aspect.property.get<Uint8Array>("from");
+    sys.log('||| preTxExecute staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
+  }
 
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
+  verifyTx(input: TxVerifyInput): Uint8Array {
+    const from = sys.aspect.property.get<Uint8Array>('from');
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
-        const hex = uint8ArrayToHex(staticCallResult.ret);
-        sys.require(hex==="0000000000000000000000000000000000000000000000000000000000000064"&& staticCallResult.vmError==="","static error: "+staticCallResult.vmError)
+    sys.log('||| verifyTx staticCallResult.ret ' + staticCallResult.ret.toString());
+    sys.log('||| verifyTx staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
 
-        sys.log("||| preTxExecute staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
-    }
+    return stringToUint8Array('ok');
+  }
 
-    verifyTx(input: TxVerifyInput): Uint8Array {
-        const from = sys.aspect.property.get<Uint8Array>("from");
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
+  operation(input: OperationInput): Uint8Array {
+    const from = sys.aspect.property.get<Uint8Array>('from');
+    const to = sys.aspect.property.get<Uint8Array>('to');
+    const data = sys.aspect.property.get<Uint8Array>('data');
 
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
+    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
-        sys.log("||| verifyTx staticCallResult.ret " + staticCallResult.ret.toString())
-        sys.log("||| verifyTx staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
+    const hex = uint8ArrayToHex(staticCallResult.ret);
+    sys.require(
+      hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
+        staticCallResult.vmError === '',
+      'static error: ' + staticCallResult.vmError,
+    );
 
-        return stringToUint8Array("ok");
-    }
+    sys.log('||| verifyTx staticCallResult.gasLeft ' + staticCallResult.gasLeft.toString());
 
-    operation(input: OperationInput): Uint8Array {
-
-        const from = sys.aspect.property.get<Uint8Array>("from");
-        const to = sys.aspect.property.get<Uint8Array>("to");
-        const data = sys.aspect.property.get<Uint8Array>("data");
-
-        const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
-        const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
-
-        const hex = uint8ArrayToHex(staticCallResult.ret);
-        sys.require(hex==="0000000000000000000000000000000000000000000000000000000000000064"&& staticCallResult.vmError==="","static error: "+staticCallResult.vmError)
-
-        sys.log("||| verifyTx staticCallResult.gasLeft " + staticCallResult.gasLeft.toString())
-
-        return stringToUint8Array("ok");
-    }
-
+    return stringToUint8Array('ok');
+  }
 }
 
-
 // 2.register aspect Instance
-const aspect = new StaticCallAspect()
-entryPoint.setAspect(aspect)
-entryPoint.setOperationAspect(aspect)
+const aspect = new StaticCallAspect();
+entryPoint.setAspect(aspect);
+entryPoint.setOperationAspect(aspect);
 
 // 3.must export it
-export {execute, allocate}
+export { allocate, execute };
+

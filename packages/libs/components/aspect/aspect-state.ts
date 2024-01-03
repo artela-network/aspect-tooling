@@ -1,6 +1,6 @@
-import { ImmutableAspectValue, MutableAspectValue } from './aspect-state-interface';
 import { fromUint8Array, toUint8Array } from '../../common';
 import { AspectStateApi } from '../../hostapi';
+import { ImmutableAspectValue, MutableAspectValue } from './aspect-state-interface';
 
 const stateApi = AspectStateApi.instance();
 

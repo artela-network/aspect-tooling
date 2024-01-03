@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { Protobuf, Reader, Writer } from "as-proto/assembly";
+import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class EthStateChange {
   static encode(message: EthStateChange, writer: Writer): void {
@@ -52,7 +52,7 @@ export class EthStateChange {
   constructor(
     account: Uint8Array = new Uint8Array(0),
     value: Uint8Array = new Uint8Array(0),
-    callIndex: u64 = 0
+    callIndex: u64 = 0,
   ) {
     this.account = account;
     this.value = value;
