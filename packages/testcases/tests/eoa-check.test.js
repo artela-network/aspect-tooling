@@ -37,7 +37,7 @@ console.log("==bind Aspect Result== ", bindResult)
 const upgradeResult= await UpgradeAspect({
     wasmPath: "../build/eoa-check.wasm",
     aspectId: aspect.aspectAddress,
-    skFile: "../aspect-account.txt",
+    skFile: "../aspect_accounts.txt",
 })
 console.log("==deploy Aspect Result== ", upgradeResult)
 

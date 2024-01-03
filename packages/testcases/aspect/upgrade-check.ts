@@ -11,7 +11,7 @@ import {
 } from "@artela/aspect-libs";
 
 
-export class UpgradeCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
+class UpgradeCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
     readonly ID_KEY: string = '0'
 
     isOwner(sender: Uint8Array): bool {
