@@ -74,36 +74,45 @@ const bindResult2 = await BindAspect({
 })
 console.log("==bind Aspect Result 2== ", bindResult2)
 
-let permFaultTestSuccess = false
-try {
-    const storeVal2 = await Promise.race([
-        newTimeoutPromise(3000),
-        SendTx({
-            contract: result.contractAddress,
-            abiPath: "../build/contract/Storage.abi",
-            method: "store",
-            args: [100]
-        })
-    ])
-    console.log("==== storeVal 2 ===", storeVal2);
-} catch (err) {
-    permFaultTestSuccess = true
+// let permFaultTestSuccess = false
+const sendTxTest = async () => {
+    try {
+        const storeVal2 = await Promise.race([
+            newTimeoutPromise(3000),
+            SendTx({
+                contract: result.contractAddress,
+                abiPath: "../build/contract/Storage.abi",
+                method: "store",
+                args: [100]
+            })
+        ])
+        console.log("==== storeVal 2 ===", storeVal2);
+        return false
+    } catch (err) {
+        return true
+    }
 }
-assert.ok(permFaultTestSuccess, '[SendTx] Test failed, unauthorized key-value pair was accessed without permission')
+assert.ok(sendTxTest(), `[SendTx] Test failed, unauthorized key-value pair was accessed without permission`)
+console.log('Test for SendTx\'s permission restriction passed!')
 
-permFaultTestSuccess = false
-try {
-    const callVal2 = await Promise.race([
-        ContractCall({
-            contract: result.contractAddress,
-            abiPath: "../build/contract/Storage.abi",
-            method: "retrieve",
-        }),
-        newTimeoutPromise(10000)
-    ])
-    console.log("==== reuslt 2 ===" + callVal2);
-    assert.strictEqual(callVal2, "200", "Contract Call result fail")
-} catch (err) {
-    permFaultTestSuccess = true
+const contractCallTest = async () => {
+    try {
+        const callVal2 = await Promise.race([
+            newTimeoutPromise(3000),
+            ContractCall({
+                contract: result.contractAddress,
+                abiPath: "../build/contract/Storage.abi",
+                method: "retrieve",
+            })
+        ])
+        console.log("==== reuslt 2 ===" + callVal2);
+        assert.strictEqual(callVal2, "200", "Contract Call result fail")
+        return false
+    } catch (err) {
+        return true
+    }
 }
-assert.ok(permFaultTestSuccess, '[ContractCall] Test failed, unauthorized key-value pair was accessed without permission')
+
+assert.ok(contractCallTest(), '[ContractCall] Test failed, unauthorized key-value pair was accessed without permission')
+console.log('Test for ContractCall\'s permission restriction passed!')
+process.exit()
