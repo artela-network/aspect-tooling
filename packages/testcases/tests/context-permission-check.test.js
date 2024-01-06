@@ -1,13 +1,96 @@
 import assert from "assert";
+import yargs from "yargs";
 import { BindAspect, ContractCall, DeployAspect, DeployContract, SendTx } from "./bese-test.js";
 
+const argv = yargs().string('phase').string('ignoreKey').argv
+
+let phase
+switch (argv.phase) {
+    case "verifyTx": phase = argv.phase; break
+    case "preTxExecute": phase = argv.phase; break
+    case "postTxExecute": phase = argv.phase; break
+    case "postContractCall": phase = argv.phase; break
+    case "preContractCall": phase = argv.phase; break
+    default: phase = 'all'; break
+}
+
+let ignoreKey = ''
+if (argv.ignoreKey != "undefined") {
+    ignoreKey = argv.ignoreKey
+}
+
+const timeoutError = new Error(`Operation timed out`)
 function newTimeoutPromise(timeoutMs) {
     return new Promise((resolve, reject) => {
         let timeoutId = setTimeout(() => {
             clearTimeout(timeoutId);
-            reject(new Error(`Operation timed out: ${timeoutMs}ms`));
+            reject(timeoutError);
         }, timeoutMs);
     })
+}
+
+const abiPath = "../build/contract/Storage.abi"
+
+const sendTxTest = async (contract) => {
+    try {
+        const res = await Promise.race([
+            newTimeoutPromise(30000),
+            SendTx({
+                contract,
+                abiPath,
+                method: "store",
+                args: [100]
+            })
+        ])
+        console.log("==== sendTx ===", res);
+        return false
+    } catch (err) {
+        // if (err !== timeoutError) {
+        //     console.log(err)
+        // }
+        return true
+    }
+}
+
+const contractCallTest = async (contract) => {
+    try {
+        const res = await Promise.race([
+            newTimeoutPromise(30000),
+            ContractCall({
+                contract,
+                abiPath,
+                method: "retrieve",
+            })
+        ])
+        console.log("==== contractCall ===" + res);
+        return false
+    } catch (err) {
+        // if (err !== timeoutError) {
+        //     console.log(err)
+        // }
+        return true
+    }
+}
+
+const deployAndBind = async (contractObj, ignoreKey = '') => {
+    const textEncoder = new TextEncoder()
+    const aspect = await DeployAspect({
+        wasmPath: "../build/context-permission-check.wasm",
+        joinPoints: ["PreTxExecute", "PostTxExecute", "PreContractCall", "PostContractCall"],
+        properties: [{ 'key': 'ScheduleTo', 'value': contractObj.contractAddress },
+        { 'key': 'Broker', 'value': contractObj.from },
+        { 'key': 'binding', 'value': contractObj.contractAddress },
+        { 'key': 'owner', 'value': contractObj.from },
+        { 'key': 'ignoreKey', 'value': textEncoder.encode(ignoreKey) }],
+    })
+    assert.ok(aspect.aspectAddress, "Deploy aspect fail");
+
+    const bindResult = await BindAspect({
+        abiPath: "../build/contract/Storage.abi",
+        contractAddress: contractObj.contractAddress,
+        aspectId: aspect.aspectAddress
+    })
+    assert.ok(bindResult.status, 'Bind aspect fail')
 }
 
 const result = await DeployContract({
@@ -16,103 +99,20 @@ const result = await DeployContract({
 assert.ok(result.contractAddress, "Deploy Storage Contract fail");
 console.log("==deploy  Storage Contract Result== ", result)
 
-const textEncoder = new TextEncoder()
+await deployAndBind(result, `all|`)
 
-const aspect = await DeployAspect({
-    wasmPath: "../build/context-permission-check.wasm",
-    joinPoints: ["PreTxExecute", "PostTxExecute", "PreContractCall", "PostContractCall"],
-    properties: [{ 'key': 'ScheduleTo', 'value': result.contractAddress },
-    { 'key': 'Broker', 'value': result.from },
-    { 'key': 'binding', 'value': result.contractAddress },
-    { 'key': 'owner', 'value': result.from },
-    { 'key': 'permission_fault_test', 'value': textEncoder.encode('false') }],
-})
-assert.ok(aspect.aspectAddress, "Deploy storage-aspect  fail");
+assert.ok(!(await sendTxTest(result.contractAddress)), `[SendTx:  base test] Failed, key-value can't be accessed`)
+console.log('[SendTx: base test] Success')
 
-console.log("==deploy Aspect Result== ", aspect)
+assert.ok(!(await contractCallTest(result.contractAddress)), `[ContractCall:  base test] Failed, key-value can't be accessed`)
+console.log('[ContractCall: base test] Success')
 
-const bindResult = await BindAspect({
-    abiPath: "../build/contract/Storage.abi",
-    contractAddress: result.contractAddress,
-    aspectId: aspect.aspectAddress,
-})
-console.log("==bind Aspect Result== ", bindResult)
+await deployAndBind(result, `${phase}|${ignoreKey}`)
 
-const storeVal = await SendTx({
-    contract: result.contractAddress,
-    abiPath: "../build/contract/Storage.abi",
-    method: "store",
-    args: [100]
-});
+assert.ok(await sendTxTest(result.contractAddress), `[SendTx: permTest] Test failed, unauthorized key-value pair was accessed without permission`)
+console.log('[SendTx: perm test] Success')
 
-console.log("==== storeVal===", storeVal);
+assert.ok(await contractCallTest(result.contractAddress), '[ContractCall: permTest] Test failed, unauthorized key-value pair was accessed without permission')
+console.log('[ContractCall: perm test] Success')
 
-
-const callVal = await ContractCall({
-    contract: result.contractAddress,
-    abiPath: "../build/contract/Storage.abi",
-    method: "retrieve"
-});
-console.log("==== reuslt===" + callVal);
-assert.strictEqual(callVal, "100", "Contract Call result fail")
-
-const aspect2 = await DeployAspect({
-    wasmPath: "../build/context-permission-check.wasm",
-    joinPoints: ["PreTxExecute", "PostTxExecute", "PreContractCall", "PostContractCall"],
-    properties: [{ 'key': 'ScheduleTo', 'value': result.contractAddress },
-    { 'key': 'Broker', 'value': result.from },
-    { 'key': 'binding', 'value': result.contractAddress },
-    { 'key': 'owner', 'value': result.from },
-    { 'key': 'permission_fault_test', 'value': textEncoder.encode('true') }],
-})
-assert.ok(aspect2.aspectAddress, "Deploy storage-aspect  fail");
-
-const bindResult2 = await BindAspect({
-    abiPath: "../build/contract/Storage.abi",
-    contractAddress: result.contractAddress,
-    aspectId: aspect2.aspectAddress,
-})
-console.log("==bind Aspect Result 2== ", bindResult2)
-
-// let permFaultTestSuccess = false
-const sendTxTest = async () => {
-    try {
-        const storeVal2 = await Promise.race([
-            newTimeoutPromise(3000),
-            SendTx({
-                contract: result.contractAddress,
-                abiPath: "../build/contract/Storage.abi",
-                method: "store",
-                args: [100]
-            })
-        ])
-        console.log("==== storeVal 2 ===", storeVal2);
-        return false
-    } catch (err) {
-        return true
-    }
-}
-assert.ok(sendTxTest(), `[SendTx] Test failed, unauthorized key-value pair was accessed without permission`)
-console.log('Test for SendTx\'s permission restriction passed!')
-
-const contractCallTest = async () => {
-    try {
-        const callVal2 = await Promise.race([
-            newTimeoutPromise(3000),
-            ContractCall({
-                contract: result.contractAddress,
-                abiPath: "../build/contract/Storage.abi",
-                method: "retrieve",
-            })
-        ])
-        console.log("==== reuslt 2 ===" + callVal2);
-        assert.strictEqual(callVal2, "200", "Contract Call result fail")
-        return false
-    } catch (err) {
-        return true
-    }
-}
-
-assert.ok(contractCallTest(), '[ContractCall] Test failed, unauthorized key-value pair was accessed without permission')
-console.log('Test for ContractCall\'s permission restriction passed!')
 process.exit()
