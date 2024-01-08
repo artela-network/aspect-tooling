@@ -56,7 +56,7 @@ export class AString {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     let bodyPtr = ptr + this.head.len();
     // utf-16 <--> utf8
@@ -100,7 +100,7 @@ export class AUint8Array {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     let bodyPtr = ptr + this.head.len();
     for (let i = 0; i < this.head.dataLen; i++) {
@@ -137,7 +137,7 @@ export class ABool {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     memory.fill(bodyPtr, this.body ? 1 : 0, 1);
@@ -171,7 +171,7 @@ export class AI32 {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i32.store(bodyPtr, this.body);
@@ -205,7 +205,7 @@ export class AI64 {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i64.store(bodyPtr, this.body);
@@ -239,7 +239,7 @@ export class AU64 {
   }
 
   public store(): i32 {
-    const ptr = heap.alloc(this.head.dataLen + this.head.len()) as i32;
+    const ptr = __alloc(this.head.dataLen + this.head.len()) as i32;
     this.head.store(ptr);
     const bodyPtr = ptr + this.head.len();
     i64.store(bodyPtr, this.body);

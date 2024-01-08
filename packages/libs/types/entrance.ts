@@ -7,5 +7,5 @@ export function execute(methodPtr: i32, argPtr: i32): i32 {
 }
 
 export function allocate(size: i32): i32 {
-  return heap.alloc(size) as i32;
+  return __alloc(size) as i32;
 }
