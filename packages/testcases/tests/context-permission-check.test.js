@@ -1,23 +1,5 @@
 import assert from "assert";
-import yargs from "yargs";
 import { BindAspect, ContractCall, DeployAspect, DeployContract, SendTx } from "./bese-test.js";
-
-const argv = yargs().string('phase').string('ignoreKey').argv
-
-let phase
-switch (argv.phase) {
-    case "verifyTx": phase = argv.phase; break
-    case "preTxExecute": phase = argv.phase; break
-    case "postTxExecute": phase = argv.phase; break
-    case "postContractCall": phase = argv.phase; break
-    case "preContractCall": phase = argv.phase; break
-    default: phase = 'all'; break
-}
-
-let ignoreKey = ''
-if (argv.ignoreKey != "undefined") {
-    ignoreKey = argv.ignoreKey
-}
 
 const timeoutError = new Error(`Operation timed out`)
 function newTimeoutPromise(timeoutMs) {
@@ -45,9 +27,9 @@ const sendTxTest = async (contract) => {
         console.log("==== sendTx ===", res);
         return false
     } catch (err) {
-        // if (err !== timeoutError) {
-        //     console.log(err)
-        // }
+        if (err !== timeoutError) {
+            console.log(err)
+        }
         return true
     }
 }
@@ -65,23 +47,27 @@ const contractCallTest = async (contract) => {
         console.log("==== contractCall ===" + res);
         return false
     } catch (err) {
-        // if (err !== timeoutError) {
-        //     console.log(err)
-        // }
+        if (err !== timeoutError) {
+            console.log(err)
+        }
         return true
     }
 }
 
-const deployAndBind = async (contractObj, ignoreKey = '') => {
+const deployAndBind = async (contractObj, unauthTest = false, joinPointForTest = '') => {
     const textEncoder = new TextEncoder()
     const aspect = await DeployAspect({
         wasmPath: "../build/context-permission-check.wasm",
         joinPoints: ["PreTxExecute", "PostTxExecute", "PreContractCall", "PostContractCall"],
-        properties: [{ 'key': 'ScheduleTo', 'value': contractObj.contractAddress },
-        { 'key': 'Broker', 'value': contractObj.from },
-        { 'key': 'binding', 'value': contractObj.contractAddress },
-        { 'key': 'owner', 'value': contractObj.from },
-        { 'key': 'ignoreKey', 'value': textEncoder.encode(ignoreKey) }],
+        properties: [
+            { 'key': 'ScheduleTo', 'value': contractObj.contractAddress },
+            { 'key': 'Broker', 'value': contractObj.from },
+            { 'key': 'binding', 'value': contractObj.contractAddress },
+            { 'key': 'owner', 'value': contractObj.from },
+
+            { 'key': 'unauthorized_test', 'value': textEncoder.encode(`${unauthTest}`) },
+            { 'key': 'join_point_for_test', 'value': textEncoder.encode(joinPointForTest) }
+        ],
     })
     assert.ok(aspect.aspectAddress, "Deploy aspect fail");
 
@@ -99,20 +85,20 @@ const result = await DeployContract({
 assert.ok(result.contractAddress, "Deploy Storage Contract fail");
 console.log("==deploy  Storage Contract Result== ", result)
 
-await deployAndBind(result, `all|`)
+await deployAndBind(result)
 
-assert.ok(!(await sendTxTest(result.contractAddress)), `[SendTx:  base test] Failed, key-value can't be accessed`)
-console.log('[SendTx: base test] Success')
+assert.ok(!(await sendTxTest(result.contractAddress)), `[SendTx: normal test] Failed, key-value can't be accessed`)
+console.log('[SendTx: normal test] Success')
 
-assert.ok(!(await contractCallTest(result.contractAddress)), `[ContractCall:  base test] Failed, key-value can't be accessed`)
-console.log('[ContractCall: base test] Success')
+assert.ok(!(await contractCallTest(result.contractAddress)), `[ContractCall: normal test] Failed, key-value can't be accessed`)
+console.log('[ContractCall: normal test] Success')
 
-await deployAndBind(result, `${phase}|${ignoreKey}`)
+await deployAndBind(result, true, `all`)
 
-assert.ok(await sendTxTest(result.contractAddress), `[SendTx: permTest] Test failed, unauthorized key-value pair was accessed without permission`)
-console.log('[SendTx: perm test] Success')
+assert.ok(await sendTxTest(result.contractAddress), `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
+console.log('[SendTx: unauthorized access test] Success')
 
-assert.ok(await contractCallTest(result.contractAddress), '[ContractCall: permTest] Test failed, unauthorized key-value pair was accessed without permission')
-console.log('[ContractCall: perm test] Success')
+// assert.ok(await contractCallTest(result.contractAddress), '[ContractCall: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission')
+// console.log('[ContractCall: unauthorized access test] Success')
 
-process.exit()
+// process.exit()

@@ -83,7 +83,10 @@ function newCtxKeys(): Map<string, CtxType> {
     ck.set("env.consensusParams.validator.pubKeyTypes", CtxType.StringArrayData)
     ck.set("env.consensusParams.appVersion", CtxType.UintData)
     ck.set("tx.type", CtxType.UintData)
-    // ck.set("tx.chainId", CtxType.UintData)
+    
+    // All join points can't access. 
+    ck.set("tx.chainId", CtxType.UintData)
+    
     ck.set("tx.accessList", CtxType.EthAccessList)
     ck.set("tx.nonce", CtxType.UintData)
     ck.set("tx.gasPrice", CtxType.BytesData)
@@ -123,7 +126,8 @@ function newCtxKeys(): Map<string, CtxType> {
 }
 
 class ContextPermissionCheck implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
-    IGNORE_KEY: string = 'ignoreKey'
+    UNAUTHORIZED_TEST: string = 'unauthorized_test'
+    JOIN_POINT_FOR_TEST: string = 'join_point_for_test'
 
     getFromCtx(valType: CtxType, key: string): string {
         const rawValue = sys.hostApi.runtimeContext.get(key)
@@ -167,31 +171,22 @@ class ContextPermissionCheck implements IPostTxExecuteJP, IPreTxExecuteJP, IPost
         return realValue
     }
 
-    checkCtxPermission(logPrefix: string, excludeList: Array<string>): void {
+    /**
+     * 
+     * @param joinPoint The join point for testing
+     * @param excludeList A list of keys that can't be accessed at the specific join point
+     */
+    checkCtxPermission(joinPoint: string, excludeList: Array<string>): void {
+
+        const unauthTestOrNot: bool = uint8ArrayToString(sys.aspect.property.get<Uint8Array>(this.UNAUTHORIZED_TEST)) == 'true'
+
+        sys.log(`<Permission test: ${joinPoint}> unauth_test=${unauthTestOrNot}`)
+
         const exSet = new Set<string>()
-
-        const rawIgnoreKeyTuple = sys.aspect.property.get<Uint8Array>(this.IGNORE_KEY)
-        const ignoreKeyTuple = uint8ArrayToString(rawIgnoreKeyTuple).split('|')
-
-        let phase: string
-        let ignoreKey: string
-        if (ignoreKeyTuple.length < 2) {
-            phase = 'all'
-            ignoreKey = ''
-        } else {
-            phase = ignoreKeyTuple[0]
-            ignoreKey = ignoreKeyTuple[1]
-        }
-
-        sys.log(`+++++++++++++ ${phase} ++++++ ${ignoreKey} ++++++++++++`)
-        const phaseMatch = phase == 'all' || phase === logPrefix
-        const ignoreAllKeys = ignoreKey === 'all' || ignoreKey == 'undefined'
-
-        for (let i = 0; i < excludeList.length; i++) {
-            if (phaseMatch && (ignoreAllKeys || ignoreKey === excludeList[i])) {
-                continue
+        if (!unauthTestOrNot) {
+            for (let i = 0; i < excludeList.length; i++) {
+                exSet.add(excludeList[i])
             }
-            exSet.add(excludeList[i])
         }
 
         const ctxKeys = newCtxKeys()
@@ -203,9 +198,12 @@ class ContextPermissionCheck implements IPostTxExecuteJP, IPreTxExecuteJP, IPost
             if (exSet.has(key)) {
                 continue
             }
-            sys.log(`${logPrefix} ${key}`)
-            sys.log(`${this.getFromCtx(val, key)}\n-----------`)
+            sys.log(`[Access] ${joinPoint} ${key}`)
+            sys.log(`\t${this.getFromCtx(val, key)}`)
+            sys.log(`\t[Parsed] ${joinPoint} ${key}`)
         }
+
+        sys.log(`</Permission test: ${joinPoint}>`)
     }
 
     /**
@@ -272,7 +270,6 @@ class ContextPermissionCheck implements IPostTxExecuteJP, IPreTxExecuteJP, IPost
         this.checkCtxPermission(
             logPrefix,
             [
-                "aspect.version",
                 "tx.chainId",
                 "msg.from",
                 "msg.to",
@@ -313,7 +310,6 @@ class ContextPermissionCheck implements IPostTxExecuteJP, IPreTxExecuteJP, IPost
                 "msg.result.ret",
                 "msg.result.gasUsed",
                 "msg.result.error",
-                "receipt.bloom",
             ]
         )
     }
