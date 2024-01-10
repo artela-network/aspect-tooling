@@ -35,7 +35,7 @@ console.log("==deploy  Storage Contract Result== ", result)
 
 const textEncoder = new TextEncoder()
 const aspect = await DeployAspect({
-    wasmPath: "../build/upgrade-check.wasm",
+    wasmPath: "../build/upgrade-test-aspect.wasm",
     joinPoints: ["PreTxExecute", "PostTxExecute"],
     properties: [{ 'key': 'ScheduleTo', 'value': result.contractAddress },
     { 'key': 'Broker', 'value': result.from },
@@ -83,3 +83,5 @@ const ver2 = await VersionOf({ aspectId: aspect.aspectAddress })
 
 console.log(`====== Aspect version ====== ${ver2}`)
 assert.ok(parseInt(ver1) + 1 == parseInt(ver2), 'Upgrade Aspect Fail')
+
+console.log('Upgrade test passed!')
