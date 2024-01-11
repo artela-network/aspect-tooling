@@ -26,7 +26,7 @@ This repo is consists of two parts:
 
 - `packages/toolkit`: Toolkit for Aspect development 
 - `packages/libs`: Assembly Script Libraries used for interacting with Host APIs within Aspect Runtime
-- `packages/testcases`:Test cases and usage demonstration for the aspect library.
+- `packages/testcases`: Test cases and usage demonstration for the aspect library.
 
 # Installation
 You can install the package either using [NPM](https://www.npmjs.com/package/@artela/aspect-libs)
