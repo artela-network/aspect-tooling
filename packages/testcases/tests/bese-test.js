@@ -2,11 +2,60 @@
 
 import fs from 'fs';
 import Web3 from '@artela/web3';
+import {LegacyTransaction as EthereumTx} from '@ethereumjs/tx'
+import BigNumber from 'bignumber.js';
 
+// 然后在代码中使用 Transaction 类
 const DefProjectConfig = "../project.config.json";
 const DefPrivateKeyPath = "../privateKey.txt";
 const DefGasLimit = 9_000_000;
 const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
+function bytesToHex(bytes) {
+    return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+}
+function getOriginalV(hexV, chainId_) {
+    const v = new BigNumber(hexV, 16);
+    const chainId = new BigNumber(chainId_);
+    const chainIdMul = chainId.multipliedBy(2);
+
+    const originalV = v.minus(chainIdMul).minus(8);
+
+    const originalVHex = originalV.toString(16);
+
+    return originalVHex;
+}
+
+function rmPrefix(data) {
+    if (data.startsWith('0x')) {
+        return data.substring(2, data.length);
+    } else {
+        return data;
+    }
+}
+function padStart(str, targetLength, padString) {
+    targetLength = Math.max(targetLength, str.length);
+    padString = String(padString || ' ');
+
+    if (str.length >= targetLength) {
+        return str;
+    } else {
+        targetLength = targetLength - str.length;
+        if (targetLength > padString.length) {
+            padString += padString.repeat(targetLength / padString.length);
+        }
+        return padString.slice(0, targetLength) + str;
+    }
+}
+
+function toPaddedHexString(num) {
+    let hex = num.toString(16);
+
+    if (hex.length % 2 !== 0) {
+        hex = '0' + hex;
+    }
+
+    return '0x' + hex;
+}
 
 export function ConnectToANode(nodeConfig = DefProjectConfig) {
 
@@ -426,6 +475,99 @@ export async function ContractCall({
 }
 
 
+export async function SendUnsignedTx({
+                                         nodeConfig = DefProjectConfig,
+                                         contract = "",
+                                         abiPath = "",
+                                         method = "",
+                                         args = [],
+                                         skFile = DefPrivateKeyPath,
+                                         gas = DefGasLimit,
+                                         value = ""
+                                     }) {
+    // init connection to Artela node
+    const web3 = ConnectToANode(nodeConfig);
+
+    const gasPrice = await web3.eth.getGasPrice();
+
+    if (!fs.existsSync(skFile)) {
+        throw new Error("'account' cannot be empty, please set by the parameter ' --skfile ./build/privateKey.txt'")
+    }
+    const pk = fs.readFileSync(skFile, 'utf-8');
+    const sender = web3.eth.accounts.privateKeyToAccount(pk.trim());
+    web3.eth.accounts.wallet.add(sender.privateKey);
+
+    // --contract 0x9999999999999999999999999999999999999999
+    if (!contract) {
+        throw new Error("'contract address' cannot be empty, please set by the parameter ' --contract 0x9999999999999999999999999999999999999999'")
+    }
+
+    // --abi xxx/xxx.abi
+    let abi = null
+    if (abiPath && abiPath !== 'undefined') {
+        abi = JSON.parse(fs.readFileSync(abiPath, "utf-8").toString());
+    } else {
+        throw new Error("'abi' cannot be empty, please set by the parameter abiPath")
+    }
+
+    //--method count
+    if (!method || method === 'undefined') {
+        throw new Error("'method' cannot be empty, please set by the parameter ' --method {method-name}'")
+    }
+    const storageInstance = new web3.eth.Contract(abi, contract);
+
+    const instance = storageInstance.methods[method](...args);
+    const chainId = await web3.eth.getChainId();
+    const nonce = await web3.eth.getTransactionCount(sender.address);
+    const contractCallData = instance.encodeABI();
+
+    const orgTx = {
+        from: sender.address,
+        nonce,
+        gasPrice,
+        gas: 8000000,
+        data: contractCallData,
+        to: contract,
+        chainId,
+        gasLimit: 8000000,
+    }
+    const signedTx = await web3.eth.accounts.signTransaction(orgTx, sender.privateKey);
+
+    const validationData = "0x"
+        + sender.privateKey.slice(2)
+        + padStart(rmPrefix(signedTx.r), 64, "0")
+        + padStart(rmPrefix(signedTx.s), 64, "0")
+        + rmPrefix(getOriginalV(signedTx.v, chainId));
+
+    let encodedData = web3.eth.abi.encodeParameters(['bytes', 'bytes'],
+        [validationData, contractCallData]);
+
+    // new calldata: magic prefix + checksum(encodedData) + encodedData(validation data + raw calldata)
+    // 0xCAFECAFE is a magic prefix,
+    encodedData = '0xCAFECAFE' + web3.utils.keccak256(encodedData).slice(2, 10) + encodedData.slice(2);
+
+
+    const tx = {
+        from: sender.address,
+        to: contract,
+        data: encodedData,
+        nonce:toPaddedHexString(nonce),
+        gasPrice:toPaddedHexString(gasPrice),
+        gas:toPaddedHexString(gas),
+        chainId: toPaddedHexString(chainId),
+        gasLimit: toPaddedHexString(DefGasLimit),
+    }
+
+    if (value !== "") {
+        tx.value = value
+    }
+    const unsignedTx = '0x' + bytesToHex(EthereumTx.fromTxData(tx).serialize());
+    return await web3.eth.sendSignedTransaction(unsignedTx)
+        .on('receipt', receipt => {
+            console.log(receipt);
+        });
+}
+
 export async function SendTx({
                                  nodeConfig = DefProjectConfig,
                                  contract = "",
@@ -515,13 +657,12 @@ export async function EntryPoint({
 
     const encodeABI = aspectInstance.operation(operationData).encodeABI();
 
-
     const tx = {
         from: sender.address,
         to: ASPECT_ADDR,
         data: encodeABI,
         gasPrice,
-       gas: 900_000
+        gas: 900_000
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);

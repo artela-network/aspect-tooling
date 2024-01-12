@@ -23,11 +23,12 @@ import {
     StringData, stringToUint8Array,
     sys,
     TxVerifyInput,
-    uint8ArrayToHex,
+    uint8ArrayToHex, uint8ArrayToString,
     UintData
 } from "@artela/aspect-libs";
 import {Protobuf} from "as-proto/assembly";
 
+// 导入必要的 AssemblyScript 模块
 enum CtxType {
     BoolData,
     BytesData,
@@ -40,44 +41,25 @@ enum CtxType {
     EthLogs,
 }
 
-/**
- *
- * @param allKeys
- * @param keyList
- * @param skipKey
- * @param point
- */
-function checkAllKeys(allKeys: Map<string, CtxType>, keyList: Set<string>, point: string): void {
-    const logPrefix: string = "|||" + point
-    const keys = allKeys.keys()
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i]
-        const has = keyList.has(key)
-        if (has) {
-            // skip hash keys
-            continue
-        }
-        let nextKey = "";
-        if (i + 1 < keys.length) {
-            nextKey = keys[i + 1];
-        }
-        let ctx = "";
-        const val = allKeys.has(key) ? allKeys.get(key) : null // OK
-        if (!val) {
-            continue
-        }
 
-        sys.log(logPrefix + i.toString() + " get key: " + key + ", next key: " + nextKey)
-        ctx = getContext(val, key);
-        sys.log(logPrefix + i.toString() + " get key: " + key + ", result: " + ctx)
-    }
+// ABI 解码函数
+export function decodeStringFromABI(abiData: Uint8Array): string {
+    const inputs = abiData.slice(0, 4);
+    const offsetStr = uint8ArrayToHex(abiData.slice(4, 36));
+    const lengthStr = uint8ArrayToHex(abiData.slice(36, 68));
+    const offset = i32.parse(offsetStr, 16);
+    const length = i32.parse(lengthStr, 16);
+    const data = abiData.slice(68, 68 + length);
+    return String.UTF8.decode(data.buffer, false);
 }
 
-function getContext(valType: CtxType, key: string): string {
+
+function getContext(valType: CtxType, key: string): string|null {
+
     const rawValue = sys.hostApi.runtimeContext.get(key)
     if (!(rawValue && (rawValue.length > 0))) {
         sys.log("||| failed to get '" + key + "'")
-        return ""
+        return null;
     }
     let realValue: string
     switch (valType) {
@@ -209,7 +191,8 @@ function newAllKeys(): Map<string, CtxType> {
     return ck
 }
 
-class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
+
+class ContextPermissionCheck implements IAspectOperation,IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
 
     isOwner(sender: Uint8Array): bool {
         const value = sys.aspect.property.get<Uint8Array>("owner");
@@ -218,23 +201,13 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
 
     operation(input: OperationInput): Uint8Array {
         const logPrefix = "operation";
-        const skipKey = new Set<string>()
-        skipKey.add("msg.from");
-        skipKey.add("msg.to");
-        skipKey.add("msg.value");
-        skipKey.add("msg.gas");
-        skipKey.add("msg.input");
-        skipKey.add("msg.index");
-        skipKey.add("msg.result.ret");
-        skipKey.add("msg.result.gasUsed");
-        skipKey.add("msg.result.error");
-        skipKey.add("receipt.status");
-        skipKey.add("receipt.logs");
-        skipKey.add("receipt.gasUsed");
-        skipKey.add("receipt.cumulativeGasUsed");
-        skipKey.add("receipt.bloom");
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
-        sys.log("||| operation end-------")
+        const key=     uint8ArrayToString(input.callData);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
+        }
         return stringToUint8Array('test');
     }
 
@@ -244,38 +217,19 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
      * @returns
      */
     verifyTx(input: TxVerifyInput): Uint8Array {
-
         const logPrefix = "verifyTx";
-        const skipKey = new Set<string>()
-        skipKey.add("block.header.parentHash");
-        skipKey.add("block.header.miner");
-        skipKey.add("block.header.transactionsRoot");
-        skipKey.add("block.header.timestamp");
-        skipKey.add("tx.chainId");
-        skipKey.add("tx.bytes");
-        skipKey.add("tx.hash");
-
-        skipKey.add("tx.sig.v");
-        skipKey.add("tx.sig.r");
-        skipKey.add("tx.sig.s");
-        skipKey.add("tx.from");
-        skipKey.add("tx.index");
-        skipKey.add("msg.from");
-        skipKey.add("msg.to");
-        skipKey.add("msg.value");
-        skipKey.add("msg.gas");
-        skipKey.add("msg.input");
-        skipKey.add("msg.index");
-        skipKey.add("msg.result.ret");
-        skipKey.add("msg.result.gasUsed");
-        skipKey.add("msg.result.error");
-        skipKey.add("receipt.status");
-        skipKey.add("receipt.logs");
-        skipKey.add("receipt.gasUsed");
-        skipKey.add("receipt.cumulativeGasUsed");
-        skipKey.add("receipt.bloom");
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
-        return input.tx!.to;
+        const txData = sys.hostApi.runtimeContext.get("tx.data")
+        const bytesData = Protobuf.decode<BytesData>(txData, BytesData.decode);
+        const key = decodeStringFromABI(bytesData.data);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            sys.log(logPrefix + " get key: " + key)
+            // here be painc
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
+        }
+        return sys.aspect.property.get<Uint8Array>("Broker");
     }
 
 
@@ -285,24 +239,16 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
      */
     preTxExecute(input: PreTxExecuteInput): void {
         const logPrefix = "preTxExecute";
-        const skipKey = new Set<string>()
-        skipKey.add("msg.from");
-        skipKey.add("msg.to");
-        skipKey.add("msg.value");
-        skipKey.add("msg.gas");
-        skipKey.add("msg.input");
-        skipKey.add("msg.index");
-        skipKey.add("msg.result.ret");
-        skipKey.add("msg.result.gasUsed");
-        skipKey.add("msg.result.error");
-        skipKey.add("receipt.status");
-        skipKey.add("receipt.logs");
-        skipKey.add("receipt.gasUsed");
-        skipKey.add("receipt.cumulativeGasUsed");
-        skipKey.add("receipt.bloom");
+        const txData = sys.hostApi.runtimeContext.get("tx.data")
+        const bytesData = Protobuf.decode<BytesData>(txData, BytesData.decode);
+        const key = decodeStringFromABI(bytesData.data);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
 
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
-
+        }
     }
 
     /**
@@ -312,17 +258,15 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
     postTxExecute(input: PostTxExecuteInput): void {
 
         const logPrefix = "postTxExecute";
-        const skipKey = new Set<string>()
-        skipKey.add("msg.from");
-        skipKey.add("msg.to");
-        skipKey.add("msg.value");
-        skipKey.add("msg.gas");
-        skipKey.add("msg.input");
-        skipKey.add("msg.index");
-        skipKey.add("msg.result.ret");
-        skipKey.add("msg.result.gasUsed");
-        skipKey.add("msg.result.error");
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
+        const txData = sys.hostApi.runtimeContext.get("tx.data")
+        const bytesData = Protobuf.decode<BytesData>(txData, BytesData.decode);
+        const key = decodeStringFromABI(bytesData.data);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
+        }
     }
 
     /**
@@ -331,15 +275,17 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
      */
     postContractCall(input: PostContractCallInput): void {
 
-        const logPrefix = "postContractCall";
-        const skipKey = new Set<string>()
-        skipKey.add("receipt.status");
-        skipKey.add("receipt.logs");
-        skipKey.add("receipt.gasUsed");
-        skipKey.add("receipt.cumulativeGasUsed");
-        skipKey.add("receipt.bloom");
-
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
+        const logPrefix = "postContractCall ";
+        const txData = sys.hostApi.runtimeContext.get("tx.data")
+        const bytesData = Protobuf.decode<BytesData>(txData, BytesData.decode);
+        const key = decodeStringFromABI(bytesData.data);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            sys.log(logPrefix + " get key: " + key)
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
+        }
     }
 
     /**
@@ -348,19 +294,16 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
      */
     preContractCall(input: PreContractCallInput): void {
 
-        const logPrefix = "preContractCall";
-        const skipKey = new Set<string>()
-
-        skipKey.add("msg.result.ret");
-        skipKey.add("msg.result.gasUsed");
-        skipKey.add("msg.result.error");
-        skipKey.add("receipt.status");
-        skipKey.add("receipt.logs");
-        skipKey.add("receipt.gasUsed");
-        skipKey.add("receipt.cumulativeGasUsed");
-        skipKey.add("receipt.bloom");
-
-        checkAllKeys(newAllKeys(), skipKey, logPrefix);
+        const logPrefix = "||| preContractCall ";
+        const txData = sys.hostApi.runtimeContext.get("tx.data")
+        const bytesData = Protobuf.decode<BytesData>(txData, BytesData.decode);
+        const key = decodeStringFromABI(bytesData.data);
+        const allKeys = newAllKeys();
+        const ctxType = allKeys.get(key);
+        if (ctxType) {
+            const context = getContext(ctxType, key);
+            sys.require(context==null,logPrefix+key+" should be null");
+        }
     }
 
 
