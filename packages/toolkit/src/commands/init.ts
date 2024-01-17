@@ -114,7 +114,7 @@ export default class Init extends Command {
         projectConfig,
         JSON.stringify(
           {
-            node: 'https://testnet-rpc1.artela.network',
+            node: 'https://betanet-rpc1.artela.network',
           },
           null,
           2,
