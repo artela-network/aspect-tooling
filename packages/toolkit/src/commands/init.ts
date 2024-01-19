@@ -11,8 +11,8 @@ import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.52';
-const libVersion = '^0.0.31';
+const toolVersion = '^0.0.55';
+const libVersion = '^0.0.32';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
@@ -33,6 +33,7 @@ export default class Init extends Command {
     this.ensureContractDirectory(flags.dir);
     this.ensureTestsDirectory(flags.dir);
     this.ensureAsconfigJson(flags.dir);
+    this.ensureGitIgnore(flags.dir);
     //package.json
     this.ensurePackageJson(flags.dir);
     //readme.md
@@ -114,7 +115,7 @@ export default class Init extends Command {
         projectConfig,
         JSON.stringify(
           {
-            node: 'https://testnet-rpc1.artela.network',
+            node: 'https://betanet-rpc1.artela.network',
           },
           null,
           2,
@@ -123,9 +124,26 @@ export default class Init extends Command {
       this.log('  Created: ' + projectConfig);
     }
   }
+  ensureGitIgnore(rootDir: string) {
+    const tsconfigFile = path.join(rootDir, '.gitignore');
+    const tsconfigBase = 'node_modules\n' +
+        'build\n';
+
+    //  this.log("- Making sure that 'tsconfigs.json' is set up...");
+    if (fs.existsSync(tsconfigFile)) {
+
+    } else {
+      fs.writeFileSync(
+          tsconfigFile,
+          tsconfigBase,
+      );
+      this.log('  Created: ' + tsconfigFile);
+    }
+  }
+
 
   ensureTsconfigJson(rootDir: string) {
-    const tsconfigFile = path.join(rootDir, 'tsconfig.json');
+    const tsconfigFile = path.join(rootDir+"/aspect/", 'tsconfig.json');
     const tsconfigBase = 'assemblyscript/std/assembly.json';
 
     //  this.log("- Making sure that 'tsconfig.json' is set up...");
@@ -140,7 +158,7 @@ export default class Init extends Command {
         JSON.stringify(
           {
             extends: tsconfigBase,
-            include: ['./aspect/**/*.ts'],
+            include: ["./**/*.ts"],
           },
           null,
           2,
@@ -300,7 +318,7 @@ export default class Init extends Command {
       }
       const devDependencies = pkg['devDependencies'] || {};
       if (!devDependencies['assemblyscript']) {
-        devDependencies['assemblyscript'] = '^0.27.5';
+        devDependencies['assemblyscript'] = '^0.27.23';
         pkg['devDependencies'] = devDependencies;
         updated = true;
       }
@@ -375,13 +393,13 @@ export default class Init extends Command {
             dependencies: {
               '@artela/aspect-libs': libVersion,
               '@artela/web3': web3Version,
-              '@assemblyscript/loader': '^0.27.5',
+              '@assemblyscript/loader': '^0.27.23',
               'as-proto': '^1.3.0',
             },
             devDependencies: {
               '@artela/aspect-tool': toolVersion,
               'as-proto-gen': '^1.3.0',
-              assemblyscript: '^0.27.5',
+              assemblyscript: '^0.27.23',
               yargs: '^17.7.2',
             },
             type: 'module',

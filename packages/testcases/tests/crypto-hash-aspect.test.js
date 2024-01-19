@@ -1,4 +1,4 @@
-import {ConnectToANode, DeployAspect, EntryPoint} from "./bese-test.js";
+import { ConnectToANode, DeployAspect, EntryPoint } from "./bese-test.js";
 
 import assert from "assert";
 

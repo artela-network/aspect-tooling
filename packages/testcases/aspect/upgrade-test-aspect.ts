@@ -11,16 +11,14 @@ import {
 } from "@artela/aspect-libs";
 
 
-class UpgradeCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
-    readonly ID_KEY: string = '0'
-
+class UpgradeTestAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
     isOwner(sender: Uint8Array): bool {
         const value = sys.aspect.property.get<Uint8Array>("owner");
         return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
     }
 
     preTxExecute(input: PreTxExecuteInput): void {
-        
+
     }
 
     postTxExecute(input: PostTxExecuteInput): void {
@@ -29,7 +27,7 @@ class UpgradeCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
 }
 
 // 2.register aspect Instance
-const aspect = new UpgradeCheck()
+const aspect = new UpgradeTestAspect()
 entryPoint.setAspect(aspect)
 
 // 3.must export it
