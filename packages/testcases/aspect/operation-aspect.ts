@@ -12,7 +12,7 @@ import {
 
 class AspectTest implements IAspectOperation {
   operation(input: OperationInput): Uint8Array {
-    sys.require(input.callData!.length > 0, 'data is lost');
+    sys.require(input.callData.length > 0, 'data is lost');
     return stringToUint8Array('test');
   }
 }

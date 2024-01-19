@@ -15,7 +15,7 @@ import {
   uint8ArrayToString,
 } from '@artela/aspect-libs';
 
-export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IAspectOperation {
+ class StateAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IAspectOperation {
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');
     return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
@@ -34,7 +34,7 @@ export class StoreAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IAspectOp
 }
 
 // 2.register aspect Instance
-const aspect = new StoreAspect();
+const aspect = new StateAspect();
 entryPoint.setAspect(aspect);
 entryPoint.setOperationAspect(aspect);
 

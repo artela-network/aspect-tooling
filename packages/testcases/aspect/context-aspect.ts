@@ -18,7 +18,7 @@ import {
   PostTxExecuteInput,
   PreContractCallInput,
   PreTxExecuteInput,
-  StringArrayData,
+  StringArrayData, StringData,
   stringToUint8Array,
   sys,
   TxVerifyInput,
@@ -1961,7 +1961,7 @@ class ContextAspect
 
     const txUnHash = sys.hostApi.runtimeContext.get('tx.unsigned.hash');
     const txUnHashData = Protobuf.decode<BytesData>(txUnHash, BytesData.decode);
-    sys.log(logPrefix + ' ' + 'env.chain.berlinBlock' + ' ' + uint8ArrayToHex(txUnHashData.data));
+    sys.log(logPrefix + ' ' + 'tx.unsigned.hash' + ' ' + uint8ArrayToHex(txUnHashData.data));
 
     const sigV = sys.hostApi.runtimeContext.get('tx.sig.v');
     const sigVData = Protobuf.decode<BytesData>(sigV, BytesData.decode);
