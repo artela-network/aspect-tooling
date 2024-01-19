@@ -11,8 +11,8 @@ import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.53';
-const libVersion = '^0.0.31';
+const toolVersion = '^0.0.55';
+const libVersion = '^0.0.32';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
