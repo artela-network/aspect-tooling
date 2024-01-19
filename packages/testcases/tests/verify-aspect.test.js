@@ -59,13 +59,13 @@ const aspectAddrof = await BoundAddressesOf({aspectId: aspect.aspectAddress});
 console.log("==bind BoundAddressesOf Result== ", aspectAddrof)
 
 
-const unbindResult = await UnBindAspect({
-    abiPath: "../build/contract/HoneyPot.abi",
-    contract: honeyPotResult.from,
-    aspectId: aspect.aspectAddress
-})
-console.log("==unbind Aspect Result== ", unbindResult)
-await new Promise(r => setTimeout(r, 5000));
+// const unbindResult = await UnBindAspect({
+//     abiPath: "../build/contract/HoneyPot.abi",
+//     contract: honeyPotResult.from,
+//     aspectId: aspect.aspectAddress
+// })
+// console.log("==unbind Aspect Result== ", unbindResult)
+// await new Promise(r => setTimeout(r, 5000));
 
 const aspectAddr = await BoundAddressesOf({aspectId: aspect.aspectAddress});
 console.log("==get BoundAddressesOf Result== ", aspectAddr)
