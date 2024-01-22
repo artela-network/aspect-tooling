@@ -7,7 +7,7 @@ export {
   IPreContractCallJP,
   IPreTxExecuteJP,
   IAspectBase,
-    AspectBase,
+  AspectBase,
 } from './aspect-interface';
 
 export { entryPoint, execute, allocate } from './entrance';
