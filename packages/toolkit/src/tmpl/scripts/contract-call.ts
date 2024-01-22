@@ -1,4 +1,5 @@
 export const ContractCallTmpl = `
+
 "use strict"
 
 // import required libs
@@ -7,10 +8,13 @@ const Web3 = require('@artela/web3');
 var argv = require('yargs')
     .string('node')
     .string('skfile')
-    .string('args')
+    .array('args')
     .string('contract')
     .string('method')
     .string('abi')
+    .parserConfiguration({
+        "parse-numbers": false,
+    })
     .argv;
 
 
@@ -59,7 +63,7 @@ async function call() {
     const inputs = argv.args;
     let parameters=[];
     if(inputs && inputs!=='undefined') {
-        parameters = JSON.parse(inputs);
+        parameters =inputs;
     }
     //--method count
     const method = argv.method;
@@ -67,11 +71,11 @@ async function call() {
         console.log("'method' cannot be empty, please set by the parameter ' --method {method-name}'")
         process.exit(0)
     }
-
     let storageInstance = new web3.eth.Contract(abi, contractAddr);
     let instance = await storageInstance.methods[method](...parameters).call();
-    console.log("==== reuslt===" + instance);
+    console.log("==== reuslt=== " + instance);
 }
 
 call().then();
+
 `;

@@ -11,8 +11,8 @@ import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
 
-const toolVersion = '^0.0.55';
-const libVersion = '^0.0.32';
+const toolVersion = '^0.0.56';
+const libVersion = '^0.0.33';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
@@ -127,7 +127,8 @@ export default class Init extends Command {
   ensureGitIgnore(rootDir: string) {
     const tsconfigFile = path.join(rootDir, '.gitignore');
     const tsconfigBase = 'node_modules\n' +
-        'build\n';
+        'build\n'+
+        '*.txt\n';
 
     //  this.log("- Making sure that 'tsconfigs.json' is set up...");
     if (fs.existsSync(tsconfigFile)) {

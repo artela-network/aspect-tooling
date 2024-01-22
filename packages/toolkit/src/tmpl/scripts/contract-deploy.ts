@@ -1,4 +1,5 @@
 export const ContractDeployTmpl = `
+
 "use strict"
 
 // import required libs
@@ -10,7 +11,10 @@ var argv = require('yargs')
     .string('bytecode')
     .string('abi')
     .string('gas')
-    .string('args')
+    .array('args')
+    .parserConfiguration({
+        "parse-numbers": false,
+    })
     .argv;
 
 
@@ -49,7 +53,7 @@ async function deploy() {
     // --args [55]
     const inputs = argv.args;
     if (inputs && inputs !== 'undefined') {
-        deployParams.arguments = JSON.parse(inputs)
+        deployParams.arguments = inputs
     }
 
     //--abi ./build/contract/xxx.abi

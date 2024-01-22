@@ -15,6 +15,10 @@ class AspectTest implements IAspectOperation {
     sys.require(input.callData.length > 0, 'data is lost');
     return stringToUint8Array('test');
   }
+
+  isOwner(sender: Uint8Array): bool {
+    return true;
+  }
 }
 
 // 2.register aspect Instance
