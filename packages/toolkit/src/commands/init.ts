@@ -10,6 +10,10 @@ import { ContractCallTmpl } from '../tmpl/scripts/contract-call';
 import { ContractDeployTmpl } from '../tmpl/scripts/contract-deploy';
 import { ContractSendTmpl } from '../tmpl/scripts/contract-send';
 import { CreateAccountTmpl } from '../tmpl/scripts/create-account';
+import { BoundAddressesOfTmpl } from '../tmpl/scripts/get-bound-account';
+import { AspectsOfTmpl } from '../tmpl/scripts/get-bound-aspect';
+import { OperationCallTmpl } from '../tmpl/scripts/operation';
+import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
 const toolVersion = '^0.0.56';
 const libVersion = '^0.0.33';
@@ -235,6 +239,22 @@ export default class Init extends Command {
     if (!fs.existsSync(createAccount)) {
       fs.writeFileSync(createAccount, CreateAccountTmpl);
     }
+    const getBoundAccount = path.join(scriptDir, 'get-bound-account.cjs');
+    if (!fs.existsSync(getBoundAccount)) {
+      fs.writeFileSync(getBoundAccount, BoundAddressesOfTmpl);
+    }
+    const getAspect = path.join(scriptDir, 'get-bound-aspect.cjs');
+    if (!fs.existsSync(getAspect)) {
+      fs.writeFileSync(getAspect, AspectsOfTmpl);
+    }
+    const operation = path.join(scriptDir, 'operation.cjs');
+    if (!fs.existsSync(operation)) {
+      fs.writeFileSync(operation, OperationCallTmpl);
+    }
+    const unbind = path.join(scriptDir, 'unbind.cjs');
+    if (!fs.existsSync(unbind)) {
+      fs.writeFileSync(unbind, UnbindTmpl);
+    }
   }
 
   ensurePackageJson(dir: string) {
@@ -275,6 +295,32 @@ export default class Init extends Command {
         pkg['scripts'] = scripts;
         updated = true;
       }
+      if (!scripts['contract:unbind']) {
+        scripts['contract:unbind'] = 'node scripts/unbind.cjs';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+      if (!scripts['operation:call']) {
+        scripts['operation:call'] = 'node scripts/operation.cjs --isCall true';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+      if (!scripts['operation:send']) {
+        scripts['operation:send'] = 'node scripts/operation.cjs --isCall false';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+      if (!scripts['bound:aspect']) {
+        scripts['bound:aspect'] = 'node scripts/get-bound-aspect.cjs';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+      if (!scripts['bound:account']) {
+        scripts['bound:account'] = 'node scripts/get-bound-account.cjs';
+        pkg['scripts'] = scripts;
+        updated = true;
+      }
+
       if (!scripts['contract:deploy']) {
         scripts['contract:deploy'] = 'node scripts/contract-deploy.cjs';
         pkg['scripts'] = scripts;
@@ -307,6 +353,7 @@ export default class Init extends Command {
         pkg['scripts'] = scripts;
         updated = true;
       }
+
       if (!scripts['build']) {
         scripts['build'] = 'npm run contract:build && npm run aspect:build';
         pkg['scripts'] = scripts;
@@ -317,6 +364,7 @@ export default class Init extends Command {
         pkg['scripts'] = scripts;
         updated = true;
       }
+
       const devDependencies = pkg['devDependencies'] || {};
       if (!devDependencies['assemblyscript']) {
         devDependencies['assemblyscript'] = '^0.27.23';
@@ -382,7 +430,12 @@ export default class Init extends Command {
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./aspect/contract',
               'asbuild:debug': 'asc aspect/index.ts --target debug',
               'asbuild:release': 'asc aspect/index.ts --target release',
+              "operation:call": "node scripts/operation.cjs --isCall true",
+              "operation:send": "node scripts/operation.cjs --isCall false",
+              "bound:aspect": "node scripts/get-bound-aspect.cjs",
+              "bound:account": "node scripts/get-bound-account.cjs",
               'contract:bind': 'node scripts/bind.cjs',
+              "contract:unbind": "node scripts/unbind.cjs",
               'contract:deploy': 'node scripts/contract-deploy.cjs',
               'contract:build':
                 'solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite',
