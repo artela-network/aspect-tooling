@@ -15,7 +15,7 @@ import { AspectsOfTmpl } from '../tmpl/scripts/get-bound-aspect';
 import { OperationCallTmpl } from '../tmpl/scripts/operation';
 import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
-const toolVersion = '^0.0.56';
+const toolVersion = '^0.0.57';
 const libVersion = '^0.0.33';
 const web3Version = '^1.9.22';
 
