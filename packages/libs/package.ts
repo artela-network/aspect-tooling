@@ -15,6 +15,7 @@ import {
   StateDbApi,
   TraceApi,
   UtilApi,
+  BlockchainApi,
 } from './hostapi';
 
 export namespace sys {
@@ -43,6 +44,7 @@ export namespace sys {
     export const aspectTransientStorage = AspectTransientStorageApi.instance();
 
     export const trace = TraceApi.instance();
+    export const blockchain = BlockchainApi.instance();
   }
   export namespace aspect {
     export function id(): string {
