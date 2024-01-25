@@ -1,4 +1,5 @@
 export const ContractSendTmpl = `
+
 "use strict"
 
 // import required libs
@@ -7,11 +8,14 @@ const Web3 = require('@artela/web3');
 var argv = require('yargs')
     .string('node')
     .string('skfile')
-    .string('args')
+    .array('args')
     .string('contract')
     .string('gas')
     .string('method')
     .string('abi')
+    .parserConfiguration({
+        "parse-numbers": false,
+    })
     .argv;
 
 
@@ -58,11 +62,12 @@ async function send() {
         console.log("'abi' cannot be empty, please set by the parameter' --abi xxx/xxx.abi'")
         process.exit(0)
     }
+
     // --args [55]
     const inputs = argv.args;
     let parameters=[];
     if(inputs && inputs!=='undefined') {
-        parameters = JSON.parse(inputs);
+        parameters =inputs;
     }
     //--method count
     const method = argv.method;
@@ -90,4 +95,5 @@ async function send() {
         });
 }
 send().then();
+
 `;

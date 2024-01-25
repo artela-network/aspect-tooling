@@ -64,7 +64,7 @@ export interface IPostTxExecuteJP extends IAspectBase {
   postTxExecute(input: PostTxExecuteInput): void;
 }
 
-export interface IAspectOperation {
+export interface IAspectOperation extends IAspectBase {
   /**
    * operation is used to execute the logics within the Aspect.
    *
@@ -72,6 +72,31 @@ export interface IAspectOperation {
    * @return the data of the operation output.
    */
   operation(input: OperationInput): Uint8Array;
+}
+
+export abstract class AspectBase
+  implements
+    IAspectBase,
+    IAspectOperation,
+    IPostTxExecuteJP,
+    IPreTxExecuteJP,
+    IPreContractCallJP,
+    IPostContractCallJP,
+    ITransactionVerifier
+{
+  abstract isOwner(sender: Uint8Array): bool;
+
+  abstract operation(input: OperationInput): Uint8Array;
+
+  abstract preTxExecute(input: PreTxExecuteInput): void;
+
+  abstract postContractCall(input: PostContractCallInput): void;
+
+  abstract preContractCall(input: PreContractCallInput): void;
+
+  abstract postTxExecute(input: PostTxExecuteInput): void;
+
+  abstract verifyTx(input: TxVerifyInput): Uint8Array;
 }
 
 export class PointCutType {

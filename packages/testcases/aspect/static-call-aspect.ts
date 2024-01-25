@@ -17,18 +17,17 @@ import {
   stringToUint8Array,
   sys,
   TxVerifyInput,
-  uint8ArrayToHex,
+  uint8ArrayToHex
 } from '@artela/aspect-libs';
 
 class StaticCallAspect
   implements
-    IPostTxExecuteJP,
-    IPreTxExecuteJP,
-    IPostContractCallJP,
-    IPreContractCallJP,
-    ITransactionVerifier,
-    IAspectOperation
-{
+  IPostTxExecuteJP,
+  IPreTxExecuteJP,
+  IPostContractCallJP,
+  IPreContractCallJP,
+  ITransactionVerifier,
+  IAspectOperation {
   isOwner(sender: Uint8Array): bool {
     return true;
   }
@@ -43,7 +42,7 @@ class StaticCallAspect
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
       hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
-        staticCallResult.vmError === '',
+      staticCallResult.vmError === '',
       'static error: ' + staticCallResult.vmError,
     );
 
@@ -60,7 +59,7 @@ class StaticCallAspect
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
       hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
-        staticCallResult.vmError === '',
+      staticCallResult.vmError === '',
       'static error: ' + staticCallResult.vmError,
     );
 
@@ -78,7 +77,7 @@ class StaticCallAspect
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
       hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
-        staticCallResult.vmError === '',
+      staticCallResult.vmError === '',
       'static error: ' + staticCallResult.vmError,
     );
 
@@ -96,7 +95,7 @@ class StaticCallAspect
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
       hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
-        staticCallResult.vmError === '',
+      staticCallResult.vmError === '',
       'static error: ' + staticCallResult.vmError,
     );
 
@@ -128,7 +127,7 @@ class StaticCallAspect
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
       hex === '0000000000000000000000000000000000000000000000000000000000000064' &&
-        staticCallResult.vmError === '',
+      staticCallResult.vmError === '',
       'static error: ' + staticCallResult.vmError,
     );
 
@@ -144,4 +143,5 @@ entryPoint.setAspect(aspect);
 entryPoint.setOperationAspect(aspect);
 
 // 3.must export it
-export { execute, allocate };
+export { allocate, execute };
+
