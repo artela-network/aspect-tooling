@@ -55,7 +55,7 @@ process_dir() {
 
 rm -rf ./proto/aspect
 
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-core/proto/message --as_out=./proto aspect/v2/host_api.proto
-protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../aspect-core/proto/message --as_out=./proto aspect/v2/joinpoint_input.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../../aspect-core/proto/message --as_opt=gen-helper-methods --as_out=./proto aspect/v2/host_api.proto
+protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --proto_path=../../../aspect-core/proto/message --as_opt=gen-helper-methods --as_out=./proto aspect/v2/joinpoint_input.proto
 
 process_dir ./proto/

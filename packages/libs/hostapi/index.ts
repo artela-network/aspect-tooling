@@ -7,3 +7,4 @@ export * from './evm-call-api';
 export * from './runtime-api';
 export * from './statedb-api';
 export * from './util-api';
+export * from './blockchain-api'
