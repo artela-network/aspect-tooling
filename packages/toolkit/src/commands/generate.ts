@@ -65,12 +65,20 @@ export default class Generate extends Command {
         this.log('Illegal input!');
         process.exit(0);
       } else {
+        const parentFolderPath = path.dirname(targetFilePath);
+        if (!fs.existsSync(parentFolderPath)) {
+          fs.mkdirSync(parentFolderPath, { recursive: true });
+        }
         inputAndOutputs.push([sourceFilePath, targetFilePath]);
       }
     } else if (
       fs.statSync(sourceFilePath).isDirectory() &&
-      fs.statSync(targetFilePath).isDirectory()
+      (!fs.existsSync(targetFilePath) || fs.statSync(targetFilePath).isDirectory())
     ) {
+      if (!fs.existsSync(targetFilePath)) {
+        fs.mkdirSync(targetFilePath, { recursive: true });
+      }
+
       for (const file of fs.readdirSync(sourceFilePath)) {
         if (!file.endsWith('_storage.json')) {
           continue;
