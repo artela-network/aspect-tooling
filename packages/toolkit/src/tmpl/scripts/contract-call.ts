@@ -61,10 +61,18 @@ async function call() {
     }
     // --args [55]
     const inputs = argv.args;
-    let parameters=[];
-    if(inputs && inputs!=='undefined') {
-        parameters =inputs;
+    let parameters = [];
+    if (inputs && inputs !== 'undefined') {
+        for (let i = 0; i < inputs.length; i++) {
+            const input = inputs[i].trim();
+            if (input.startsWith('[') || input.startsWith('{')) {
+                parameters.push(JSON.parse(input));
+            } else {
+                parameters.push(input);
+            }
+        }
     }
+    
     //--method count
     const method = argv.method;
     if(!method || method==='undefined') {
