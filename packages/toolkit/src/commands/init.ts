@@ -15,7 +15,9 @@ import { AspectsOfTmpl } from '../tmpl/scripts/get-bound-aspect';
 import { OperationCallTmpl } from '../tmpl/scripts/operation';
 import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
-const toolVersion = '^0.0.57';
+const isWinOS = /^win/i.test(process.platform);
+
+const toolVersion = '^0.0.58';
 const libVersion = '^0.0.33';
 const web3Version = '^1.9.22';
 
@@ -49,6 +51,14 @@ export default class Init extends Command {
     const readmePath = path.join(dir, 'README.md');
     if (!fs.existsSync(readmePath)) {
       fs.writeFileSync(readmePath, ReadMeTmpl);
+    }
+  }
+
+  warpOsPath(dir: string) {
+    if (isWinOS) {
+      return dir.replace(/\\/g, '/');
+    } else {
+      return dir;
     }
   }
 
@@ -128,27 +138,21 @@ export default class Init extends Command {
       this.log('  Created: ' + projectConfig);
     }
   }
+
   ensureGitIgnore(rootDir: string) {
     const tsconfigFile = path.join(rootDir, '.gitignore');
-    const tsconfigBase = 'node_modules\n' +
-        'build\n'+
-        '*.txt\n';
+    const tsconfigBase = 'node_modules\n' + 'build\n' + '*.txt\n';
 
     //  this.log("- Making sure that 'tsconfigs.json' is set up...");
     if (fs.existsSync(tsconfigFile)) {
-
     } else {
-      fs.writeFileSync(
-          tsconfigFile,
-          tsconfigBase,
-      );
+      fs.writeFileSync(tsconfigFile, tsconfigBase);
       this.log('  Created: ' + tsconfigFile);
     }
   }
 
-
   ensureTsconfigJson(rootDir: string) {
-    const tsconfigFile = path.join(rootDir+"/aspect/", 'tsconfig.json');
+    const tsconfigFile = path.join(rootDir + '/aspect/', 'tsconfig.json');
     const tsconfigBase = 'assemblyscript/std/assembly.json';
 
     //  this.log("- Making sure that 'tsconfig.json' is set up...");
@@ -163,7 +167,7 @@ export default class Init extends Command {
         JSON.stringify(
           {
             extends: tsconfigBase,
-            include: ["./**/*.ts"],
+            include: ['./**/*.ts'],
           },
           null,
           2,
@@ -276,6 +280,7 @@ export default class Init extends Command {
           types: './build/release.d.ts',
         },
       };
+
       if (!scripts['aspect:build']) {
         scripts['asbuild:debug'] = 'asc aspect/index.ts --target debug';
         scripts['asbuild:release'] = 'asc aspect/index.ts --target release';
@@ -348,8 +353,13 @@ export default class Init extends Command {
         updated = true;
       }
       if (!scripts['contract:build']) {
-        scripts['contract:build'] =
+        let cmd =
           'solc -o ./build/contract/ --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
+        if (isWinOS) {
+          cmd =
+            'for %f in (./contracts/*.sol) do solc -o ./build/contract --via-ir --abi --storage-layout --bin ./contracts/%f --overwrite';
+        }
+        scripts['contract:build'] = cmd;
         pkg['scripts'] = scripts;
         updated = true;
       }
@@ -415,6 +425,12 @@ export default class Init extends Command {
         this.log('  Exists: ' + packageFile);
       }
     } else {
+      let buildCmd =
+        'solc -o ./build/contract/ --abi --storage-layout --bin ./contracts/*.sol  --overwrite';
+      if (isWinOS) {
+        buildCmd =
+          'for %f in (./contracts/*.sol) do solc -o ./build/contract --via-ir --abi --storage-layout --bin ./contracts/%f --overwrite';
+      }
       fs.writeFileSync(
         packageFile,
         JSON.stringify(
@@ -430,15 +446,14 @@ export default class Init extends Command {
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./aspect/contract',
               'asbuild:debug': 'asc aspect/index.ts --target debug',
               'asbuild:release': 'asc aspect/index.ts --target release',
-              "operation:call": "node scripts/operation.cjs --isCall true",
-              "operation:send": "node scripts/operation.cjs --isCall false",
-              "bound:aspect": "node scripts/get-bound-aspect.cjs",
-              "bound:account": "node scripts/get-bound-account.cjs",
+              'operation:call': 'node scripts/operation.cjs --isCall true',
+              'operation:send': 'node scripts/operation.cjs --isCall false',
+              'bound:aspect': 'node scripts/get-bound-aspect.cjs',
+              'bound:account': 'node scripts/get-bound-account.cjs',
               'contract:bind': 'node scripts/bind.cjs',
-              "contract:unbind": "node scripts/unbind.cjs",
+              'contract:unbind': 'node scripts/unbind.cjs',
               'contract:deploy': 'node scripts/contract-deploy.cjs',
-              'contract:build':
-                'solc -o ./build/contract/ --via-ir --abi --storage-layout --bin ./contracts/*.sol --overwrite',
+              'contract:build': buildCmd,
               build: 'npm run contract:build && npm run aspect:gen && npm run aspect:build',
             },
             keywords: [],
