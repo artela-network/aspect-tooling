@@ -4,12 +4,10 @@ import fs from 'fs';
 import Web3 from '@artela/web3';
 import {LegacyTransaction as EthereumTx} from '@ethereumjs/tx'
 import BigNumber from 'bignumber.js';
+import {DefPrivateKeyPath,DefProjectConfig,DefGasLimit,ASPECT_ADDR} from "./utils/base.js";
 
 // 然后在代码中使用 Transaction 类
-const DefProjectConfig = "../project.config.json";
-const DefPrivateKeyPath = "../privateKey.txt";
-const DefGasLimit = 9_000_000;
-const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
+
 function bytesToHex(bytes) {
     return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
 }

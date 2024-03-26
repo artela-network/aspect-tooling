@@ -13,27 +13,27 @@ console.log("==deploy  Storage Contract Result== ", result)
 // })
 //
 // console.log("==deploy ScheduleTarget Contract Result== ", dcResult)
-
-const textEncoder = new TextEncoder()
-const aspect = await DeployAspect({
-    wasmPath: "../build/type-check-aspect.wasm",
-    joinPoints: ["PreTxExecute", "PostTxExecute"],
-    properties: [{ 'key': 'ScheduleTo', 'value': result.contractAddress },
-    { 'key': 'Broker', 'value': result.from },
-    { 'key': 'binding', 'value': result.contractAddress },
-    { 'key': 'owner', 'value': result.from },
-    { 'key': 'key_for_string', 'value': textEncoder.encode('test value') }],
-})
-assert.ok(aspect.aspectAddress, "Deploy storage-aspect  fail");
-
-console.log("==deploy Aspect Result== ", aspect)
-
-const bindResult = await BindAspect({
-    abiPath: "../build/contract/Storage.abi",
-    contractAddress: result.contractAddress,
-    aspectId: aspect.aspectAddress
-})
-console.log("==bind Aspect Result== ", bindResult)
+//
+// const textEncoder = new TextEncoder()
+// const aspect = await DeployAspect({
+//     wasmPath: "../build/type-check-aspect.wasm",
+//     joinPoints: ["PreTxExecute", "PostTxExecute"],
+//     properties: [{ 'key': 'ScheduleTo', 'value': result.contractAddress },
+//     { 'key': 'Broker', 'value': result.from },
+//     { 'key': 'binding', 'value': result.contractAddress },
+//     { 'key': 'owner', 'value': result.from },
+//     { 'key': 'key_for_string', 'value': textEncoder.encode('test value') }],
+// })
+// assert.ok(aspect.aspectAddress, "Deploy storage-aspect  fail");
+//
+// console.log("==deploy Aspect Result== ", aspect)
+//
+// const bindResult = await BindAspect({
+//     abiPath: "../build/contract/Storage.abi",
+//     contractAddress: result.contractAddress,
+//     aspectId: aspect.aspectAddress
+// })
+// console.log("==bind Aspect Result== ", bindResult)
 
 const storeVal = await SendTx({
     contract: result.contractAddress,
