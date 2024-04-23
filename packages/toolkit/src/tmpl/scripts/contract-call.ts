@@ -73,7 +73,7 @@ async function call() {
     }
     let storageInstance = new web3.eth.Contract(abi, contractAddr);
     let instance = await storageInstance.methods[method](...parameters).call();
-    console.log("==== reuslt=== " + instance);
+    console.log("==== result ====" + instance);
 }
 
 call().then();
