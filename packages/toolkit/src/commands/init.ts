@@ -18,7 +18,7 @@ import { UnbindTmpl } from '../tmpl/scripts/unbind';
 const isWinOS = /^win/i.test(process.platform);
 
 const toolVersion = '^0.0.59';
-const libVersion = '^0.0.33';
+const libVersion = '^0.0.34';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
@@ -282,8 +282,8 @@ export default class Init extends Command {
       };
 
       if (!scripts['aspect:build']) {
-        scripts['asbuild:debug'] = 'asc aspect/index.ts --target debug';
-        scripts['asbuild:release'] = 'asc aspect/index.ts --target release';
+        scripts['asbuild:debug'] = 'asc aspect/index.ts --target debug --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__';
+        scripts['asbuild:release'] = 'asc aspect/index.ts --target release --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__';
         scripts['aspect:build'] = 'npm run asbuild:debug && npm run asbuild:release';
         pkg['scripts'] = scripts;
         updated = true;
