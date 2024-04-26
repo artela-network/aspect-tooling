@@ -13,6 +13,9 @@ import {
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+  isOwner(sender: Uint8Array): bool {
+     return true;
+  }
   rmPrefix(data: string): string {
     if (data.startsWith('0x')) {
       return data.substring(2, data.length);

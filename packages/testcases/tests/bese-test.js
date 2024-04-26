@@ -660,7 +660,7 @@ export async function EntryPoint({
         to: ASPECT_ADDR,
         data: encodeABI,
         gasPrice,
-        gas: 900_000
+        gas: 20_000_000
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);

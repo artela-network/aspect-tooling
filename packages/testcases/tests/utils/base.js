@@ -24,7 +24,7 @@ const currDirectory = path.resolve('__dirname', '../');
 export const RootDirectory = findRootDirectory(currDirectory);
 export const DefProjectConfig = path.join(RootDirectory, "project.config.json");
 export const DefPrivateKeyPath = path.join(RootDirectory, "privateKey.txt");
-export const DefGasLimit = 9_000_000;
+export const DefGasLimit = 20_000_000;
 export const ASPECT_ADDR = "0x0000000000000000000000000000000000A27E14";
 
 export function NewWeb3(nodeConfig = DefProjectConfig) {
