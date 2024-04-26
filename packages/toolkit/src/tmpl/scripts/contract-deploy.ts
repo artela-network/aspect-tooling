@@ -50,10 +50,18 @@ async function deploy() {
         }
         deployParams.data = byteTxt.trim()
     }
+
     // --args [55]
     const inputs = argv.args;
     if (inputs && inputs !== 'undefined') {
-        deployParams.arguments = inputs
+        for (let i = 0; i < inputs.length; i++) {
+            const input = inputs[i].trim();
+            if (input.startsWith('[') || input.startsWith('{')) {
+                deployParams.arguments.push(JSON.parse(input));
+            } else {
+                deployParams.arguments.push(input);
+            }
+        }
     }
 
     //--abi ./build/contract/xxx.abi

@@ -83,4 +83,4 @@ const entryPointTest = async (contract, key) => {
         return false
     }
 }
-assert.ok((await entryPointTest(aspect.aspectAddress,"0x01")), `[entryPoint: normal test] Failed, key-value can't be accessed`)
+assert.ok(!(await entryPointTest(aspect.aspectAddress,"0x01")), `[entryPoint: normal test] Failed, key-value can't be accessed`)

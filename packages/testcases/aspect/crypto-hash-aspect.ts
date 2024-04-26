@@ -12,6 +12,9 @@ import {
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+  isOwner(sender: Uint8Array): bool {
+      return true;
+  }
   operation(input: OperationInput): Uint8Array {
     const keccak = sys.hostApi.crypto.keccak(input.callData);
     sys.log('||| keccak ' + uint8ArrayToHex(keccak));

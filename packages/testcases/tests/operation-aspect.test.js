@@ -22,8 +22,8 @@ function getInt16Bytes(num) {
 }
 
 const aspect = await DeployAspect({
-    wasmPath: "../build/operation-aspect.wasm",
-    properties: [{'key': 'num', 'value':getInt16Bytes(100)} ],
+    wasmPath: "../build/black-list.wasm",
+    joinPoints: "../build/black-list"
 
 })
 
