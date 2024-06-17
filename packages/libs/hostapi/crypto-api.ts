@@ -1,4 +1,8 @@
-import { AUint8Array, BigInt, hexToUint8Array, uint8ArrayToHex } from '../common';
+import { Protobuf } from 'as-proto/assembly';
+import { ABool, AUint8Array, BigInt, hexToUint8Array, uint8ArrayToHex } from '../common';
+import { Bn256AddInput, Bn256PairingInput, CurvePoint } from '../proto'
+import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
+import { G1Point, G2Point } from '../common'
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
@@ -8,12 +12,20 @@ declare namespace __CryptoApi__ {
   function keccak(dataPtr: i32): i32;
 
   function ecRecover(dataPtr: i32): i32;
+
+  function bigModExp(basePtr: i32, expPtr: i32, modPtr: i32): i32;
+
+  function bn256Add(dataPtr: i32): i32;
+
+  function bn256ScalarMul(dataPtr: i32): i32;
+
+  function bn256Pairing(dataPtr: i32): i32;
 }
 
 export class CryptoApi {
   private static _ins: CryptoApi | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   public static instance(): CryptoApi {
     if (!CryptoApi._ins) {
@@ -83,5 +95,106 @@ export class CryptoApi {
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
     return resRaw.body;
+  }
+
+  /**
+   * bigModExp implements a native big integer exponential modular operation.
+   * @param base
+   * @param exp
+   * @param mod
+   *
+   * @returns
+   */
+  public bigModExp(base: BigInt, exp: BigInt, mod: BigInt): BigInt {
+    if (!this.checkLength(base) || !this.checkLength(exp) || !this.checkLength(mod)) {
+      return BigInt.ZERO;
+    }
+
+    const basePtr = new AUint8Array(base.toUint8Array()).store();
+    const expPtr = new AUint8Array(exp.toUint8Array()).store();
+    const modPtr = new AUint8Array(mod.toUint8Array()).store();
+    const resPtr = __CryptoApi__.bigModExp(basePtr, expPtr, modPtr);
+    const resRaw = new AUint8Array();
+    resRaw.load(resPtr);
+    return BigInt.fromUint8Array(resRaw.body);
+  }
+
+  /**
+   * bn256Add implements a native elliptic curve point addition conforming to Istanbul consensus rules.
+   * @param a
+   * @param b
+   *
+   * @returns
+   */
+  public bn256Add(a: G1Point, b: G1Point): G1Point {
+    const input = new Bn256AddInput(
+      new CurvePoint(a.x.toUint8Array(), a.y.toUint8Array()),
+      new CurvePoint(b.x.toUint8Array(), b.y.toUint8Array()),
+    );
+    const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256AddInput.encode)).store();
+
+    const resPtr = __CryptoApi__.bn256Add(inputPtr);
+    const resRaw = new AUint8Array();
+    load(resPtr);
+    return new G1Point().decode(resRaw.get());
+  }
+
+  /**
+   * bn256ScalarMul implements a native elliptic curve scalar multiplication conforming to Istanbul consensus rules.
+   * @param p
+   * @param scalar
+   *
+   * @returns
+   */
+  public bn256ScalarMul(p: G1Point, scalar: BigInt): G1Point {
+    const input = new Bn256ScalarMulInput(
+      new CurvePoint(p.x.toUint8Array(), p.y.toUint8Array()),
+      scalar.toUint8Array(),
+    );
+    const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256ScalarMulInput.encode)).store();
+
+    const resPtr = __CryptoApi__.bn256ScalarMul(inputPtr);
+    const resRaw = new AUint8Array();
+    resRaw.load(resPtr);
+    return new G1Point().decode(resRaw.get());
+  }
+
+  /**
+   * bn256Pairing implements a pairing pre-compile for the bn256 curve conforming to Istanbul consensus rules.
+   * @param input
+   *
+   * @returns
+   */
+  public bn256Pairing(g1Points: G1Point[], g2Points: G2Point[]): bool {
+    if (g1Points.length != g2Points.length) {
+      return false;
+    }
+
+    const cs: Array<CurvePoint> = [];
+    const ts1: Array<CurvePoint> = [];
+    const ts2: Array<CurvePoint> = [];
+    for (let i = 0; i < g1Points.length; i++) {
+      const c = new CurvePoint(g1Points[i].x.toUint8Array(), g1Points[i].y.toUint8Array());
+      const t1 = new CurvePoint(g2Points[i].x.m1.toUint8Array(), g2Points[i].y.m1.toUint8Array());
+      const t2 = new CurvePoint(g2Points[i].x.m2.toUint8Array(), g2Points[i].y.m2.toUint8Array());
+      cs.push(c);
+      ts1.push(t1);
+      ts2.push(t2);
+    }
+
+    let input = new Bn256PairingInput(cs, ts1, ts2)
+    const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256PairingInput.encode)).store();
+
+    const resPtr = __CryptoApi__.bn256Pairing(inputPtr);
+    const resRaw = new ABool();
+    resRaw.load(resPtr);
+    return resRaw.body;
+  }
+
+  private checkLength(b: BigInt): bool {
+    if (b.countBits() == 0 || b.countBits() > 256) {
+      return false
+    }
+    return true
   }
 }

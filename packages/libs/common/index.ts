@@ -6,3 +6,4 @@ export * from './wraptypes/bigint';
 export * from './abi';
 
 export * from './errors';
+export * from './cryptos/point';

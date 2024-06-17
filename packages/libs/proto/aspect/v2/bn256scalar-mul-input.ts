@@ -6,8 +6,8 @@
 import { CurvePoint } from './curve-point';
 import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
-export class Bn256ScalarMul {
-  static encode(message: Bn256ScalarMul, writer: Writer): void {
+export class Bn256ScalarMulInput {
+  static encode(message: Bn256ScalarMulInput, writer: Writer): void {
     const a = message.a;
     if (a !== null) {
       writer.uint32(10);
@@ -20,9 +20,9 @@ export class Bn256ScalarMul {
     writer.bytes(message.scalar);
   }
 
-  static decode(reader: Reader, length: i32): Bn256ScalarMul {
+  static decode(reader: Reader, length: i32): Bn256ScalarMulInput {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new Bn256ScalarMul();
+    const message = new Bn256ScalarMulInput();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
@@ -56,10 +56,10 @@ export class Bn256ScalarMul {
   }
 }
 
-export function encodeBn256ScalarMul(message: Bn256ScalarMul): Uint8Array {
-  return Protobuf.encode(message, Bn256ScalarMul.encode);
+export function encodeBn256ScalarMulInput(message: Bn256ScalarMulInput): Uint8Array {
+  return Protobuf.encode(message, Bn256ScalarMulInput.encode);
 }
 
-export function decodeBn256ScalarMul(buffer: Uint8Array): Bn256ScalarMul {
-  return Protobuf.decode<Bn256ScalarMul>(buffer, Bn256ScalarMul.decode);
+export function decodeBn256ScalarMulInput(buffer: Uint8Array): Bn256ScalarMulInput {
+  return Protobuf.decode<Bn256ScalarMulInput>(buffer, Bn256ScalarMulInput.decode);
 }

@@ -41,4 +41,4 @@ export * from './aspect/v2/with-from-tx-input';
 export * from './aspect/v2/curve-point'
 export * from './aspect/v2/bn256add-input'
 export * from './aspect/v2/bn256pairing-input'
-export * from './aspect/v2/bn256scalar-mul'
+export * from './aspect/v2/bn256scalar-mul-input'
