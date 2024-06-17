@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { CurvePoint } from './curve-point';
+import { G1 } from './g1';
 import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class Bn256ScalarMulInput {
@@ -12,7 +12,7 @@ export class Bn256ScalarMulInput {
     if (a !== null) {
       writer.uint32(10);
       writer.fork();
-      CurvePoint.encode(a, writer);
+      G1.encode(a, writer);
       writer.ldelim();
     }
 
@@ -28,7 +28,7 @@ export class Bn256ScalarMulInput {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.a = CurvePoint.decode(reader, reader.uint32());
+          message.a = G1.decode(reader, reader.uint32());
           break;
 
         case 2:
@@ -44,13 +44,10 @@ export class Bn256ScalarMulInput {
     return message;
   }
 
-  a: CurvePoint | null;
+  a: G1 | null;
   scalar: Uint8Array;
 
-  constructor(
-    a: CurvePoint | null = null,
-    scalar: Uint8Array = new Uint8Array(0)
-  ) {
+  constructor(a: G1 | null = null, scalar: Uint8Array = new Uint8Array(0)) {
     this.a = a;
     this.scalar = scalar;
   }

@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 import { ABool, AUint8Array, BigInt, hexToUint8Array, uint8ArrayToHex } from '../common';
-import { Bn256AddInput, Bn256PairingInput, CurvePoint } from '../proto'
+import { Bn256AddInput, Bn256PairingInput, G1, G2 } from '../proto'
 import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
 import { G1Point, G2Point } from '../common'
 
@@ -128,8 +128,8 @@ export class CryptoApi {
    */
   public bn256Add(a: G1Point, b: G1Point): G1Point {
     const input = new Bn256AddInput(
-      new CurvePoint(a.x.toUint8Array(), a.y.toUint8Array()),
-      new CurvePoint(b.x.toUint8Array(), b.y.toUint8Array()),
+      new G1(a.x.toUint8Array(), a.y.toUint8Array()),
+      new G1(b.x.toUint8Array(), b.y.toUint8Array()),
     );
     const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256AddInput.encode)).store();
 
@@ -148,7 +148,7 @@ export class CryptoApi {
    */
   public bn256ScalarMul(p: G1Point, scalar: BigInt): G1Point {
     const input = new Bn256ScalarMulInput(
-      new CurvePoint(p.x.toUint8Array(), p.y.toUint8Array()),
+      new G1(p.x.toUint8Array(), p.y.toUint8Array()),
       scalar.toUint8Array(),
     );
     const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256ScalarMulInput.encode)).store();
@@ -170,19 +170,22 @@ export class CryptoApi {
       return false;
     }
 
-    const cs: Array<CurvePoint> = [];
-    const ts1: Array<CurvePoint> = [];
-    const ts2: Array<CurvePoint> = [];
+    const cs: Array<G1> = [];
+    const ts1: Array<G2> = [];
+
     for (let i = 0; i < g1Points.length; i++) {
-      const c = new CurvePoint(g1Points[i].x.toUint8Array(), g1Points[i].y.toUint8Array());
-      const t1 = new CurvePoint(g2Points[i].x.m1.toUint8Array(), g2Points[i].y.m1.toUint8Array());
-      const t2 = new CurvePoint(g2Points[i].x.m2.toUint8Array(), g2Points[i].y.m2.toUint8Array());
+      const c = new G1(g1Points[i].x.toUint8Array(), g1Points[i].y.toUint8Array());
+      const t = new G2(
+        g2Points[i].x.m1.toUint8Array(),
+        g2Points[i].x.m2.toUint8Array(),
+        g2Points[i].y.m1.toUint8Array(),
+        g2Points[i].y.m2.toUint8Array(),
+        );
       cs.push(c);
-      ts1.push(t1);
-      ts2.push(t2);
+      ts1.push(t);
     }
 
-    let input = new Bn256PairingInput(cs, ts1, ts2)
+    let input = new Bn256PairingInput(cs, ts1)
     const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256PairingInput.encode)).store();
 
     const resPtr = __CryptoApi__.bn256Pairing(inputPtr);

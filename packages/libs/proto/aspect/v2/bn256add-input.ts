@@ -3,7 +3,7 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { CurvePoint } from './curve-point';
+import { G1 } from './g1';
 import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class Bn256AddInput {
@@ -12,7 +12,7 @@ export class Bn256AddInput {
     if (a !== null) {
       writer.uint32(10);
       writer.fork();
-      CurvePoint.encode(a, writer);
+      G1.encode(a, writer);
       writer.ldelim();
     }
 
@@ -20,7 +20,7 @@ export class Bn256AddInput {
     if (b !== null) {
       writer.uint32(18);
       writer.fork();
-      CurvePoint.encode(b, writer);
+      G1.encode(b, writer);
       writer.ldelim();
     }
   }
@@ -33,11 +33,11 @@ export class Bn256AddInput {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.a = CurvePoint.decode(reader, reader.uint32());
+          message.a = G1.decode(reader, reader.uint32());
           break;
 
         case 2:
-          message.b = CurvePoint.decode(reader, reader.uint32());
+          message.b = G1.decode(reader, reader.uint32());
           break;
 
         default:
@@ -49,10 +49,10 @@ export class Bn256AddInput {
     return message;
   }
 
-  a: CurvePoint | null;
-  b: CurvePoint | null;
+  a: G1 | null;
+  b: G1 | null;
 
-  constructor(a: CurvePoint | null = null, b: CurvePoint | null = null) {
+  constructor(a: G1 | null = null, b: G1 | null = null) {
     this.a = a;
     this.b = b;
   }

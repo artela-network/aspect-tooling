@@ -3,7 +3,8 @@
 //   protoc-gen-as v1.3.0
 //   protoc        v4.25.1
 
-import { CurvePoint } from './curve-point';
+import { G1 } from './g1';
+import { G2 } from './g2';
 import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class Bn256PairingInput {
@@ -12,23 +13,15 @@ export class Bn256PairingInput {
     for (let i: i32 = 0; i < cs.length; ++i) {
       writer.uint32(10);
       writer.fork();
-      CurvePoint.encode(cs[i], writer);
+      G1.encode(cs[i], writer);
       writer.ldelim();
     }
 
-    const ts1 = message.ts1;
-    for (let i: i32 = 0; i < ts1.length; ++i) {
+    const ts = message.ts;
+    for (let i: i32 = 0; i < ts.length; ++i) {
       writer.uint32(18);
       writer.fork();
-      CurvePoint.encode(ts1[i], writer);
-      writer.ldelim();
-    }
-
-    const ts2 = message.ts2;
-    for (let i: i32 = 0; i < ts2.length; ++i) {
-      writer.uint32(26);
-      writer.fork();
-      CurvePoint.encode(ts2[i], writer);
+      G2.encode(ts[i], writer);
       writer.ldelim();
     }
   }
@@ -41,15 +34,11 @@ export class Bn256PairingInput {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.cs.push(CurvePoint.decode(reader, reader.uint32()));
+          message.cs.push(G1.decode(reader, reader.uint32()));
           break;
 
         case 2:
-          message.ts1.push(CurvePoint.decode(reader, reader.uint32()));
-          break;
-
-        case 3:
-          message.ts2.push(CurvePoint.decode(reader, reader.uint32()));
+          message.ts.push(G2.decode(reader, reader.uint32()));
           break;
 
         default:
@@ -61,18 +50,12 @@ export class Bn256PairingInput {
     return message;
   }
 
-  cs: Array<CurvePoint>;
-  ts1: Array<CurvePoint>;
-  ts2: Array<CurvePoint>;
+  cs: Array<G1>;
+  ts: Array<G2>;
 
-  constructor(
-    cs: Array<CurvePoint> = [],
-    ts1: Array<CurvePoint> = [],
-    ts2: Array<CurvePoint> = []
-  ) {
+  constructor(cs: Array<G1> = [], ts: Array<G2> = []) {
     this.cs = cs;
-    this.ts1 = ts1;
-    this.ts2 = ts2;
+    this.ts = ts;
   }
 }
 

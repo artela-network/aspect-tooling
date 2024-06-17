@@ -5,8 +5,8 @@
 
 import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
-export class CurvePoint {
-  static encode(message: CurvePoint, writer: Writer): void {
+export class G1 {
+  static encode(message: G1, writer: Writer): void {
     writer.uint32(10);
     writer.bytes(message.x);
 
@@ -14,9 +14,9 @@ export class CurvePoint {
     writer.bytes(message.y);
   }
 
-  static decode(reader: Reader, length: i32): CurvePoint {
+  static decode(reader: Reader, length: i32): G1 {
     const end: usize = length < 0 ? reader.end : reader.ptr + length;
-    const message = new CurvePoint();
+    const message = new G1();
 
     while (reader.ptr < end) {
       const tag = reader.uint32();
@@ -50,10 +50,10 @@ export class CurvePoint {
   }
 }
 
-export function encodeCurvePoint(message: CurvePoint): Uint8Array {
-  return Protobuf.encode(message, CurvePoint.encode);
+export function encodeG1(message: G1): Uint8Array {
+  return Protobuf.encode(message, G1.encode);
 }
 
-export function decodeCurvePoint(buffer: Uint8Array): CurvePoint {
-  return Protobuf.decode<CurvePoint>(buffer, CurvePoint.decode);
+export function decodeG1(buffer: Uint8Array): G1 {
+  return Protobuf.decode<G1>(buffer, G1.decode);
 }
