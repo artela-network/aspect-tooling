@@ -38,3 +38,7 @@ export * from './aspect/v2/string-data';
 export * from './aspect/v2/tx-verify-input';
 export * from './aspect/v2/uint-data';
 export * from './aspect/v2/with-from-tx-input';
+export * from './aspect/v2/curve-point'
+export * from './aspect/v2/bn256add-input'
+export * from './aspect/v2/bn256pairing-input'
+export * from './aspect/v2/bn256scalar-mul'
