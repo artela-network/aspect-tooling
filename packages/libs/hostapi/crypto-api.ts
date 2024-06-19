@@ -181,6 +181,6 @@ export class CryptoApi {
     if (resRaw.get().length != 32) {
       return false
     }
-    return <u8>(resRaw.get().at(31)) == 1;
+    return resRaw.get().at(31) == 1;
   }
 }
