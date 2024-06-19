@@ -2,7 +2,8 @@ import { Protobuf } from 'as-proto/assembly';
 import { ABool, AUint8Array, Uint256, hexToUint8Array, uint8ArrayToHex } from '../common';
 import { Bn256AddInput, Bn256PairingInput, G1, G2 } from '../proto'
 import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
-import { G1Point, G2Point } from '../common'
+import { G1Point, G2Point, ethereum } from '../common'
+import { EcRecoverInput } from '../proto/aspect/v2/ec-recover-input';
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
@@ -68,16 +69,14 @@ export class CryptoApi {
    *
    * @returns string returns an address, and not an address payable
    */
-  public ecRecover(hash: string, v: Uint256, r: Uint256, s: Uint256): string {
-    const vStr = v.toHex().padStart(64, '0');
-    const rStr = r.toHex().padStart(64, '0');
-    const sStr = s.toHex().padStart(64, '0');
+  public ecRecover(hash: Uint8Array, v: Uint256, r: Uint256, s: Uint256): Uint8Array {
+    const input = new EcRecoverInput(hash, v.toUint8Array(), r.toUint8Array(), s.toUint8Array());
+    const inputPtr =new AUint8Array(Protobuf.encode(input, EcRecoverInput.encode)).store();
 
-    //[msgHash 32B][v 32B][r 32B][s 32B]
-    // const syscallInput = hash + vStr + rStr + sStr;
-    const syscallInput = hash;
-    const ret = this._ecRecover(hexToUint8Array(syscallInput));
-    return uint8ArrayToHex(ret);
+    const ret = __CryptoApi__.ecRecover(inputPtr);
+    const resRaw = new AUint8Array();
+    resRaw.load(ret);
+    return resRaw.body;
   }
 
   private _ecRecover(data: Uint8Array): Uint8Array {
