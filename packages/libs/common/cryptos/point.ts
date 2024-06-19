@@ -9,7 +9,7 @@ export class G1Point {
   }
 
   decode(data: Uint8Array): G1Point {
-    const curlPoint = Protobuf.decode(data, G1.decode);
+    const curlPoint = Protobuf.decode<G1>(data, G1.decode);
     this.x = Uint256.fromUint8Array(curlPoint.x);
     this.y = Uint256.fromUint8Array(curlPoint.y);
     return this

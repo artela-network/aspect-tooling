@@ -96,14 +96,14 @@ export class CryptoApi {
    *
    * @returns
    */
-  public bigModExp(base: Uint256, exp: Uint256, mod: Uint256): Uint256 {
-    const basePtr = new AUint8Array(base.toUint8Array()).store();
-    const expPtr = new AUint8Array(exp.toUint8Array()).store();
-    const modPtr = new AUint8Array(mod.toUint8Array()).store();
+  public bigModExp(base: Uint8Array, exp: Uint8Array, mod: Uint8Array): Uint8Array {
+    const basePtr = new AUint8Array(base).store();
+    const expPtr = new AUint8Array(exp).store();
+    const modPtr = new AUint8Array(mod).store();
     const resPtr = __CryptoApi__.bigModExp(basePtr, expPtr, modPtr);
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
-    return Uint256.fromUint8Array(resRaw.body);
+    return resRaw.body;
   }
 
   /**
@@ -122,7 +122,7 @@ export class CryptoApi {
 
     const resPtr = __CryptoApi__.bn256Add(inputPtr);
     const resRaw = new AUint8Array();
-    load(resPtr);
+    resRaw.load(resPtr);
     return new G1Point().decode(resRaw.get());
   }
 
@@ -158,7 +158,7 @@ export class CryptoApi {
     }
 
     const cs: Array<G1> = [];
-    const ts1: Array<G2> = [];
+    const ts: Array<G2> = [];
 
     for (let i = 0; i < g1Points.length; i++) {
       const c = new G1(g1Points[i].x.toUint8Array(), g1Points[i].y.toUint8Array());
@@ -169,15 +169,18 @@ export class CryptoApi {
         g2Points[i].y.m2.toUint8Array(),
         );
       cs.push(c);
-      ts1.push(t);
+      ts.push(t);
     }
 
-    let input = new Bn256PairingInput(cs, ts1)
+    let input = new Bn256PairingInput(cs, ts)
     const inputPtr =new AUint8Array(Protobuf.encode(input, Bn256PairingInput.encode)).store();
 
     const resPtr = __CryptoApi__.bn256Pairing(inputPtr);
-    const resRaw = new ABool();
+    const resRaw = new AUint8Array();
     resRaw.load(resPtr);
-    return resRaw.body;
+    if (resRaw.get().length != 32) {
+      return false
+    }
+    return <u8>(resRaw.get().at(31)) == 1;
   }
 }
