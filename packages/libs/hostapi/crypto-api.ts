@@ -1,5 +1,5 @@
 import { Protobuf } from 'as-proto/assembly';
-import { ABool, AUint8Array, BigInt, hexToUint8Array, uint8ArrayToHex } from '../common';
+import { ABool, AUint8Array, Uint256, hexToUint8Array, uint8ArrayToHex } from '../common';
 import { Bn256AddInput, Bn256PairingInput, G1, G2 } from '../proto'
 import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
 import { G1Point, G2Point } from '../common'
@@ -68,23 +68,14 @@ export class CryptoApi {
    *
    * @returns string returns an address, and not an address payable
    */
-  public ecRecover(hash: string, v: BigInt, r: BigInt, s: BigInt): string {
-    if (
-      v.countBits() == 0 ||
-      r.countBits() == 0 ||
-      s.countBits() == 0 ||
-      v.countBits() > 256 ||
-      r.countBits() > 256 ||
-      s.countBits() > 256
-    ) {
-      return '';
-    }
-    const vStr = v.countBits() == 256 ? v.toString(16) : v.toString(16).padStart(64, '0');
-    const rStr = r.countBits() == 256 ? r.toString(16) : r.toString(16).padStart(64, '0');
-    const sStr = s.countBits() == 256 ? s.toString(16) : s.toString(16).padStart(64, '0');
+  public ecRecover(hash: string, v: Uint256, r: Uint256, s: Uint256): string {
+    const vStr = v.toHex().padStart(64, '0');
+    const rStr = r.toHex().padStart(64, '0');
+    const sStr = s.toHex().padStart(64, '0');
 
     //[msgHash 32B][v 32B][r 32B][s 32B]
-    const syscallInput = hash + vStr + rStr + sStr;
+    // const syscallInput = hash + vStr + rStr + sStr;
+    const syscallInput = hash;
     const ret = this._ecRecover(hexToUint8Array(syscallInput));
     return uint8ArrayToHex(ret);
   }
@@ -105,18 +96,14 @@ export class CryptoApi {
    *
    * @returns
    */
-  public bigModExp(base: BigInt, exp: BigInt, mod: BigInt): BigInt {
-    if (!this.checkLength(base) || !this.checkLength(exp) || !this.checkLength(mod)) {
-      return BigInt.ZERO;
-    }
-
+  public bigModExp(base: Uint256, exp: Uint256, mod: Uint256): Uint256 {
     const basePtr = new AUint8Array(base.toUint8Array()).store();
     const expPtr = new AUint8Array(exp.toUint8Array()).store();
     const modPtr = new AUint8Array(mod.toUint8Array()).store();
     const resPtr = __CryptoApi__.bigModExp(basePtr, expPtr, modPtr);
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
-    return BigInt.fromUint8Array(resRaw.body);
+    return Uint256.fromUint8Array(resRaw.body);
   }
 
   /**
@@ -146,7 +133,7 @@ export class CryptoApi {
    *
    * @returns
    */
-  public bn256ScalarMul(p: G1Point, scalar: BigInt): G1Point {
+  public bn256ScalarMul(p: G1Point, scalar: Uint256): G1Point {
     const input = new Bn256ScalarMulInput(
       new G1(p.x.toUint8Array(), p.y.toUint8Array()),
       scalar.toUint8Array(),
@@ -192,12 +179,5 @@ export class CryptoApi {
     const resRaw = new ABool();
     resRaw.load(resPtr);
     return resRaw.body;
-  }
-
-  private checkLength(b: BigInt): bool {
-    if (b.countBits() == 0 || b.countBits() > 256) {
-      return false
-    }
-    return true
   }
 }

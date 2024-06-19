@@ -1,6 +1,6 @@
 import { Protobuf } from "as-proto/assembly";
 import { G1, G2 } from "../../proto";
-import { BigInt } from "../wraptypes/bigint";
+import { Uint256 } from "../wraptypes/uint256";
 
 export class G1Point {
   encode(): Uint8Array {
@@ -10,17 +10,17 @@ export class G1Point {
 
   decode(data: Uint8Array): G1Point {
     const curlPoint = Protobuf.decode(data, G1.decode);
-    this.x = BigInt.fromUint8Array(curlPoint.x);
-    this.y = BigInt.fromUint8Array(curlPoint.y);
+    this.x = Uint256.fromUint8Array(curlPoint.x);
+    this.y = Uint256.fromUint8Array(curlPoint.y);
     return this
   }
 
-  x: BigInt;
-  y: BigInt;
+  x: Uint256;
+  y: Uint256;
 
   constructor(
-    x: BigInt = BigInt.ZERO,
-    y: BigInt = BigInt.ZERO,
+    x: Uint256 = Uint256.ZERO,
+    y: Uint256 = Uint256.ZERO,
   ) {
     this.x = x;
     this.y = y;
@@ -28,10 +28,10 @@ export class G1Point {
 }
 
 export class G2Coord {
-  m1 :BigInt;
-  m2 :BigInt;
+  m1 :Uint256;
+  m2 :Uint256;
 
-  constructor(m1: BigInt = BigInt.ZERO, m2: BigInt = BigInt.ZERO) {
+  constructor(m1: Uint256 = Uint256.ZERO, m2: Uint256 = Uint256.ZERO) {
     this.m1 = m1;
     this.m2 = m2;
   }
