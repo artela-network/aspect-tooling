@@ -247,14 +247,18 @@ export class Uint256 {
     }
 
     public toHex(): string {
-        let result = "";
+        const hexChars = '0123456789abcdef';
+        const result = new Uint8Array(64);
+
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 8; j++) {
                 let byte = <u8>(this.data[i] >> (j << 3));
-                result = byte.toString(16).padStart(2, '0') + result;
+                let index = (i << 3) + j;
+                result[63 - ( index << 1)] = hexChars.charCodeAt(byte & 0x0f);
+                result[63 - ((index << 1) + 1)] = hexChars.charCodeAt(byte >> 4);
             }
         }
-        return result;
+        return String.UTF8.decode(result.buffer);
     }
 
     public fromHex(hexString: string): Uint256 {
