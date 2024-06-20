@@ -27,24 +27,17 @@ export class G1Point {
   }
 }
 
-export class G2Coord {
-  m1 :Uint256;
-  m2 :Uint256;
-
-  constructor(m1: Uint256 = Uint256.ZERO, m2: Uint256 = Uint256.ZERO) {
-    this.m1 = m1;
-    this.m2 = m2;
-  }
-}
-
 export class G2Point {
-  x: G2Coord;
-  y: G2Coord;
+  x: Array<Uint256>;
+  y: Array<Uint256>;
 
   constructor(
-    x: G2Coord = new G2Coord(),
-    y: G2Coord = new G2Coord(),
+    x: Array<Uint256> = [Uint256.ZERO, Uint256.ZERO],
+    y: Array<Uint256> = [Uint256.ZERO, Uint256.ZERO],
   ) {
+    if (x.length != 2 || y.length != 2) {
+      throw new Error("Array x,y must have a length of 2");
+    }
     this.x = x;
     this.y = y;
   }
