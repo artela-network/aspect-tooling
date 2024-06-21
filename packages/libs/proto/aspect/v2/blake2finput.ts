@@ -7,35 +7,20 @@ import { Protobuf, Reader, Writer } from 'as-proto/assembly';
 
 export class Blake2FInput {
   static encode(message: Blake2FInput, writer: Writer): void {
-    const h = message.h;
-    if (h.length !== 0) {
-      for (let i: i32 = 0; i < h.length; ++i) {
-        writer.uint32(8);
-        writer.uint64(h[i]);
-      }
-    }
+    writer.uint32(10);
+    writer.bytes(message.h);
 
-    const m = message.m;
-    if (m.length !== 0) {
-      for (let i: i32 = 0; i < m.length; ++i) {
-        writer.uint32(16);
-        writer.uint64(m[i]);
-      }
-    }
+    writer.uint32(18);
+    writer.bytes(message.m);
 
-    const t = message.t;
-    if (t.length !== 0) {
-      for (let i: i32 = 0; i < t.length; ++i) {
-        writer.uint32(24);
-        writer.uint64(t[i]);
-      }
-    }
+    writer.uint32(26);
+    writer.bytes(message.t);
 
     writer.uint32(32);
     writer.bool(message.final);
 
-    writer.uint32(40);
-    writer.uint32(message.rounds);
+    writer.uint32(42);
+    writer.bytes(message.rounds);
   }
 
   static decode(reader: Reader, length: i32): Blake2FInput {
@@ -46,15 +31,15 @@ export class Blake2FInput {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.h.push(reader.uint64());
+          message.h = reader.bytes();
           break;
 
         case 2:
-          message.m.push(reader.uint64());
+          message.m = reader.bytes();
           break;
 
         case 3:
-          message.t.push(reader.uint64());
+          message.t = reader.bytes();
           break;
 
         case 4:
@@ -62,7 +47,7 @@ export class Blake2FInput {
           break;
 
         case 5:
-          message.rounds = reader.uint32();
+          message.rounds = reader.bytes();
           break;
 
         default:
@@ -74,18 +59,18 @@ export class Blake2FInput {
     return message;
   }
 
-  h: Array<u64>;
-  m: Array<u64>;
-  t: Array<u64>;
+  h: Uint8Array;
+  m: Uint8Array;
+  t: Uint8Array;
   final: bool;
-  rounds: u32;
+  rounds: Uint8Array;
 
   constructor(
-    h: Array<u64> = [],
-    m: Array<u64> = [],
-    t: Array<u64> = [],
+    h: Uint8Array = new Uint8Array(0),
+    m: Uint8Array = new Uint8Array(0),
+    t: Uint8Array = new Uint8Array(0),
     final: bool = false,
-    rounds: u32 = 0
+    rounds: Uint8Array = new Uint8Array(0)
   ) {
     this.h = h;
     this.m = m;

@@ -5,7 +5,6 @@ import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
 import { G1Point, G2Point, ethereum } from '../common'
 import { EcRecoverInput } from '../proto/aspect/v2/ec-recover-input';
 import { Blake2FInput } from '../proto/aspect/v2/blake2finput';
-import { Blake2FOutput } from '../proto/aspect/v2/blake2foutput';
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
@@ -189,32 +188,25 @@ export class CryptoApi {
 
   /**
    * blake2F implements blake2F to Istanbul consensus rules.
-   * @param input
-   *
+   * @param h
+   * @param m
+   * @param t
+   * @param final
+   * @param rounds
    * @returns
    */
-  // public blake2F(h: Array<u64>, m: Array<u64>, t: Array<u64>, final: bool, rounds: u32): Array<u64> {
-  //   if (h.length != 8 || m.length != 16 && t.length != 2) {
-  //     return new Array<u64>(0);
-  //   }
+  public blake2F(h: Uint8Array, m: Uint8Array, t: Uint8Array, final: bool, rounds: Uint8Array): Uint8Array {
+    if (h.length != 64 || m.length != 128 || t.length != 16 || rounds.length != 4) {
+      return new Uint8Array(0);
+    }
 
-  //   let input = new Blake2FInput(h, m, t, final, rounds);
-  //   const inputPtr = new AUint8Array(Protobuf.encode(input, Blake2FInput.encode)).store();
-
-  //   const resPtr = __CryptoApi__.blake2F(inputPtr);
-  //   const resRaw = new AUint8Array();
-  //   resRaw.load(resPtr);
-
-  //   const out = Protobuf.decode(resRaw.get(), Blake2FOutput.decode);
-  //   return out.h;
-  // }
-
-  public blake2F(input: Uint8Array): Uint8Array {
-    const inputPtr = new AUint8Array(input).store();
+    let input = new Blake2FInput(h, m, t, final, rounds);
+    const inputPtr = new AUint8Array(Protobuf.encode(input, Blake2FInput.encode)).store();
 
     const resPtr = __CryptoApi__.blake2F(inputPtr);
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
+
     return resRaw.get();
   }
 }
