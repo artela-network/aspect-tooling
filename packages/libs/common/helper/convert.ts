@@ -4,14 +4,19 @@ import { BigInt } from '../wraptypes/bigint';
 
 export function uint8ArrayToHex(data: Uint8Array, prefix: string = ''): string {
   const hexChars = '0123456789abcdef';
-  let result = prefix;
+  const result = new Uint8Array((data.length << 1) + prefix.length);
+
+  for (let i = 0; i < prefix.length; i++) {
+    result[i] = prefix.charCodeAt(i);
+  }
 
   for (let i = 0; i < data.length; i++) {
     const byte = data[i];
-    result += hexChars.charAt(byte >> 4) + hexChars.charAt(byte & 0x0f);
+    result[(i << 1) + prefix.length] = hexChars.charCodeAt(byte >> 4);
+    result[(i << 1) + 1 + prefix.length] = hexChars.charCodeAt(byte & 0x0f);
   }
 
-  return result;
+  return String.UTF8.decode(result.buffer);
 }
 
 export function hexToUint8Array(hex: string): Uint8Array {
