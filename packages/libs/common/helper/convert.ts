@@ -20,7 +20,7 @@ export function uint8ArrayToHex(data: Uint8Array, prefix: string = ''): string {
 }
 
 export function hexToUint8Array(hex: string): Uint8Array {
-  if (hex.length % 2 !== 0) {
+  if (hex.length & 1) {
     return new Uint8Array(0);
   }
   if (hex.startsWith('0x')) {

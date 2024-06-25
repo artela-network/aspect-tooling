@@ -1,9 +1,11 @@
-import { AString } from '../common';
+import {AI64, AString, AUint8Array} from '../common';
 
 declare namespace __UtilApi__ {
   function revert(ptr: i32): void;
 
   function sLog(ptr: i32): void;
+
+  function gas(): i32;
 }
 
 export class UtilApi {
@@ -24,6 +26,13 @@ export class UtilApi {
     const inPtr = input.store();
     __UtilApi__.revert(inPtr);
     throw new Error(message);
+  }
+
+  public gas(): i64 {
+    const ret = __UtilApi__.gas();
+    const gas = new AI64();
+    gas.load(ret);
+    return gas.get();
   }
 
   public log(data: string): void {
