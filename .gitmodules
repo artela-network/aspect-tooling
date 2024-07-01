@@ -1,4 +1,5 @@
 [submodule "aspect-core"]
 	path = aspect-core
 	url = https://github.com/artela-network/aspect-core.git
-	tag = v0.4.7-rc2
+	branch = fix/call-tree
+; 	tag = v0.4.7-rc2
