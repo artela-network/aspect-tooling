@@ -49,7 +49,6 @@ export class EntryPoint {
     const input = new AUint8Array();
     input.load(argPtr);
 
-
     if (method == PointCutType.VERIFY_TX) {
       const output = this.verifyTx(input.get());
       const outputPtr = new AUint8Array(output);
@@ -76,7 +75,6 @@ export class EntryPoint {
       const outputPtr = new AUint8Array(output);
       return outputPtr.store();
     }
-
 
     throw new Error('method ' + method + ' not found or not implemented');
   }

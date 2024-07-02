@@ -1,4 +1,4 @@
-import {AI64, AString, AUint8Array} from '../common';
+import { AI64, AString } from '../common';
 
 declare namespace __UtilApi__ {
   function revert(ptr: i32): void;

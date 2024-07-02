@@ -1,10 +1,14 @@
 import { Protobuf } from 'as-proto/assembly';
-import { ABool, AUint8Array, Uint256, hexToUint8Array, uint8ArrayToHex } from '../common';
-import { Bn256AddInput, Bn256PairingInput, G1, G2 } from '../proto'
-import { Bn256ScalarMulInput } from '../proto/aspect/v2/bn256scalar-mul-input';
-import { G1Point, G2Point, ethereum } from '../common'
-import { EcRecoverInput } from '../proto/aspect/v2/ec-recover-input';
-import { Blake2FInput } from '../proto/aspect/v2/blake2finput';
+import { AUint8Array, G1Point, G2Point, Uint256 } from '../common';
+import {
+  Blake2FInput,
+  Bn256AddInput,
+  Bn256PairingInput,
+  Bn256ScalarMulInput,
+  EcRecoverInput,
+  G1,
+  G2,
+} from '../proto';
 
 declare namespace __CryptoApi__ {
   function sha256(dataPtr: i32): i32;
@@ -29,7 +33,7 @@ declare namespace __CryptoApi__ {
 export class CryptoApi {
   private static _ins: CryptoApi | null = null;
 
-  private constructor() { }
+  private constructor() {}
 
   public static instance(): CryptoApi {
     if (!CryptoApi._ins) {
@@ -174,14 +178,14 @@ export class CryptoApi {
       ts.push(t);
     }
 
-    let input = new Bn256PairingInput(cs, ts)
+    const input = new Bn256PairingInput(cs, ts);
     const inputPtr = new AUint8Array(Protobuf.encode(input, Bn256PairingInput.encode)).store();
 
     const resPtr = __CryptoApi__.bn256Pairing(inputPtr);
     const resRaw = new AUint8Array();
     resRaw.load(resPtr);
     if (resRaw.get().length != 32) {
-      return false
+      return false;
     }
     return resRaw.get().at(31) == 1;
   }
@@ -195,12 +199,18 @@ export class CryptoApi {
    * @param rounds
    * @returns
    */
-  public blake2F(h: Uint8Array, m: Uint8Array, t: Uint8Array, final: bool, rounds: Uint8Array): Uint8Array {
+  public blake2F(
+    h: Uint8Array,
+    m: Uint8Array,
+    t: Uint8Array,
+    final: bool,
+    rounds: Uint8Array,
+  ): Uint8Array {
     if (h.length != 64 || m.length != 128 || t.length != 16 || rounds.length != 4) {
       return new Uint8Array(0);
     }
 
-    let input = new Blake2FInput(h, m, t, final, rounds);
+    const input = new Blake2FInput(h, m, t, final, rounds);
     const inputPtr = new AUint8Array(Protobuf.encode(input, Blake2FInput.encode)).store();
 
     const resPtr = __CryptoApi__.blake2F(inputPtr);
