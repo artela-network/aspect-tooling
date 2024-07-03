@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import path from 'path';
 import { Command, Flags } from '@oclif/core';
 import { WasmIndexTmpl } from '../tmpl/aspect/indextmpl';
+import { TransformTmpl } from "../tmpl/misc/transform";
 import { ReadMeTmpl } from '../tmpl/readme';
 import { DeployTmpl } from '../tmpl/scripts/aspect-deploy';
 import { BindTmpl } from '../tmpl/scripts/bind';
@@ -17,8 +18,8 @@ import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
 const isWinOS = /^win/i.test(process.platform);
 
-const toolVersion = '^0.0.59';
-const libVersion = '^0.0.34';
+const toolVersion = '^0.0.60';
+const libVersion = '^0.0.35';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
@@ -40,8 +41,10 @@ export default class Init extends Command {
     this.ensureTestsDirectory(flags.dir);
     this.ensureAsconfigJson(flags.dir);
     this.ensureGitIgnore(flags.dir);
-    //package.json
+    // package.json
     this.ensurePackageJson(flags.dir);
+    // transform.mjs
+    this.ensureTransform(flags.dir);
     //readme.md
     this.ensureReadme(flags.dir);
     this.log('=====Success=====');
@@ -144,11 +147,21 @@ export default class Init extends Command {
     const tsconfigBase = 'node_modules\n' + 'build\n' + '*.txt\n';
 
     //  this.log("- Making sure that 'tsconfigs.json' is set up...");
-    if (fs.existsSync(tsconfigFile)) {
-    } else {
+    if (!fs.existsSync(tsconfigFile)) {
       fs.writeFileSync(tsconfigFile, tsconfigBase);
       this.log('  Created: ' + tsconfigFile);
     }
+  }
+
+  ensureTransform(rootDir: string) {
+    const transformFile = path.join(rootDir, 'transform.mjs');
+
+    if (fs.existsSync(transformFile)) {
+      return;
+    }
+
+    fs.writeFileSync(transformFile, TransformTmpl);
+    this.log('  Created: ' + transformFile);
   }
 
   ensureTsconfigJson(rootDir: string) {
@@ -282,8 +295,8 @@ export default class Init extends Command {
       };
 
       if (!scripts['aspect:build']) {
-        scripts['asbuild:debug'] = 'asc aspect/index.ts --target debug --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__';
-        scripts['asbuild:release'] = 'asc aspect/index.ts --target release --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__';
+        scripts['asbuild:debug'] = 'asc aspect/index.ts --transform ./transform.mjs --disable bulk-memory -O0 --debug --runtime stub --exportRuntime --exportStart __aspect_start__ --target debug';
+        scripts['asbuild:release'] = 'asc aspect/index.ts --transform ./transform.mjs --disable bulk-memory -O3 --noAssert --runtime stub --exportRuntime --exportStart __aspect_start__ --target release';
         scripts['aspect:build'] = 'npm run asbuild:debug && npm run asbuild:release';
         pkg['scripts'] = scripts;
         updated = true;
@@ -417,6 +430,21 @@ export default class Init extends Command {
         pkg['dependencies'] = dependencies;
         updated = true;
       }
+      if (!dependencies['@ethersproject/bytes']) {
+        dependencies['@ethersproject/bytes'] = '^5.7.0';
+        pkg['dependencies'] = dependencies;
+        updated = true;
+      }
+      if (!dependencies['@ethersproject/keccak256']) {
+        dependencies['@ethersproject/keccak256'] = '^5.7.0';
+        pkg['dependencies'] = dependencies;
+        updated = true;
+      }
+      if (!dependencies['brotli']) {
+        dependencies['brotli'] = '^1.3.3';
+        pkg['dependencies'] = dependencies;
+        updated = true;
+      }
 
       if (updated) {
         fs.writeFileSync(packageFile, JSON.stringify(pkg, null, 2));
@@ -444,8 +472,8 @@ export default class Init extends Command {
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./aspect/contract',
-              'asbuild:debug': 'asc aspect/index.ts --target debug',
-              'asbuild:release': 'asc aspect/index.ts --target release',
+              'asbuild:debug': 'asc aspect/index.ts --transform ./transform.mjs --disable bulk-memory -O0 --debug --runtime stub --exportRuntime --exportStart __aspect_start__ --target debug',
+              'asbuild:release': 'asc aspect/index.ts --transform ./transform.mjs --disable bulk-memory -O3 --noAssert --runtime stub --exportRuntime --exportStart __aspect_start__ --target release',
               'operation:call': 'node scripts/operation.cjs --isCall true',
               'operation:send': 'node scripts/operation.cjs --isCall false',
               'bound:aspect': 'node scripts/get-bound-aspect.cjs',
@@ -464,6 +492,9 @@ export default class Init extends Command {
               '@artela/web3': web3Version,
               '@assemblyscript/loader': '^0.27.23',
               'as-proto': '^1.3.0',
+              '@ethersproject/bytes': '^5.7.0',
+              '@ethersproject/keccak256': '^5.7.0',
+              'brotli': '^1.3.3'
             },
             devDependencies: {
               '@artela/aspect-tool': toolVersion,
