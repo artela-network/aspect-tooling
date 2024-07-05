@@ -50,31 +50,31 @@ async function operationCall() {
         console.log("'aspectId' cannot be empty, please set by the parameter' --aspectId 0xxxx'")
         process.exit(0)
     }
-
+    
+    const isCall = argv.isCall;
     const aspectContract = new web3.atl.aspectCore();
-
     const aspectInstance = new web3.atl.Aspect(aspectId);
+    const operation = aspectInstance.operation(callData);
 
-    const encodeABI = aspectInstance.operation(callData).encodeABI();
-
-    const tx = {
-        from: sender.address,
-        to: aspectContract.options.address,
-        data: encodeABI,
-        gasPrice,
-        gas: 900_000
-    }
-    const isCall = argv.isCall
-
-    const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
     if (isCall) {
         let callResult = await web3.eth.call({
+            from: sender.address,
             to: aspectContract.options.address,
-            data: encodeABI
+            data: operation.encodeABI()
         });
         const rest = web3.eth.abi.decodeParameter('string', callResult);
         console.log('operation call result: ' + rest);
     } else {
+        const tx = {
+          from: sender.address,
+          to: aspectContract.options.address,
+          data: operation.encodeABI(),
+          gasPrice,
+          gas: argv.gas ? parseInt(argv.gas) : await operation.estimateGas({from: sender.address})
+        }
+        
+        const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
+    
         await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
             .on('receipt', receipt => {
                 console.log(receipt);

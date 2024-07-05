@@ -90,31 +90,30 @@ async function deploy() {
     {
         const contractAbi = JSON.parse(abiTxt);
 
-        // instantiate an instance of demo contract
-        let tokenContract = new web3.eth.Contract(contractAbi);
+        // instantiate an instance of contract
+        let contract = new web3.eth.Contract(contractAbi);
 
-        // deploy token contract
-        let tokenDeploy = tokenContract.deploy(deployParams);
+        // deploy contract
+        let deploy = contract.deploy(deployParams);
         let nonceVal = await web3.eth.getTransactionCount(account.address);
 
-        let tokenTx = {
+        let tx = {
             from: account.address,
-            data: tokenDeploy.encodeABI(),
+            data: deploy.encodeABI(),
             nonce: nonceVal,
-            gas: !parseInt(argv.gas) | 7000000
+            gas: argv.gas ? parseInt(argv.gas) : await deploy.estimateGas({from: sender.address})
         }
 
-
-        let signedTokenTx = await web3.eth.accounts.signTransaction(tokenTx, account.privateKey);
-        console.log('deploy contract tx hash: ' + signedTokenTx.transactionHash);
-        await web3.eth.sendSignedTransaction(signedTokenTx.rawTransaction)
+        let signedTx = await web3.eth.accounts.signTransaction(tx, account.privateKey);
+        console.log('deploy contract tx hash: ' + signedTx.transactionHash);
+        await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
             .on('receipt', receipt => {
                 console.log(receipt);
                 console.log("contract address: ", receipt.contractAddress);
                 contractAddress = receipt.contractAddress;
             });
     }
-    console.log(\`--contractAccount \${account.address} --contractAddress \${contractAddress}\`);
+    console.log(\`contractAddress: \${contractAddress}\`);
 
 }
 

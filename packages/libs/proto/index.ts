@@ -27,6 +27,7 @@ export * from './aspect/v2/post-exec-message-input';
 export * from './aspect/v2/post-tx-execute-input';
 export * from './aspect/v2/post-contract-call-input';
 export * from './aspect/v2/pre-contract-call-input';
+export * from './aspect/v2/init-input';
 export * from './aspect/v2/pre-exec-message-input';
 export * from './aspect/v2/pre-tx-execute-input';
 export * from './aspect/v2/receipt-input';
