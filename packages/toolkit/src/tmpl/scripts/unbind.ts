@@ -63,7 +63,7 @@ async function unbind() {
         data: unbind.encodeABI(),
         gasPrice,
         to: aspectContract.options.address,
-        gas: !parseInt(argv.gas) | 9000000
+        gas: argv.gas ? parseInt(argv.gas) : await unbind.estimateGas({from: sender.address})
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);

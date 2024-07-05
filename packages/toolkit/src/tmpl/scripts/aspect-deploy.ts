@@ -6,6 +6,7 @@ const argv = require('yargs')
     .string('node')
     .string('skfile')
     .string('gas')
+    .string('initdata')
     .string('wasm')
     .string('properties')
     .array('joinPoints')
@@ -59,7 +60,8 @@ async function deploy() {
     //  --wasm  ./build/release.wasm
     let wasmPath = String(argv.wasm)
     if (!wasmPath || wasmPath === 'undefined') {
-        aspectCode = fs.readFileSync('./build/release.wasm', {encoding: "hex"});
+        const bytecodePath = fs.existsSync('./build/release.wasm.br') ? './build/release.wasm.br' : './build/release.wasm';
+        aspectCode = fs.readFileSync(bytecodePath, { encoding: "hex" });
     } else {
         aspectCode = fs.readFileSync(wasmPath, {encoding: "hex"});
     }
@@ -67,11 +69,14 @@ async function deploy() {
         console.log("aspectCode cannot be empty")
         process.exit(0)
     }
+    
+    const initData = argv.initdata || '0x';
 
     // to deploy aspect
     let aspect = new web3.atl.Aspect();
     let deploy = await aspect.deploy({
         data: '0x' + aspectCode,
+        initData,
         properties,
         joinPoints,
         paymaster: sender.address,
@@ -83,7 +88,7 @@ async function deploy() {
         data: deploy.encodeABI(),
         to: ARTELA_ADDR,
         gasPrice,
-        gas: !parseInt(argv.gas) | 9000000
+        gas: argv.gas ? parseInt(argv.gas) : await deploy.estimateGas({from: sender.address})
     }
     let signedTx = await web3.atl.accounts.signTransaction(tx, sender.privateKey);
     console.log("sending signed transaction...");

@@ -83,15 +83,15 @@ async function send() {
         process.exit(0)
     }
 
-    let storageInstance = new web3.eth.Contract(abi, contractAddr);
-    let instance = storageInstance.methods[method](...parameters);
+    let contract = new web3.eth.Contract(abi, contractAddr);
+    let instance = contract.methods[method](...parameters);
 
     let tx = {
         from: sender.address,
         to: contractAddr,
         data: instance.encodeABI(),
         gasPrice,
-        gas: !parseInt(argv.gas) | 4000000
+        gas: argv.gas ? parseInt(argv.gas) : await instance.estimateGas({from: sender.address})
     }
     let signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
     console.log('call contract tx hash: ' + signedTx.transactionHash);

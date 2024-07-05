@@ -1,5 +1,6 @@
 import {
   OperationInput,
+  InitInput,
   PostContractCallInput,
   PostTxExecuteInput,
   PreContractCallInput,
@@ -15,6 +16,14 @@ export interface IAspectBase {
    * @returns true if the sender is the owner of the contract, otherwise false.
    */
   isOwner(sender: Uint8Array): bool;
+
+  /**
+   * init is the one-time initialization function for the aspect. It will be triggered
+   * when the aspect is first time deployed.
+   *
+   * @param input the input for the initialization.
+   */
+  init(input: InitInput): void;
 }
 
 export interface ITransactionVerifier extends IAspectBase {
@@ -97,23 +106,19 @@ export abstract class AspectBase
   abstract postTxExecute(input: PostTxExecuteInput): void;
 
   abstract verifyTx(input: TxVerifyInput): Uint8Array;
+
+  abstract init(input: InitInput): void;
 }
 
 export class PointCutType {
-  static readonly ON_TX_RECEIVE_METHOD: string = 'onTxReceive';
-  static readonly ON_BLOCK_INITIALIZE_METHOD: string = 'onBlockInitialize';
-
   static readonly VERIFY_TX: string = 'verifyTx';
 
   static readonly PRE_TX_EXECUTE_METHOD: string = 'preTxExecute';
   static readonly PRE_CONTRACT_CALL_METHOD: string = 'preContractCall';
   static readonly POST_CONTRACT_CALL_METHOD: string = 'postContractCall';
   static readonly POST_TX_EXECUTE_METHOD: string = 'postTxExecute';
-  static readonly POST_TX_COMMIT: string = 'postTxCommit';
-  static readonly ON_BLOCK_FINALIZE_METHOD: string = 'onBlockFinalize';
 
+  static readonly INIT_METHOD: string = 'init';
   static readonly OPERATION_METHOD: string = 'operation';
   static readonly IS_OWNER_METHOD: string = 'isOwner';
-
-  static readonly FILTER_TX: string = 'filterTx';
 }
