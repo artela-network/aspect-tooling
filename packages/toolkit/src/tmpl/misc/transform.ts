@@ -32,7 +32,7 @@ class CompressionTransform extends Transform {
     const outputData = Buffer.concat([ header, checkSumBuffer, compressedData ]);
 
     // save it
-    const outputFile = isRelease ? 'build/release.wasm' : 'build/debug.wasm';
+    const outputFile = isRelease ? 'build/release.wasm.br' : 'build/debug.wasm.br';
     if (!fs.existsSync("build")) {
       fs.mkdirSync("build");
     }

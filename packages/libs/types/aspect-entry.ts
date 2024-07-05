@@ -2,6 +2,7 @@ import { Protobuf } from 'as-proto/assembly';
 import { IAspectOperation, IPostContractCallJP, IPostTxExecuteJP } from '.';
 import { AString, AUint8Array, MessageUtil } from '../common';
 import {
+  InitInput,
   OperationInput,
   PostContractCallInput,
   PostTxExecuteInput,
@@ -75,6 +76,10 @@ export class EntryPoint {
       const outputPtr = new AUint8Array(output);
       return outputPtr.store();
     }
+    if (method == PointCutType.INIT_METHOD) {
+      this.init(input.get());
+      return 0;
+    }
 
     throw new Error('method ' + method + ' not found or not implemented');
   }
@@ -146,5 +151,14 @@ export class EntryPoint {
     const input = Protobuf.decode<OperationInput>(rawInput, OperationInput.decode);
     const operation = this.aspectOperation as IAspectOperation;
     return operation.operation(input);
+  }
+
+  private init(rawInput: Uint8Array): void {
+    if (this.aspectBase == null) {
+      throw new Error('aspect is not initialized');
+    }
+
+    const input = Protobuf.decode<InitInput>(rawInput, InitInput.decode);
+    this.aspectBase!.init(input);
   }
 }
