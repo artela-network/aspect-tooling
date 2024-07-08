@@ -19,7 +19,7 @@ import { UnbindTmpl } from '../tmpl/scripts/unbind';
 const isWinOS = /^win/i.test(process.platform);
 
 const toolVersion = '^0.0.60';
-const libVersion = '^0.0.35';
+const libVersion = '^0.0.36';
 const web3Version = '^1.9.22';
 
 export default class Init extends Command {
