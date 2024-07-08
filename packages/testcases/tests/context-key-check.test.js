@@ -93,7 +93,8 @@ const VerifyCheck = async (contractObj, joinPoint, key) => {
     console.log("==== boundAddrs ===", boundAddrs)
     assert.ok(bindResult.status, 'Bind aspect fail')
     assert.ok(bindResult2.status, 'Bind aspect fail')
-    assert.ok(await SendUnsignedTxTest(contractObj.contractAddress, key), `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
+    const result = await SendUnsignedTxTest(contractObj.contractAddress, key)
+    assert.ok(!result, `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
 }
 
 const VerifyCheckResult = {
@@ -127,7 +128,8 @@ const OperationCheck = async (contractObj, key) => {
     const transactionReceipt = await DeployAspect({
         wasmPath: "../build/context-key-check.wasm"
     })
-    assert.ok(await entryPointTest(transactionReceipt.aspectAddress, key), `[EntryPointTest] Test failed, key ${key}`)
+    const po=await entryPointTest(transactionReceipt.aspectAddress, key)
+    assert.ok(!po, `[EntryPointTest] Test failed, key ${key}`)
 }
 for (var k in operationKeys.accessLimitKeys) {
     const key = stringToHex(operationKeys.accessLimitKeys[k]);
@@ -161,8 +163,8 @@ const JoinPointCheck = async (contractObj, joinPoint, key) => {
     })
 
     assert.ok(bindResult.status, 'Bind aspect fail')
-    assert.ok(await sendTxTest(contractObj.contractAddress, key), `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
-    assert.ok(await contractCallTest(contractObj.contractAddress, key), `[CallTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
+    assert.ok(!await sendTxTest(contractObj.contractAddress, key), `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
+    assert.ok(!await contractCallTest(contractObj.contractAddress, key), `[CallTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
 }
 
 
