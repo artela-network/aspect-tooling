@@ -28,6 +28,8 @@
     "@ethereumjs/tx": "^5.1.0",
     "as-proto": "^1.3.0",
     "bignumber.js": "^9.1.2",
+    "buffer": "^6.0.3",
+    "ethereum-bloom-filters": "^1.1.0",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {

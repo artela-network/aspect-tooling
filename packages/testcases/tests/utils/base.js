@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import Web3 from "@artela/web3";
+import {ConnectToANode} from "../bese-test.js";
 
 // Recursively look up until you find a directory that contains package.json
 function findRootDirectory(dir) {
@@ -105,6 +106,7 @@ export async function SendTx({
 
     return await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
         .on('receipt', receipt => {
+            console.log("received===");
             console.log(receipt);
         });
 }
@@ -168,4 +170,44 @@ export async function DeployContract({
 
     const signedTokenTx = await web3.eth.accounts.signTransaction(tokenTx, account.privateKey);
     return await web3.eth.sendSignedTransaction(signedTokenTx.rawTransaction);
+}
+
+export async function ContractCall({
+                                       nodeConfig = DefProjectConfig,
+                                       contract = "",
+                                       abiPath = "",
+                                       method = "",
+                                       args = [],
+                                       skFile = DefPrivateKeyPath
+                                   }) {
+    // init connection to Artela node
+    const web3 = ConnectToANode(nodeConfig);
+
+
+    if (!fs.existsSync(skFile)) {
+        throw new Error("'account' cannot be empty, please set by the parameter ' --skfile ./build/privateKey.txt'")
+    }
+    const pk = fs.readFileSync(skFile, 'utf-8');
+    const sender = web3.eth.accounts.privateKeyToAccount(pk.trim());
+    web3.eth.accounts.wallet.add(sender.privateKey);
+
+    // --contract 0x9999999999999999999999999999999999999999
+    if (!contract) {
+        throw new Error("'contract address' cannot be empty, please set by the parameter ' --contract 0x9999999999999999999999999999999999999999'")
+    }
+
+    // --abi xxx/xxx.abi
+    let abi = null
+    if (abiPath && abiPath !== 'undefined') {
+        abi = JSON.parse(fs.readFileSync(abiPath, "utf-8").toString());
+    } else {
+        throw new Error("'abi' cannot be empty, please set by the parameter abiPath")
+    }
+
+    //--method count
+    if (!method || method === 'undefined') {
+        throw new Error("'method' cannot be empty, please set by the parameter ' --method {method-name}'")
+    }
+    const storageInstance = new web3.eth.Contract(abi, contract);
+    return await storageInstance.methods[method](...args).call()
 }
