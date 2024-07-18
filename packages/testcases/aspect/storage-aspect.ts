@@ -2,6 +2,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostContractCallJP,
   IPostTxExecuteJP,
   IPreContractCallJP,
@@ -17,6 +18,8 @@ import {
 class StoreAspect
   implements IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP
 {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');
     return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));

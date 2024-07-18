@@ -68,31 +68,16 @@ const entryPointTest = async (contract, key) => {
 }
 
 
-const result = await DeployContract({
+let result = await DeployContract({
     abiPath: "../build/contract/Context.abi", bytePath: "../build/contract/Context.bin"
 })
 assert.ok(result.contractAddress, "Deploy Storage Contract fail");
 
 /// Verify check start----------------------------------------------------------------
+
+console.log('======================== Verify Tx Check ========================')
+
 const VerifyCheck = async (contractObj, joinPoint, key) => {
-
-    const aspect = await DeployAspect({
-        wasmPath: "../build/context-key-check.wasm", joinPoints: [joinPoint],properties: [
-        { 'key': 'Broker', 'value': contractObj.from }],
-    })
-    const bindResult = await BindAspect({
-        abiPath, contractAddress: contractObj.contractAddress, aspectId: aspect.aspectAddress
-    })
-
-    // bind eoa
-    const bindResult2 = await BindAspect({
-        abiPath, contractAddress: contractObj.from, aspectId: aspect.aspectAddress
-    })
-
-    const boundAddrs = await BoundAddressesOf({aspectId: aspect.aspectAddress})
-    console.log("==== boundAddrs ===", boundAddrs)
-    assert.ok(bindResult.status, 'Bind aspect fail')
-    assert.ok(bindResult2.status, 'Bind aspect fail')
     const result = await SendUnsignedTxTest(contractObj.contractAddress, key)
     assert.ok(!result, `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
 }
@@ -101,6 +86,25 @@ const VerifyCheckResult = {
     "joinPoint": "VerifyTx",
     "accessLimitKeys": ["block.header.parentHash", "block.header.miner", "block.header.transactionsRoot", "block.header.timestamp", "tx.chainId", "tx.bytes", "tx.hash", "tx.sig.v", "tx.sig.r", "tx.sig.s", "tx.from", "tx.index", "msg.from", "msg.to", "msg.value", "msg.gas", "msg.input", "msg.index", "msg.result.ret", "msg.result.gasUsed", "msg.result.error", "receipt.status", "receipt.logs", "receipt.gasUsed", "receipt.cumulativeGasUsed", "receipt.bloom"]
 }
+
+const aspect = await DeployAspect({
+    wasmPath: "../build/context-key-check.wasm", joinPoints: ['VerifyTx'],properties: [
+    { 'key': 'Broker', 'value': result.from }],
+})
+const bindResult = await BindAspect({
+    abiPath, contractAddress: result.contractAddress, aspectId: aspect.aspectAddress
+})
+
+// bind eoa
+const bindResult2 = await BindAspect({
+    abiPath, contractAddress: result.from, aspectId: aspect.aspectAddress
+})
+
+const boundAddrs = await BoundAddressesOf({aspectId: aspect.aspectAddress})
+console.log("==== boundAddrs ===", boundAddrs)
+assert.ok(bindResult.status, 'Bind aspect fail')
+assert.ok(bindResult2.status, 'Bind aspect fail')
+
 for (var i in VerifyCheckResult.accessLimitKeys) {
     await VerifyCheck(result, VerifyCheckResult.joinPoint, VerifyCheckResult.accessLimitKeys[i])
 }
@@ -109,9 +113,11 @@ for (var i in VerifyCheckResult.accessLimitKeys) {
 
 /// operation check start----------------------------------------------------------------
 
+console.log('======================== Operation Check ========================')
+
 const operationKeys = {
     "joinPoint": "Operation",
-    "accessLimitKeys": ["msg.from", "msg.to", "msg.value", "msg.gas", "msg.input", "msg.index", "msg.result.ret", "msg.result.gasUsed", "msg.result.error", "receipt.status", "receipt.logs", "receipt.gasUsed", "receipt.cumulativeGasUsed", "receipt.bloom"]
+    "accessLimitKeys": ["msg.index", "msg.result.ret", "msg.result.gasUsed", "msg.result.error", "receipt.status", "receipt.logs", "receipt.gasUsed", "receipt.cumulativeGasUsed", "receipt.bloom"]
 }
 
 function stringToHex(inputString) {
@@ -137,7 +143,6 @@ for (var k in operationKeys.accessLimitKeys) {
 }
 /// operation check end----------------------------------------------------------------
 
-
 const json = [{
     "joinPoint": "preTxExecute",
     "accessLimitKeys": ["msg.from", "msg.to", "msg.value", "msg.gas", "msg.input", "msg.index", "msg.result.ret", "msg.result.gasUsed", "msg.result.error", "receipt.status", "receipt.logs", "receipt.gasUsed", "receipt.cumulativeGasUsed", "receipt.bloom"]
@@ -152,24 +157,29 @@ const json = [{
     "accessLimitKeys": ["msg.result.ret", "msg.result.gasUsed", "msg.result.error", "receipt.status", "receipt.logs", "receipt.gasUsed", "receipt.cumulativeGasUsed", "receipt.bloom"]
 }];
 
-const JoinPointCheck = async (contractObj, joinPoint, key) => {
-
-    const aspect = await DeployAspect({
-        wasmPath: "../build/context-key-check.wasm", joinPoints: [joinPoint]
-    })
-
-    const bindResult = await BindAspect({
-        abiPath, contractAddress: contractObj.contractAddress, aspectId: aspect.aspectAddress
-    })
-
-    assert.ok(bindResult.status, 'Bind aspect fail')
+const JoinPointCheck = async (contractObj, key) => {
     assert.ok(!await sendTxTest(contractObj.contractAddress, key), `[SendTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
     assert.ok(!await contractCallTest(contractObj.contractAddress, key), `[CallTx: unauthorized access test] Test failed, unauthorized key-value pair was accessed without permission`)
 }
 
 
 for (var p in json) {
+    console.log(`======================== ${json[p].joinPoint} Check ========================`)
+    result = await DeployContract({
+        abiPath: "../build/contract/Context.abi", bytePath: "../build/contract/Context.bin"
+    })
+    assert.ok(result.contractAddress, "Deploy Storage Contract fail");
+    const aspect = await DeployAspect({
+        wasmPath: "../build/context-key-check.wasm", joinPoints: [json[p].joinPoint]
+    })
+
+    const bindResult = await BindAspect({
+        abiPath, contractAddress: result.contractAddress, aspectId: aspect.aspectAddress
+    })
+
+    assert.ok(bindResult.status, 'Bind aspect fail')
+
     for (var q in json[p].accessLimitKeys) {
-        await JoinPointCheck(result, json[p].joinPoint, json[p].accessLimitKeys[q])
+        await JoinPointCheck(result, json[p].accessLimitKeys[q])
     }
 }

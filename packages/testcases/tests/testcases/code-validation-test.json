@@ -1,0 +1,183 @@
+{
+  "description": "Test aspect code validations",
+  "actions": [
+    {
+      "description": "Create new accounts",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 1
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 1
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Aspect without exporting start function",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectNoExportStart.bytecode"
+        }
+      },
+      "expect": {
+        "error": {
+          "include": "start section not allowed"
+        }
+      }
+    },
+    {
+      "description": "Deploy Aspect with bulk memory enabled",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectBulkMemoryEnabled.bytecode"
+        }
+      },
+      "expect": {
+        "error": {
+          "include": "bulk memory support is not enabled"
+        }
+      }
+    },
+    {
+      "description": "Deploy Aspect with GC enabled",
+      "comment": "This case is not failing is because AS implemented the GC themselves, not using the GC opcodes from defined by WASM",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectWithGC.bytecode"
+        }
+      }
+    },
+    {
+      "description": "Deploy Aspect with float numbers",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [],
+          "code": "#FloatAspect.bytecode"
+        }
+      },
+      "expect": {
+        "error": {
+          "include": "floating-point support is disabled"
+        }
+      }
+    },
+    {
+      "description": "Deploy normal Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        }
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Upgrade to Aspect with bulk memory enabled",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectBulkMemoryEnabled.bytecode",
+          "properties": [],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"]
+        },
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "error": {
+          "include": "bulk memory support is not enabled"
+        }
+      }
+    },
+    {
+      "description": "Upgrade to Aspect no export start",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectNoExportStart.bytecode",
+          "properties": [],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"]
+        },
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "error": {
+          "include": "start section not allowed"
+        }
+      }
+    },
+    {
+      "description": "Upgrade to Aspect with float",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#FloatAspect.bytecode",
+          "properties": [],
+          "joinPoints": []
+        },
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "error": {
+          "include": "floating-point support is disabled"
+        }
+      }
+    }
+  ]
+}

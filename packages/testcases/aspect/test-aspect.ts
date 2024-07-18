@@ -1,7 +1,7 @@
 import {
   allocate, AspectBase,
   entryPoint,
-  execute, OperationInput, PostContractCallInput,
+  execute, InitInput, OperationInput, PostContractCallInput,
   PostTxExecuteInput, PreContractCallInput,
   PreTxExecuteInput, stringToUint8Array,
   sys, TxVerifyInput,
@@ -10,6 +10,8 @@ import {
 
 class StoreAspect extends AspectBase
 {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
     return true
   }

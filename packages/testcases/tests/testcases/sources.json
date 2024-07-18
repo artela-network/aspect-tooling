@@ -1,0 +1,164 @@
+[
+  {
+    "name": "BasicAspectCompressed",
+    "description": "Compressed dummy Aspect for testing basic functionalities",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectNoCompression",
+    "description": "Uncompressed dummy Aspect for testing basic functionalities",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": false,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "VerifierAspect",
+    "description": "Verifier Aspect for testing customized tx verification",
+    "type": "aspect",
+    "src": "verifier.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectBulkMemoryEnabled",
+    "description": "Dummy Aspect with bulk memory enabled",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectWithGC",
+    "description": "Dummy Aspect with gc enabled",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "incremental",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectNoExportStart",
+    "description": "Dummy Aspect without exporting start function",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "FloatAspect",
+    "description": "Float Aspect for testing code validations",
+    "type": "aspect",
+    "src": "float.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O0",
+        "--debug"
+      ]
+    }
+  },
+  {
+    "name": "InitFailAspect",
+    "description": "Aspect with init failure",
+    "type": "aspect",
+    "src": "init-fail.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O0",
+        "--debug"
+      ]
+    }
+  },
+  {
+    "name": "CounterContract",
+    "description": "Simple contract that counts numbers",
+    "type": "contract",
+    "src": "Counter.sol",
+    "contractName": "Counter"
+  }
+]

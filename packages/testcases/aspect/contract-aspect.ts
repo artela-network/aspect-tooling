@@ -2,6 +2,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostTxExecuteJP,
   IPreTxExecuteJP,
   PostTxExecuteInput,
@@ -13,6 +14,8 @@ import {
 class StoreAspect
   implements IPostTxExecuteJP, IPreTxExecuteJP
 {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
     return true
   }

@@ -8,6 +8,7 @@ import {
     EthLog,
     EthLogs,
     execute, IAspectOperation,
+    InitInput,
     IntArrayData,
     IntData,
     IPostContractCallJP,
@@ -210,6 +211,8 @@ function newAllKeys(): Map<string, CtxType> {
 }
 
 class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPreTxExecuteJP, IPostContractCallJP, IPreContractCallJP, ITransactionVerifier {
+    init(input: InitInput): void {}
+
 
     isOwner(sender: Uint8Array): bool {
         const value = sys.aspect.property.get<Uint8Array>("owner");
@@ -219,11 +222,6 @@ class ContextPermissionCheck implements IAspectOperation, IPostTxExecuteJP, IPre
     operation(input: OperationInput): Uint8Array {
         const logPrefix = "operation";
         const skipKey = new Set<string>()
-        skipKey.add("msg.from");
-        skipKey.add("msg.to");
-        skipKey.add("msg.value");
-        skipKey.add("msg.gas");
-        skipKey.add("msg.input");
         skipKey.add("msg.index");
         skipKey.add("msg.result.ret");
         skipKey.add("msg.result.gasUsed");
