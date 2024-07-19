@@ -46,6 +46,10 @@ function padStart(str, targetLength, padString) {
 }
 
 function toPaddedHexString(num) {
+    if (typeof num === 'string') {
+        num = new BigNumber(num, 10);
+    }
+
     let hex = num.toString(16);
 
     if (hex.length % 2 !== 0) {
@@ -122,11 +126,13 @@ export async function DeployContract({
     web3.eth.accounts.wallet.add(account.privateKey);
     const nonceVal = await web3.eth.getTransactionCount(account.address);
 
+    console.log(`Deploy contract with ${account.address}`);
+
     const tokenTx = {
         from: account.address,
         data: tokenDeploy.encodeABI(),
         nonce: nonceVal,
-        gas
+        gas: await tokenDeploy.estimateGas({from: account.address})
     }
 
     const signedTokenTx = await web3.eth.accounts.signTransaction(tokenTx, account.privateKey);
@@ -141,6 +147,7 @@ export async function DeployAspect({
                                        skFile = DefPrivateKeyPath,
                                        gas = DefGasLimit
                                    }) {
+    console.log(`============= join points ${joinPoints} =============`)
     const ARTELA_ADDR = "0x0000000000000000000000000000000000A27E14";
 
     const web3 = ConnectToANode(nodeConfig);
@@ -177,7 +184,7 @@ export async function DeployAspect({
         data: deploy.encodeABI(),
         to: ARTELA_ADDR,
         gasPrice,
-        gas
+        gas: await deploy.estimateGas({from: account.address})
     }
     const signedTx = await web3.atl.accounts.signTransaction(tx, account.privateKey);
     return await web3.atl.sendSignedTransaction(signedTx.rawTransaction);
@@ -233,7 +240,7 @@ export async function UpgradeAspect({
         data: deploy.encodeABI(),
         to: ARTELA_ADDR,
         gasPrice,
-        gas
+        gas: await deploy.estimateGas({from: account.address})
     }
 
 
@@ -267,6 +274,8 @@ export async function BindAspect({
     web3.eth.accounts.wallet.add(sender.privateKey);
 
 
+    console.log(`Bind aspect with ${sender.address}`);
+
     // --contract {smart-contract-address}
     if (!contractAddress || contractAddress === 'undefined') {
         throw new Error("'contractAddress' cannot be empty, please set by the parameter ' 0xxxx'")
@@ -297,7 +306,7 @@ export async function BindAspect({
         data: bind.encodeABI(),
         gasPrice,
         to: ASPECT_ADDR,
-        gas
+        gas: await bind.estimateGas({from: sender.address})
     }
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
     return await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
@@ -345,7 +354,7 @@ export async function UnBindAspect({
         data: bind.encodeABI(),
         gasPrice,
         to: ASPECT_ADDR,
-        gas
+        gas: await bind.estimateGas({from: sender.address})
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
@@ -519,15 +528,16 @@ export async function SendUnsignedTx({
     const nonce = await web3.eth.getTransactionCount(sender.address);
     const contractCallData = instance.encodeABI();
 
+    gas = 1_000_000;
+
     const orgTx = {
         from: sender.address,
         nonce,
         gasPrice,
-        gas: 8000000,
+        gas,
         data: contractCallData,
         to: contract,
         chainId,
-        gasLimit: 8000000,
     }
     const signedTx = await web3.eth.accounts.signTransaction(orgTx, sender.privateKey);
 
@@ -551,9 +561,8 @@ export async function SendUnsignedTx({
         data: encodedData,
         nonce:toPaddedHexString(nonce),
         gasPrice:toPaddedHexString(gasPrice),
-        gas:toPaddedHexString(gas),
+        gasLimit:toPaddedHexString(gas),
         chainId: toPaddedHexString(chainId),
-        gasLimit: toPaddedHexString(DefGasLimit),
     }
 
     if (value !== "") {
@@ -614,7 +623,7 @@ export async function SendTx({
         to: contract,
         data: instance.encodeABI(),
         gasPrice,
-        gas
+        gas: await instance.estimateGas({from: sender.address})
     }
     if (value !== "") {
         tx.value = value
@@ -653,14 +662,14 @@ export async function EntryPoint({
     }
     const aspectInstance = new web3.atl.Aspect(aspectId);
 
-    const encodeABI = aspectInstance.operation(operationData).encodeABI();
+    const operation = aspectInstance.operation(operationData);
 
     const tx = {
         from: sender.address,
         to: ASPECT_ADDR,
-        data: encodeABI,
+        data: operation.encodeABI(),
         gasPrice,
-        gas: 20_000_000
+        gas: await operation.estimateGas({from: sender.address})
     }
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
@@ -672,7 +681,7 @@ export async function EntryPoint({
 
     return await web3.eth.call({
         to: ASPECT_ADDR, // contract address
-        data: encodeABI
+        data: operation.encodeABI()
     });
 }
 

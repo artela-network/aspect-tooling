@@ -3,7 +3,7 @@ import {
     entryPoint,
     execute,
     IPreContractCallJP,
-    uint8ArrayToHex, sys, IAspectOperation, stringToUint8Array,
+    uint8ArrayToHex, sys, IAspectOperation, stringToUint8Array, InitInput,
     PreContractCallInput, OperationInput, uint8ArrayToString, ethereum
 } from "@artela/aspect-libs";
 
@@ -102,6 +102,7 @@ class Aspect implements IPreContractCallJP, IAspectOperation {
         return stringToUint8Array("success");
     }
 
+    init(input: InitInput): void {}
 }
 
 // 2.register aspect Instance

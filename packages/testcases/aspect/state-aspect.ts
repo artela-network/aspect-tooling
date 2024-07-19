@@ -3,6 +3,7 @@ import {
   entryPoint,
   execute,
   IAspectOperation,
+  InitInput,
   IPostTxExecuteJP,
   IPreTxExecuteJP,
   OperationInput,
@@ -16,6 +17,8 @@ import {
 } from '@artela/aspect-libs';
 
  class StateAspect implements IPostTxExecuteJP, IPreTxExecuteJP, IAspectOperation {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');
     return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));

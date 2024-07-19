@@ -1,0 +1,301 @@
+{
+  "description": "Test bind same aspect with contract and EoA",
+  "actions": [
+    {
+      "description": "Create new account",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 1
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 1
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Verifier Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "verifierAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Upgrade Verifier Aspect",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#VerifierAspect.bytecode",
+          "properties": [{ "key": "0x12", "value": "0x34" }],
+          "joinPoints": ["VerifyTx"]
+        },
+        "aspect": "$verifierAspect",
+        "gas": "auto"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Upgrade Basic Aspect",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectCompressed.bytecode",
+          "properties": [],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"]
+        },
+        "aspect": "$aspectId",
+        "gas": "auto"
+      }
+    },
+    {
+      "description": "Deploy no-joinpoint Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "noJoinPoint": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Bind verifier version 1 with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Bind verifier version 1 again with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "binding limit exceeded"
+        }
+      }
+    },
+    {
+      "description": "Bind verifier version 2 with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 2,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "binding limit exceeded"
+        }
+      }
+    },
+    {
+      "description": "Bind verifier version 1 with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Bind verifier version 1 again with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
+      }
+    },
+    {
+      "description": "Bind verifier version 2 with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$accounts.0",
+        "version": 2,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
+      }
+    },
+    {
+      "description": "Bind no-joinpoint Aspect with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$noJoinPoint",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect is either for tx or verifier"
+        }
+      }
+    },
+    {
+      "description": "Bind tx Aspect with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$accounts.0",
+        "version": 0,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "only verifier aspect can be bound with eoa"
+        }
+      }
+    },
+    {
+      "description": "Bind no-joinpoint Aspect with Contract",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$noJoinPoint",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect is either for tx or verifier"
+        }
+      }
+    },
+    {
+      "description": "Bind tx aspect version 1 with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Bind tx aspect version 1 again with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
+      }
+    },
+    {
+      "description": "Bind tx aspect version 2 with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 2,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
+      }
+    }
+  ]
+}

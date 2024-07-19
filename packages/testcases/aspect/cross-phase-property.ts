@@ -2,6 +2,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostTxExecuteJP,
   IPreTxExecuteJP,
   ITransactionVerifier,
@@ -20,6 +21,8 @@ class CrossPhaseProperty implements IPostTxExecuteJP, IPreTxExecuteJP, ITransact
   propFromVerifyTx: string = `${this.stateKeyPrefix}_verifyTx`;
   propFromPreTxExecute: string = `${this.stateKeyPrefix}_preTxExecute`;
   propFromPostTxExecute: string = `${this.stateKeyPrefix}_postTxExecute`;
+
+  init(input: InitInput): void {}
 
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');

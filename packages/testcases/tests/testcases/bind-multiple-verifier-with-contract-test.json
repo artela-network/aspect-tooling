@@ -1,0 +1,77 @@
+{
+  "description": "Test multiple verifier binding with contract",
+  "actions": [
+    {
+      "description": "Deploy Verifier Aspect",
+      "account": "",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "verifierAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Verifier Aspect2",
+      "account": "",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "verifierAspect2": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Bind first verifier Aspect with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Bind second verifier Aspect with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect2",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "binding limit exceeded"
+        }
+      }
+    }
+  ]
+}

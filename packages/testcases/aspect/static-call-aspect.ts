@@ -3,6 +3,7 @@ import {
   entryPoint,
   execute,
   IAspectOperation,
+  InitInput,
   IPostContractCallJP,
   IPostTxExecuteJP,
   IPreContractCallJP,
@@ -28,6 +29,8 @@ class StaticCallAspect
   IPreContractCallJP,
   ITransactionVerifier,
   IAspectOperation {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
     return true;
   }
@@ -37,7 +40,7 @@ class StaticCallAspect
     const to = sys.aspect.property.get<Uint8Array>('to');
     const data = sys.aspect.property.get<Uint8Array>('data');
 
-    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallRequest = new StaticCallRequest(from, to, data);
     const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
@@ -71,7 +74,7 @@ class StaticCallAspect
     const to = sys.aspect.property.get<Uint8Array>('to');
     const data = sys.aspect.property.get<Uint8Array>('data');
 
-    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallRequest = new StaticCallRequest(from, to, data);
     const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
     const hex = uint8ArrayToHex(staticCallResult.ret);
@@ -90,7 +93,7 @@ class StaticCallAspect
     const to = sys.aspect.property.get<Uint8Array>('to');
     const data = sys.aspect.property.get<Uint8Array>('data');
 
-    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallRequest = new StaticCallRequest(from, to, data);
     const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
     const hex = uint8ArrayToHex(staticCallResult.ret);
     sys.require(
@@ -107,7 +110,7 @@ class StaticCallAspect
     const to = sys.aspect.property.get<Uint8Array>('to');
     const data = sys.aspect.property.get<Uint8Array>('data');
 
-    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallRequest = new StaticCallRequest(from, to, data);
     const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
     sys.log('||| verifyTx staticCallResult.ret ' + staticCallResult.ret.toString());
@@ -121,7 +124,7 @@ class StaticCallAspect
     const to = sys.aspect.property.get<Uint8Array>('to');
     const data = sys.aspect.property.get<Uint8Array>('data');
 
-    const staticCallRequest = new StaticCallRequest(from, to, data, 1000000000);
+    const staticCallRequest = new StaticCallRequest(from, to, data);
     const staticCallResult = sys.hostApi.evmCall.staticCall(staticCallRequest);
 
     const hex = uint8ArrayToHex(staticCallResult.ret);

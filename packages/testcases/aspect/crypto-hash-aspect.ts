@@ -5,6 +5,7 @@ import {
   entryPoint,
   execute,
   IAspectOperation,
+  InitInput,
   OperationInput,
   stringToUint8Array,
   sys,
@@ -12,6 +13,8 @@ import {
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+  init(input: InitInput): void {}
+
   isOwner(sender: Uint8Array): bool {
       return true;
   }
