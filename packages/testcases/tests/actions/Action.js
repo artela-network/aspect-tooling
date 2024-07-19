@@ -18,26 +18,7 @@ export class Action {
     throw new Error('Execute method must be implemented');
   }
 
-  validate(result, receipt, tx, error, context) {
-    const replaceContextVariables = (obj, context) => {
-      if (typeof obj === 'string' && obj.startsWith('$')) {
-        const variableName = obj.substring(1);
-        const parts = variableName.split('.');
-        let value = context;
-        parts.forEach(part => {
-          value = value[part];
-        });
-        return value;
-      } else if (Array.isArray(obj)) {
-        return obj.map(item => replaceContextVariables(item, context));
-      } else if (typeof obj === 'object' && obj !== null) {
-        for (const key in obj) {
-          obj[key] = replaceContextVariables(obj[key], context);
-        }
-      }
-      return obj;
-    };
-
+  validate(result, receipt, tx, error, context, testManager) {
     const validateField = (field, sources, context) => {
       Object.keys(field).forEach(key => {
         const condition = field[key];
@@ -62,7 +43,7 @@ export class Action {
           throw new Error(`Unknown source type: ${sourceType}`);
         }
 
-        const expectedValue = replaceContextVariables(condition, context);
+        const expectedValue = testManager.replaceVariables(condition, context);
 
         let validated = false;
         if (expectedValue.eq !== undefined) {
@@ -75,6 +56,19 @@ export class Action {
             expect(actualValue).to.deep.equal(expectedValue.eq);
           } else {
             expect(actualValue).to.eq(expectedValue.eq);
+          }
+          validated = true;
+        }
+        if (expectedValue.notEq !== undefined) {
+          if (process.env.SHOW_TX_DETAILS === 'true') {
+            console.log(
+              `🔍 Validating data: ${key}, condition: notEq, expected: ${JSON.stringify(expectedValue.notEq)}, actual: ${JSON.stringify(actualValue)}`,
+            );
+          }
+          if (typeof expectedValue.notEq === 'object') {
+            expect(actualValue).to.not.deep.eq(expectedValue.notEq);
+          } else {
+            expect(actualValue).to.not.eq(expectedValue.notEq);
           }
           validated = true;
         }
@@ -125,17 +119,6 @@ export class Action {
     if (this.action.expect) {
       validateField(this.action.expect, { result, receipt, tx, error }, context);
     }
-  }
-
-  async estimateGas(tx, testManager, context) {
-    tx.from = testManager.replaceVariables(
-      this.action.account || testManager.account.address,
-      context,
-    );
-    if (!tx.gas || tx.gas === 'auto') {
-      tx.gas = await testManager.web3.eth.estimateGas(tx);
-    }
-    return tx;
   }
 
   async estimateGas(tx, testManager, context) {

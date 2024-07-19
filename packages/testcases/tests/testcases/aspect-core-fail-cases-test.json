@@ -85,7 +85,7 @@
               "value": "$accounts.1"
             }
           ],
-          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "joinPoints": ["VerifyTx"],
           "code": "#VerifierAspect.bytecode"
         },
         "gas": "auto"
@@ -303,7 +303,7 @@
       }
     },
     {
-      "description": "Authorized binding",
+      "description": "Duplicate binding",
       "account": "",
       "type": "bind",
       "options": {
@@ -311,6 +311,11 @@
         "account": "$contractAddress",
         "version": 1,
         "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
       }
     },
     {

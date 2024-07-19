@@ -1,0 +1,234 @@
+{
+  "description": "Test change aspect binding version",
+  "actions": [
+    {
+      "description": "Create new account",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 1
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 1
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Upgrade Aspect to no-joinpoint Aspect",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectCompressed.bytecode",
+          "properties": [{ "key": "owner", "value": "$accounts.0" }],
+          "joinPoints": []
+        },
+        "aspect": "$aspectId",
+        "gas": "auto"
+      }
+    },
+    {
+      "description": "Upgrade Aspect to Basic Aspect",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectCompressed.bytecode",
+          "properties": [{ "key": "0x12", "value": "0x34" }],
+          "joinPoints": ["PostContractCall"]
+        },
+        "aspect": "$aspectId",
+        "gas": "auto"
+      }
+    },
+    {
+      "description": "Bind verifier aspect version with EoA",
+      "account": "$accounts.0",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Change EoA Aspect bind version to latest version (tx aspect)",
+      "account": "$accounts.0",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$accounts.0",
+        "version": 0
+      },
+      "expect": {
+        "error": {
+          "include": "only verifier aspect can be bound with eoa"
+        }
+      }
+    },
+    {
+      "description": "Deploy Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Bind latest aspect version with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 0,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Change Aspect bind version to no-joinpoint version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 2
+      },
+      "expect": {
+        "error": {
+          "include": "aspect is either for tx or verifier"
+        }
+      }
+    },
+    {
+      "description": "Change Aspect bind version to verifier version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1
+      }
+    },
+    {
+      "description": "Deploy Another verifier Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "verifierAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind verifier aspect with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 0,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "binding limit exceeded"
+        }
+      }
+    },
+    {
+      "description": "Change Aspect bind version to latest version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 0
+      }
+    },
+    {
+      "description": "Check contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId",
+              "version": "3",
+              "priority": "-1"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "description": "Bind verifier aspect again with contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress",
+        "version": 0,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Change Aspect bind version to verifier version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1
+      },
+      "expect": {
+        "error": {
+          "include": "binding limit exceeded"
+        }
+      }
+    }
+  ]
+}

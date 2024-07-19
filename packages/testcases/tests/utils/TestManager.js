@@ -9,6 +9,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 import { AspectVersionAction } from '../actions/AspectVersionAction.js';
 import { BindAspectAction } from '../actions/BindAspectAction.js';
 import { CallContractAction } from '../actions/CallContractAction.js';
+import { ChangeVersionAction } from '../actions/ChangeVersionAction.js';
 import { CreateAccountsAction } from '../actions/CreateAccountsAction.js';
 import { DeployAspectAction } from '../actions/DeployAspectAction.js';
 import { DeployContractAction } from '../actions/DeployContractAction.js';
@@ -16,7 +17,6 @@ import { QueryAspectBindingsAction } from '../actions/QueryAspectBindingsAction.
 import { QueryContractBindingsAction } from '../actions/QueryContractBindingsAction.js';
 import { UnbindAspectAction } from '../actions/UnbindAspectAction.js';
 import { UpgradeAspectAction } from '../actions/UpgradeAspectAction.js';
-import { ChangeVersionAction } from '../actions/ChangeVersionAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -86,7 +86,7 @@ export class TestManager {
       '--lib',
       path.join(this.rootDir, 'node_modules'),
       '--outFile',
-      'output.wasm'
+      'output.wasm',
     ];
 
     if (source.compileOptions.args) {
@@ -243,12 +243,11 @@ export class TestManager {
         let value = context;
         parts.forEach(part => {
           value = value[part];
+          if (value === undefined) {
+            throw new Error(`Variable ${variableName} not found in context`);
+          }
         });
-        if (value !== undefined) {
-          return value;
-        } else {
-          throw new Error(`Variable ${variableName} not found in context`);
-        }
+        return value;
       } else if (obj.startsWith('#')) {
         const splits = obj.substring(1).split('.');
         const sourceName = splits[0];
@@ -260,6 +259,9 @@ export class TestManager {
 
         return source[property];
       }
+    } else if (Array.isArray(obj)) {
+      const testManager = this;
+      return obj.map(item => testManager.replaceVariables(item, context));
     } else if (typeof obj === 'object') {
       for (const key in obj) {
         obj[key] = this.replaceVariables(obj[key], context);
@@ -290,10 +292,13 @@ export class TestManager {
     const actionInstance = new ActionClass(action);
     let result, receipt, tx, err;
     try {
-      const res = await actionInstance.execute(this, context);
-      result = res.result;
-      receipt = res.receipt;
-      tx = res.tx;
+      action.repeat = action.repeat || 1;
+      for (let i = 0; i < action.repeat; ++i) {
+        const res = await actionInstance.execute(this, context);
+        result = res.result;
+        receipt = res.receipt;
+        tx = res.tx;
+      }
     } catch (e) {
       err = e;
     }
@@ -304,7 +309,7 @@ export class TestManager {
       console.log('  ⤷ ✅ Execution result:', result);
     }
 
-    actionInstance.validate(result, receipt, tx, err, context);
+    actionInstance.validate(result, receipt, tx, err, context, this);
 
     // Update context
     if (action.output) {
@@ -350,9 +355,27 @@ export class TestManager {
     return testCases;
   }
 
+  expectFail(action) {
+    const expect = action.expect;
+    if (!expect) {
+      return false;
+    }
+
+    const error = expect.error;
+    if (!error) {
+      return false;
+    }
+
+    for (let k of Object.keys(error)) {
+      const condition = error[k];
+      return k.startsWith('not') ? !condition : !!condition
+    }
+  }
+
   async runTestCases() {
     const loadSources = this.loadSources.bind(this);
     const testCases = this.loadTestCases();
+    const expectFail = this.expectFail;
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
 
     describe('⌚️ Start executing test cases', function () {
@@ -364,11 +387,11 @@ export class TestManager {
 
       for (const testCase of testCases) {
         it(`👉 ${testCase.description}`, async function () {
-          console.log(`👉 Start test case: ${testCase.description}`)
+          console.log(`👉 Start test case: ${testCase.description}`);
           const context = {};
           for (let i = 0; i < testCase.actions.length; ++i) {
             const action = testCase.actions[i];
-            console.log(`⤷ 🏁 Executing step ${i + 1}: ${action.description}`);
+            console.log(`⤷ ${expectFail(action) ? '🔴' : '🟢'} Executing step ${i + 1}: ${action.description}`);
             await execute(action, context);
             console.log('');
           }
