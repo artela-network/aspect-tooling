@@ -45,18 +45,7 @@
     "type": "aspect",
     "src": "verifier.ts",
     "compileOptions": {
-      "compress": true,
-      "args": [
-        "--disable",
-        "bulk-memory",
-        "--runtime",
-        "stub",
-        "--exportRuntime",
-        "--exportStart",
-        "__aspect_start__",
-        "-O3",
-        "--noAssert"
-      ]
+      "compress": true
     }
   },
   {

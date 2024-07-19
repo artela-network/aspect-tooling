@@ -91,6 +91,19 @@ export class TestManager {
 
     if (source.compileOptions.args) {
       compileArgs.push(...source.compileOptions.args);
+    } else {
+      // default compile options
+      compileArgs.push(
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      );
     }
 
     // console.log(`🔨 Compiling aspect ${source.name} with args:`, compileArgs);
