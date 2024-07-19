@@ -6,6 +6,7 @@ import {
     entryPoint,
     execute,
     IAspectOperation,
+    InitInput,
     IPostContractCallJP,
     IPostTxExecuteJP,
     IPreContractCallJP,
@@ -25,6 +26,8 @@ import {
 } from '@artela/aspect-libs';
 
 class InvalidJitCallAspect implements IPreTxExecuteJP, IPostTxExecuteJP, ITransactionVerifier, IAspectOperation, IPreContractCallJP, IPostContractCallJP {
+    init(input: InitInput): void {}
+    
     isOwner(sender: Uint8Array): bool {
         return true;
     }

@@ -5,6 +5,7 @@ import {
     entryPoint,
     execute,
     IAspectOperation,
+    InitInput,
     OperationInput,
     stringToUint8Array,
     sys,
@@ -30,6 +31,8 @@ class AspectTest implements IAspectOperation {
     isOwner(sender: Uint8Array): bool {
         return true;
     }
+
+    init(input: InitInput): void {}
 }
 
 // 2.register aspect Instance

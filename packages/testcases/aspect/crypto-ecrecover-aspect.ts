@@ -7,12 +7,15 @@ import {
   execute,
   hexToUint8Array,
   IAspectOperation,
+  InitInput,
   OperationInput,
   sys,
   uint8ArrayToHex,
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+  init(input: InitInput): void {}
+  
   isOwner(sender: Uint8Array): bool {
      return true;
   }

@@ -2,6 +2,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostTxExecuteJP,
   IPreTxExecuteJP,
   PostTxExecuteInput,
@@ -13,6 +14,8 @@ import {
  class CrossPhaseState implements IPostTxExecuteJP, IPreTxExecuteJP {
   keyForTest: string = 'key_for_cross_consensus_phase_state_test';
   valueForTest: string = 'value for test';
+
+  init(input: InitInput): void {}
 
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');

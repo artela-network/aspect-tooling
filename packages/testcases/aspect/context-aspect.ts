@@ -7,6 +7,7 @@ import {
   EthAccessList,
   EthLogs,
   execute,
+  InitInput,
   IntArrayData,
   IntData,
   IPostContractCallJP,
@@ -2027,6 +2028,8 @@ class ContextAspect
     // const msgErrData = Protobuf.decode<StringData>(msgErr, StringData.decode);
     // sys.log(logPrefix + " " + "msg.result.error" + " " + msgErrData.data)
   }
+
+  init(input: InitInput): void {}
 }
 
 // 2.register aspect Instance

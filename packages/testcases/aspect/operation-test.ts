@@ -8,9 +8,12 @@ import {
     OperationInput,
     uint8ArrayToHex,
     sys,
+    InitInput,
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+    init(input: InitInput): void {}
+
     parseOP(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(2, 6);
