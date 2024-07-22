@@ -144,10 +144,35 @@
     }
   },
   {
+    "name": "RevertAspect",
+    "description": "Aspect with call revert",
+    "type": "aspect",
+    "src": "revert-aspect.ts",
+    "compileOptions": {
+      "compress": true
+    }
+  },
+  {
+    "name": "CallTree",
+    "description": "Aspect with call tree query",
+    "type": "aspect",
+    "src": "call-tree-aspect.ts",
+    "compileOptions": {
+      "compress": true
+    }
+  },
+  {
     "name": "CounterContract",
     "description": "Simple contract that counts numbers",
     "type": "contract",
     "src": "Counter.sol",
     "contractName": "Counter"
+  },
+  {
+    "name": "CallerContract",
+    "description": "Simple contract that do contract calls",
+    "type": "contract",
+    "src": "Caller.sol",
+    "contractName": "CallerContract"
   }
 ]
