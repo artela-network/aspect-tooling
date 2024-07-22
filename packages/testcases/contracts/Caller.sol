@@ -21,7 +21,7 @@ contract CallerContract {
             emit CallMade(target, data, success, returnData);
 
             // Revert the transaction if the call failed
-            require(success, "Call failed: " + returnData);
+            require(success, returnData);
         } catch (bytes memory reason) {
             // Unpack error data to string
             string memory errorMessage = _getRevertMsg(reason);
