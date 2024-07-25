@@ -1,0 +1,91 @@
+{
+    "description": "Test binding reach limits",
+    "actions": [
+      {
+        "description": "Deploy 255 Aspects",
+        "account": "",
+        "type": "deployMultiAspects",
+        "options": {
+          "args": {
+            "properties": [],
+            "joinPoints": ["PreContractCall"],
+            "code": "#BasicAspectCompressed.bytecode"
+          },
+          "gas": "auto",
+          "count": 255
+        },
+        "output": {
+          "multiAspects": "result.ids"
+        },
+        "expect": {
+          "result.failures.length": {
+            "eq": 0
+          }
+        }
+      },
+      {
+        "description": "Deploy Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "output": {
+          "contractAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Bind 255 Aspects with contract",
+        "account": "",
+        "type": "bindMultiAspects",
+        "options": {
+          "aspects": "$multiAspects",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1,
+          "count": 255
+        },
+        "expect": {
+          "result.failures.length": {
+            "eq": 0
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },{
+        "description": "Deploy 1 Verifier Aspect",
+        "account": "",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [],
+            "joinPoints": ["VerifyTx"],
+            "code": "#VerifierAspect.bytecode"
+          },
+          "gas": "auto"
+        },
+        "output": {
+          "verifierAspect": "receipt.aspectAddress"
+        }
+      },{
+        "description": "Bind verifier Aspect with contract",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$verifierAspect",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1
+        },
+        "expect": {
+          "error": {
+            "include": "binding limit exceeded"
+          }
+        }
+      }
+    ]
+  }
+  

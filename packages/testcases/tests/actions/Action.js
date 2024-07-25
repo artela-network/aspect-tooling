@@ -154,4 +154,121 @@ export class Action {
 
     return { tx: signedTx, receipt };
   }
+
+  async sendTransactions(from, txs, testManager, context) {
+    const account = testManager.web3.eth.accounts.wallet[from];
+    if (!account) {
+      throw new Error(`Account ${from} not found in web3 wallet`);
+    }
+
+    let nonce = await testManager.web3.atl.getTransactionCount(from);
+    let fetch = new fetchBlock(testManager);
+
+    for (let tx of txs) {
+      tx.nonce = nonce++;
+      const signedTx = await account.signTransaction(tx);
+
+      if (process.env.SHOW_TX_DETAILS === 'true') {
+        console.log('📒 Transaction Details:', signedTx);
+      }
+
+      fetch.fetchAdd(signedTx.transactionHash);
+      testManager.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+
+      if (process.env.SHOW_TX_DETAILS === 'true') {
+        console.log('🧾 Transaction Receipt:', receipt);
+      }
+      await new Promise(r => setTimeout(r, 50));
+    }
+    const [receipts, failures] = await fetch.fetchCheck();
+    return [receipts, [...failures]]
+  }
+}
+
+
+class fetchBlock {
+  constructor(testManager) {
+    this.sentTransactionHashes = new Set();
+    this.failureTransactionHashes = new Set();
+    this.receipts = [];
+    this.fetching = false;
+    this.duration = 500;
+    this.testManager = testManager;
+  }
+
+  fetchAdd(hash) {
+    if (!this.fetching) {
+      this.start();
+      this.fetching = true;
+    }
+    this.sentTransactionHashes.add(hash);
+  }
+
+  fetchRemove(hash) {
+    if (this.sentTransactionHashes.has(hash)) {
+      this.sentTransactionHashes.delete(hash);
+    }
+  }
+
+  async start() {
+    try {
+      let current = await this.testManager.web3.eth.getBlockNumber();
+
+      while (this.fetching) {
+        const latest = await this.testManager.web3.eth.getBlockNumber();
+        if (latest == current) {
+          await new Promise(r => setTimeout(r, this.duration));
+          continue;
+        }
+
+        const block = await this.testManager.web3.eth.getBlock(current);
+        console.log(`Block Number: ${block.number}, txs: ${block.transactions.length}`);
+        for (const tx of block.transactions) {
+          const receipt = await this.testManager.web3.eth.getTransactionReceipt(tx);
+          if (receipt && receipt.status) {
+            this.receipts.push(receipt);
+            this.fetchRemove(tx);
+          } else {
+            this.failureTransactionHashes.add(tx);
+          }
+        }
+
+        current++;
+      }
+    } catch (error) {
+      console.error('Error fetching blocks:', error);
+    }
+  }
+
+  async fetchCheck() {
+    let i = 0;
+    while (true) {
+      const sendlen = this.sentTransactionHashes.size;
+      const faillen = this.failureTransactionHashes.size;
+      if (sendlen > faillen) {
+        // if (i % 10 == 0) {
+        // console.log(`waitting tx to finish: ${sendlen - faillen}`);
+        // }
+        i++;
+        await new Promise(r => setTimeout(r, 100));
+      } else {
+        this.stop();
+        if (faillen == 0) {
+          this.sentTransactionHashes.clear();
+          this.failureTransactionHashes.clear();
+          // console.log(`all transaction success`);
+          return [this.receipts, new Set()];
+        } else {
+          // console.log("some transaction failed", failureTransactionHashes);
+          return [this.receipts, this.failureTransactionHashes];
+        }
+      }
+    }
+  }
+
+  stop() {
+    if (this.fetching) {
+      this.fetching = false;
+    }
+  }
 }

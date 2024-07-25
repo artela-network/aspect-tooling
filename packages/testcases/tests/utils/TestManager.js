@@ -17,6 +17,8 @@ import { QueryAspectBindingsAction } from '../actions/QueryAspectBindingsAction.
 import { QueryContractBindingsAction } from '../actions/QueryContractBindingsAction.js';
 import { UnbindAspectAction } from '../actions/UnbindAspectAction.js';
 import { UpgradeAspectAction } from '../actions/UpgradeAspectAction.js';
+import { BindMultiAspectsAction } from '../actions/BindMultiAspectsAction.js';
+import { DeployMultiAspectsAction } from '../actions/DeployMultiAspectsAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -68,6 +70,8 @@ export class TestManager {
     this.registerAction('aspectVersion', AspectVersionAction);
     this.registerAction('createAccounts', CreateAccountsAction);
     this.registerAction('changeVersion', ChangeVersionAction);
+    this.registerAction('bindMultiAspects', BindMultiAspectsAction);
+    this.registerAction('deployMultiAspects', DeployMultiAspectsAction);
   }
 
   async compileAspect(source) {
@@ -109,7 +113,7 @@ export class TestManager {
     // console.log(`🔨 Compiling aspect ${source.name} with args:`, compileArgs);
 
     const nullWriteStream = {
-      write: () => {},
+      write: () => { },
     };
 
     const asc = await import('assemblyscript/asc');
@@ -359,12 +363,24 @@ export class TestManager {
     const testCases = [];
     const files = fs.readdirSync(this.testCaseDir);
     const testCaseDir = this.testCaseDir;
-    files.forEach(file => {
-      if (file.endsWith('-test.json')) {
-        const testCase = JSON.parse(fs.readFileSync(path.join(testCaseDir, file), 'utf-8'));
-        testCases.push(testCase);
-      }
-    });
+
+    const traverseDir = (dir) => {
+      const files = fs.readdirSync(dir);
+
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+
+        if (stat.isDirectory()) {
+          traverseDir(filePath);
+        } else if (file.endsWith('-test.json')) {
+          const testCase = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+          testCases.push(testCase);
+        }
+      });
+    };
+
+    traverseDir(this.testCaseDir);
     return testCases;
   }
 
