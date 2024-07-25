@@ -175,9 +175,6 @@ export class Action {
       fetch.fetchAdd(signedTx.transactionHash);
       testManager.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-      if (process.env.SHOW_TX_DETAILS === 'true') {
-        console.log('🧾 Transaction Receipt:', receipt);
-      }
       await new Promise(r => setTimeout(r, 50));
     }
     const [receipts, failures] = await fetch.fetchCheck();
