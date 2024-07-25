@@ -5,7 +5,6 @@ export class BindMultiAspectsAction extends Action {
         const { account, aspects, priority, version, gas, count } = testManager.replaceVariables(this.action.options, context);
         const from = this.getAccount(testManager, context);
 
-        console.log("-------------------------------------contract address: ", account);
         const instance = new testManager.web3.eth.Contract([], account);
 
         if (aspects.length < count) {

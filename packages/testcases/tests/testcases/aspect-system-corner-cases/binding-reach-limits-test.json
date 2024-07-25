@@ -82,6 +82,36 @@
         },
         "expect": {
           "error": {
+            "eq": ""
+          }
+        }
+      },{
+        "description": "Deploy 1 Aspect",
+        "account": "",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [],
+            "joinPoints": ["PreContractCall"],
+            "code": "#BasicAspectCompressed.bytecode"
+          },
+          "gas": "auto"
+        },
+        "output": {
+          "basicAspect": "receipt.aspectAddress"
+        }
+      },{
+        "description": "Bind Aspect with contract",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$basicAspect",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1
+        },
+        "expect": {
+          "error": {
             "include": "binding limit exceeded"
           }
         }
