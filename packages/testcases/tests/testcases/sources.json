@@ -174,5 +174,64 @@
     "type": "contract",
     "src": "Caller.sol",
     "contractName": "CallerContract"
+  },{
+    "name": "LargeSizeAspect300K",
+    "description": "Aspect with a size of 300Kb",
+    "type": "aspect",
+    "src": "abnormal-large-size-aspect-300k.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "LargeSizeAspect1M",
+    "description": "Aspect with a size of 1Mb",
+    "type": "aspect",
+    "src": "abnormal-large-size-aspect-1m.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "DeadLoopAspect",
+    "description": "Aspect with a dead loop",
+    "type": "aspect",
+    "src": "abnormal-dead-loop-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
   }
 ]
