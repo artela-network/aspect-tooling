@@ -359,7 +359,7 @@ export class TestManager {
     return { result, receipt, tx };
   }
 
-  loadTestCases() {
+  loadTestCases(name) {
     const testCases = [];
     const files = fs.readdirSync(this.testCaseDir);
     const testCaseDir = this.testCaseDir;
@@ -373,7 +373,7 @@ export class TestManager {
 
         if (stat.isDirectory()) {
           traverseDir(filePath);
-        } else if (file.endsWith('-test.json')) {
+        } else if (file.endsWith('-test.json') && (!name || file.includes(name))) {
           const testCase = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
           testCases.push(testCase);
         }
@@ -401,9 +401,9 @@ export class TestManager {
     }
   }
 
-  async runTestCases() {
+  async runTestCases(name) {
     const loadSources = this.loadSources.bind(this);
-    const testCases = this.loadTestCases();
+    const testCases = this.loadTestCases(name);
     const expectFail = this.expectFail;
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
 
