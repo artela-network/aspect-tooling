@@ -17,7 +17,7 @@ import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
 const isWinOS = /^win/i.test(process.platform);
 
-const toolVersion = '^0.0.59';
+const toolVersion = '^0.0.60';
 const libVersion = '^0.0.34';
 const web3Version = '^1.9.22';
 
@@ -444,8 +444,8 @@ export default class Init extends Command {
               'aspect:deploy': 'npm run aspect:build && node scripts/aspect-deploy.cjs',
               'aspect:build': 'npm run asbuild:debug && npm run asbuild:release',
               'aspect:gen': 'aspect-tool generate -i ./build/contract -o ./aspect/contract',
-              'asbuild:debug': 'asc aspect/index.ts --target debug',
-              'asbuild:release': 'asc aspect/index.ts --target release',
+              'asbuild:debug': 'asc aspect/index.ts --target debug --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__',
+              'asbuild:release': 'asc aspect/index.ts --target release --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__',
               'operation:call': 'node scripts/operation.cjs --isCall true',
               'operation:send': 'node scripts/operation.cjs --isCall false',
               'bound:aspect': 'node scripts/get-bound-aspect.cjs',
