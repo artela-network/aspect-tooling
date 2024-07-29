@@ -178,7 +178,7 @@ export class Action {
       await new Promise(r => setTimeout(r, 50));
     }
     const [receipts, failures] = await fetch.fetchCheck();
-    return [receipts, [...failures]]
+    return [receipts, [...failures]];
   }
 }
 
@@ -195,8 +195,8 @@ class fetchBlock {
 
   fetchAdd(hash) {
     if (!this.fetching) {
-      this.start();
       this.fetching = true;
+      this.start();
     }
     this.sentTransactionHashes.add(hash);
   }
