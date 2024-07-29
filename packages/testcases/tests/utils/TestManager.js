@@ -19,6 +19,7 @@ import { UnbindAspectAction } from '../actions/UnbindAspectAction.js';
 import { UpgradeAspectAction } from '../actions/UpgradeAspectAction.js';
 import { BindMultiAspectsAction } from '../actions/BindMultiAspectsAction.js';
 import { DeployMultiAspectsAction } from '../actions/DeployMultiAspectsAction.js';
+import { CallOperationAction } from '../actions/CallOperationAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -72,6 +73,7 @@ export class TestManager {
     this.registerAction('changeVersion', ChangeVersionAction);
     this.registerAction('bindMultiAspects', BindMultiAspectsAction);
     this.registerAction('deployMultiAspects', DeployMultiAspectsAction);
+    this.registerAction("callOperation", CallOperationAction);
   }
 
   async compileAspect(source) {
