@@ -1,0 +1,123 @@
+{
+  "description": "Test Operation Basic",
+  "actions": [
+    {
+      "description": "Create new accounts",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Basic Operation Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "code": "#OperationBasic.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Call operation success with 0001",
+      "account": "",
+      "type": "callOperation",
+      "options": {
+        "aspectID": "$aspectId",
+        "operationData": "0x0001100001",
+        "gas":"auto",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Call operation success with 1003",
+      "account": "",
+      "type": "callOperation",
+      "options": {
+        "aspectID": "$aspectId",
+        "operationData": "0x1003101003",
+        "gas":"auto",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Call operation fail with wrong params",
+      "account": "",
+      "type": "callOperation",
+      "options": {
+        "aspectID": "$aspectId",
+        "operationData": "0x1003101004",
+        "gas":"auto",
+        "args": []
+      },
+      "expect": {
+        "error": {
+          "include": "unknown params"
+        }
+      }
+    },
+    {
+      "description": "Call operation fail with error unknow op",
+      "account": "",
+      "type": "callOperation",
+      "options": {
+        "aspectID": "$aspectId",
+        "operationData": "0x0100100001",
+        "gas":"auto",
+        "args": []
+      },
+      "expect": {
+        "error": {
+          "include": "unknown op"
+        }
+      }
+    }
+  ]
+}
