@@ -24,7 +24,7 @@ export class EntryPoint {
   private aspectBase: IAspectBase | null = null;
   private aspectOperation: IAspectOperation | null = null;
 
-  constructor() {}
+  constructor() { }
 
   public setAspect(aspectBase: IAspectBase): void {
     this.aspectBase = aspectBase;
@@ -154,11 +154,18 @@ export class EntryPoint {
   }
 
   private init(rawInput: Uint8Array): void {
-    if (this.aspectBase == null) {
-      throw new Error('aspect is not initialized');
+    const input = Protobuf.decode<InitInput>(rawInput, InitInput.decode);
+
+    if (this.aspectBase != null) {
+      this.aspectBase!.init(input);
+      return
     }
 
-    const input = Protobuf.decode<InitInput>(rawInput, InitInput.decode);
-    this.aspectBase!.init(input);
+    if (this.aspectOperation != null) {
+      this.aspectOperation!.init(input);
+      return
+    }
+
+    throw new Error('aspect is not initialized');
   }
 }
