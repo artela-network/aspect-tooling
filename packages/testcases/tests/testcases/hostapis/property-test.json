@@ -1,0 +1,125 @@
+{
+    "description": "Test HostApi Property",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Aspect",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.1"
+              },
+              {
+                "key": "prop-key1",
+                "value": "0x1234567890abcdef"
+              },
+              {
+                "key": "prop-key2",
+                "value": "0xabcdefabcdef"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute", "VerifyTx"],
+            "code": "#HostApi.bytecode"
+          },
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas":"auto",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Upgrade HostApi Aspect",
+        "account": "$accounts.1",
+        "type": "upgradeAspect",
+        "options": {
+          "args": {
+            "code": "#HostApi.bytecode",
+            "properties": [
+                {
+                  "key": "prop-key2",
+                  "value": "0x1234567890"
+                }
+              ]
+          },
+          "aspect": "$aspectId",
+          "gas": "auto"
+        },
+        "expect": {
+            "receipt.status": {
+              "eq": true
+            },
+            "error": {
+              "eq": ""
+            }
+          }
+      },
+      {
+        "description": "Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas":"auto",
+          "args": []
+        },
+        "expect": {
+          "error": {
+            "include": "aspect assert failed, expect abcdefabcdef, got 1234567890",
+            "notinclude": "1234567890abcdef"
+          }
+        }
+      }
+    ]
+  }
+  

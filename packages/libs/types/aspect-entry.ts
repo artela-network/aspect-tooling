@@ -158,12 +158,12 @@ export class EntryPoint {
 
     if (this.aspectBase != null) {
       this.aspectBase!.init(input);
-      return
+      return;
     }
 
     if (this.aspectOperation != null) {
       this.aspectOperation!.init(input);
-      return
+      return;
     }
 
     throw new Error('aspect is not initialized');
