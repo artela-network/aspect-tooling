@@ -1,5 +1,5 @@
 {
-    "description": "Test HostApi Property",
+    "description": "Test HostApi State",
     "actions": [
       {
         "description": "Create new accounts",
@@ -53,15 +53,7 @@
               },
               {
                 "key": "test",
-                "value": "0x01"
-              },
-              {
-                "key": "prop-key1",
-                "value": "0x1234567890abcdef"
-              },
-              {
-                "key": "prop-key2",
-                "value": "0xabcdefabcdef"
+                "value": "0x02"
               }
             ],
             "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
@@ -96,6 +88,22 @@
             "eq": true
           },
           "error": ""
+        }
+      },
+      {
+        "description": "Call contract",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "expect": {
+          "error": {
+            "include": "expect 0x123, got"
+          }
         }
       },
       {
@@ -192,9 +200,11 @@
           "args": []
         },
         "expect": {
+          "receipt.status": {
+            "eq": true
+          },
           "error": {
-            "include": "aspect assert failed, expect abcdefabcdef, got 1234567890",
-            "notinclude": "1234567890abcdef"
+            "eq": ""
           }
         }
       },
@@ -243,9 +253,11 @@
           "args": []
         },
         "expect": {
+          "receipt.status": {
+            "eq": true
+          },
           "error": {
-            "include": "aspect assert failed, expect abcdefabcdef, got 1234567890",
-            "notinclude": "1234567890abcdef"
+            "eq": ""
           }
         }
       },
