@@ -64,6 +64,13 @@ class HostApiAspect implements
     this.checkPoperty();
   }
 
+  checkPoperty(): void {
+    const prop1 = sys.aspect.property.get<Uint8Array>("prop-key1");
+    this.assert("1234567890abcdef", prop1);
+    const prop2 = sys.aspect.property.get<Uint8Array>("prop-key2");
+    this.assert("abcdefabcdef", prop2);
+  }
+
   assert(expect: string, actual: Uint8Array): void {
     const strAct = uint8ArrayToHex(actual);
     if (expect != strAct) {
@@ -71,13 +78,6 @@ class HostApiAspect implements
       sys.revert(msg);
       return;
     }
-  }
-
-  checkPoperty(): void {
-    const prop1 = sys.aspect.property.get<Uint8Array>("prop-key1");
-    this.assert("1234567890abcdef", prop1);
-    const prop2 = sys.aspect.property.get<Uint8Array>("prop-key2");
-    this.assert("abcdefabcdef", prop2);
   }
 }
 // 2.register aspect Instance
