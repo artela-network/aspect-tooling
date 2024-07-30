@@ -8,7 +8,7 @@ import {RootDirectory, DeployContract, SendTx} from "../utils/base.js";
 //const ws = new web3("ws://47.254.68.8:8546");
 //const ws = new web3("wss://evmos.drpc.org");
 
-const ws = new web3("ws://127.0.0.1:8546");
+const ws = new web3("http://127.0.0.1:8546");
 
 
 ws.eth.subscribe('newBlockHeaders', (error, blockHeader) => {
