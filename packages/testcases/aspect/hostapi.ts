@@ -46,17 +46,27 @@ class HostApiAspect implements
     this.checkPoperty();
     this.checkState(true);
     this.checkState(false);
+
+    const test = uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("set"));
+    const calldata = uint8ArrayToHex(input.callData);
+    if (calldata == "0001100001") {
+      this.checkContext(true);
+    } else {
+      this.checkContext(false);
+    }
     return input.callData;
   }
 
   preContractCall(_: PreContractCallInput): void {
     this.checkPoperty();
+    this.checkContext(true);
   }
 
   postContractCall(_: PostContractCallInput): void {
     this.checkState(false);
     this.checkState(true);
     this.checkState(false);
+    this.checkContext(false);
   }
 
   preTxExecute(_: PreTxExecuteInput): void {
@@ -65,11 +75,37 @@ class HostApiAspect implements
   postTxExecute(_: PostTxExecuteInput): void {
   }
 
+  checkContext(set: bool): void {
+    if (!this.checkTest("03")) {
+      return;
+    }
+
+    if (set) {
+      this.setContext();
+    } else {
+      this.getContext();
+    }
+  }
+
+  setContext(): void {
+    const context1 = sys.aspect.transientStorage.get<string>("context")
+    context1.set<string>("0xaaaa");
+    this.assertStr("0xaaaa", context1.unwrap());
+    const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
+    context2.set<u64>(999999999999);
+    this.assertStr("999999999999", context2.unwrap().toString());
+  }
+
+  getContext(): void {
+    const context1 = sys.aspect.transientStorage.get<string>("context");
+    this.assertStr("0xaaaa", context1.unwrap());
+    const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
+    this.assertStr("999999999999", context2.unwrap().toString());
+  }
+
   checkState(set: bool): void {
-    const test = uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("test"));
-    sys.log("_____________test: " + test.toString());
-    if (test != "02") {
-      return
+    if (!this.checkTest("02")) {
+      return;
     }
     if (set) {
       this.setState()
@@ -82,18 +118,21 @@ class HostApiAspect implements
     const state1 = sys.aspect.mutableState.get<string>("state")
     state1.set<string>("0x123");
     this.assertStr("0x123", state1.unwrap());
+    const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
+    state2.set<u64>(999999999999);
+    this.assertStr("999999999999", state2.unwrap().toString());
   }
 
   getState(): void {
     const state1 = sys.aspect.mutableState.get<string>("state");
     this.assertStr("0x123", state1.unwrap());
+    const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
+    this.assertStr("999999999999", state2.unwrap().toString());
   }
 
   checkPoperty(): void {
-    const test = uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("test"));
-    sys.log("_____________test: " + test.toString());
-    if (test != "01") {
-      return
+    if (!this.checkTest("01")) {
+      return;
     }
     const testu64 = sys.aspect.property.get<u64>("test");
     const testi64 = sys.aspect.property.get<i64>("test");
@@ -107,6 +146,15 @@ class HostApiAspect implements
     this.assert("1234567890abcdef", prop1);
     const prop2 = sys.aspect.property.get<Uint8Array>("prop-key2");
     this.assert("abcdefabcdef", prop2);
+  }
+
+  checkTest(expect: string): bool {
+    const test = uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("test"));
+    sys.log("_____________test: " + test.toString());
+    if (test != expect) {
+      return false;
+    }
+    return true;
   }
 
   assert(expect: string, actual: Uint8Array): void {
