@@ -20,6 +20,7 @@ import {
   sys,
   uint8ArrayToHex,
   hexToUint8Array,
+  Uint256,
 } from '@artela/aspect-libs';
 
 class HostApiAspect implements
@@ -54,6 +55,8 @@ class HostApiAspect implements
     } else {
       this.checkContext(false);
     }
+
+    this.checkStateDB(3);
     return input.callData;
   }
 
@@ -69,10 +72,52 @@ class HostApiAspect implements
     this.checkContext(false);
   }
 
-  preTxExecute(_: PreTxExecuteInput): void {
+  preTxExecute(input: PreTxExecuteInput): void {
   }
 
   postTxExecute(_: PostTxExecuteInput): void {
+  }
+
+  checkStateDB(offset: u64): void {
+    if (!this.checkTest("04")) {
+      return;
+    }
+
+    const addr = sys.aspect.property.get<Uint8Array>("sender");
+
+    let nonce = sys.hostApi.stateDb.nonce(addr);
+    let propNonce = u64.parse(uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("nonce")), 16);
+    let expectNonce = propNonce + offset;
+    this.assertStr(expectNonce.toString(), nonce.toString(), "nonce");
+
+    const balance = sys.hostApi.stateDb.balance(addr);
+    const expectBalance = sys.aspect.property.get<Uint8Array>("balance");
+    this.checkDiffs(Uint256.fromHex(uint8ArrayToHex(expectBalance)), Uint256.fromHex(uint8ArrayToHex(balance)));
+
+    const codeSize = sys.hostApi.stateDb.codeSize(addr);
+    this.assertStr("0", codeSize.toString(), "code size");
+
+    const emptyCodeHash = "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
+    const codeHash = sys.hostApi.stateDb.codeHash(addr);
+    this.assert(emptyCodeHash, codeHash, "code hash");
+
+    const hasSuicided = sys.hostApi.stateDb.hasSuicided(addr);
+    this.assertBool(false, hasSuicided, "hasSuicided");
+
+    const contractAddr = sys.aspect.property.get<Uint8Array>("contract");
+    const hashKey = sys.aspect.property.get<Uint8Array>("hashkey");
+
+    const codeSizeContract = sys.hostApi.stateDb.codeSize(contractAddr);
+    this.assertBool(true, codeSizeContract.toString() != emptyCodeHash, "codeSizeContract");
+
+    const codeHashContract = sys.hostApi.stateDb.codeHash(contractAddr);
+    this.assert(Uint256.ZERO.toHex(), codeHashContract);
+
+    const hasSuicidedContract = sys.hostApi.stateDb.hasSuicided(contractAddr);
+    this.assertBool(false, hasSuicidedContract);
+    const state = sys.hostApi.stateDb.stateAt(contractAddr, hashKey);
+
+    sys.require(state.length > 0, 'failed to get state.');
   }
 
   checkContext(set: bool): void {
@@ -93,14 +138,14 @@ class HostApiAspect implements
     this.assertStr("0xaaaa", context1.unwrap());
     const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
     context2.set<u64>(999999999999);
-    this.assertStr("999999999999", context2.unwrap().toString());
+    this.assertStr("999999999999", context2.unwrap().toString(), "setContext");
   }
 
   getContext(): void {
     const context1 = sys.aspect.transientStorage.get<string>("context");
     this.assertStr("0xaaaa", context1.unwrap());
     const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
-    this.assertStr("999999999999", context2.unwrap().toString());
+    this.assertStr("999999999999", context2.unwrap().toString(), "getContext");
   }
 
   checkState(set: bool): void {
@@ -120,14 +165,14 @@ class HostApiAspect implements
     this.assertStr("0x123", state1.unwrap());
     const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
     state2.set<u64>(999999999999);
-    this.assertStr("999999999999", state2.unwrap().toString());
+    this.assertStr("999999999999", state2.unwrap().toString(), "setState-u64");
   }
 
   getState(): void {
     const state1 = sys.aspect.mutableState.get<string>("state");
     this.assertStr("0x123", state1.unwrap());
     const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
-    this.assertStr("999999999999", state2.unwrap().toString());
+    this.assertStr("999999999999", state2.unwrap().toString(), "getState-u64");
   }
 
   checkPoperty(): void {
@@ -150,21 +195,33 @@ class HostApiAspect implements
 
   checkTest(expect: string): bool {
     const test = uint8ArrayToHex(sys.aspect.property.get<Uint8Array>("test"));
-    sys.log("_____________test: " + test.toString());
+
     if (test != expect) {
       return false;
     }
     return true;
   }
 
-  assert(expect: string, actual: Uint8Array): void {
-    const strAct = uint8ArrayToHex(actual);
-    this.assertStr(expect, strAct);
+  checkDiffs(expect: Uint256, actual: Uint256): void {
+    const oneArt = new Uint256().fromHex("0xde0b6b3a7640000");
+    if (actual.cmp(Uint256.ZERO) > 0 && expect.sub(actual).cmp(oneArt) > 0) {
+      let msg = "aspect assert failed, diffs should not more than 1 art, expect " + expect.toHex() + ", got " + actual.toHex();
+      sys.revert(msg);
+    }
   }
 
-  assertStr(expect: string, actual: string): void {
+  assert(expect: string, actual: Uint8Array, name: string = ""): void {
+    const strAct = uint8ArrayToHex(actual);
+    this.assertStr(expect, strAct, name);
+  }
+
+  assertBool(expect: bool, actual: bool, name: string = ""): void {
+    this.assertStr(expect ? "true" : "false", actual ? "true" : "false", name);
+  }
+
+  assertStr(expect: string, actual: string, name: string = ""): void {
     if (expect != actual) {
-      let msg = "aspect assert failed, expect " + expect + ", got " + actual;
+      let msg = name + ": aspect assert failed, expect " + expect + ", got " + actual;
       sys.revert(msg);
       return;
     }

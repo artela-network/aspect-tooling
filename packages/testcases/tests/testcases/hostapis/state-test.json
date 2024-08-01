@@ -7,7 +7,8 @@
         "type": "createAccounts",
         "options": {
           "fundingAmount": 1,
-          "accountNumber": 2
+          "accountNumber": 2,
+          "gas": "1000000"
         },
         "expect": {
           "error": {
@@ -28,7 +29,8 @@
         "options": {
           "code": "#CounterContract.bytecode",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -59,7 +61,7 @@
             "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
             "code": "#HostApi.bytecode"
           },
-          "gas": "auto"
+          "gas": "5000000"
         },
         "expect": {
           "receipt.status": {
@@ -81,7 +83,8 @@
           "aspect": "$aspectId",
           "account": "$contractAddress",
           "version": 1,
-          "priority": -1
+          "priority": -1,
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -98,7 +101,8 @@
           "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "error": {
@@ -113,7 +117,7 @@
         "options": {
           "aspectID": "$aspectId",
           "operationData": "0x0001100001",
-          "gas":"auto",
+          "gas":"1000000",
           "args": []
         },
         "expect": {
@@ -133,7 +137,8 @@
           "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -157,7 +162,7 @@
               ]
           },
           "aspect": "$aspectId",
-          "gas": "auto"
+          "gas": "1000000"
         },
         "expect": {
             "receipt.status": {
@@ -176,7 +181,7 @@
           "aspectID": "$aspectId",
           "operationData": "0x0001100001",
           "version": 1,
-          "gas":"auto",
+          "gas":"1000000",
           "args": []
         },
         "expect": {
@@ -196,7 +201,7 @@
           "aspectID": "$aspectId",
           "version": 2,
           "operationData": "0x0001100001",
-          "gas":"auto",
+          "gas":"1000000",
           "args": []
         },
         "expect": {
@@ -216,7 +221,8 @@
           "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -231,7 +237,8 @@
         "options": {
           "aspect": "$aspectId",
           "account": "$contractAddress",
-          "version": 2
+          "version": 2,
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -250,7 +257,8 @@
           "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -267,7 +275,8 @@
         "type": "unbind",
         "options": {
           "aspect": "$aspectId",
-          "account": "$contractAddress"
+          "account": "$contractAddress",
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -283,7 +292,8 @@
           "aspect": "$aspectId",
           "account": "$contractAddress",
           "version": 1,
-          "priority": -1
+          "priority": -1,
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
@@ -300,7 +310,8 @@
           "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
-          "args": []
+          "args": [],
+          "gas": "1000000"
         },
         "expect": {
           "receipt.status": {
