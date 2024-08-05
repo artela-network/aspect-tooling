@@ -163,7 +163,7 @@ class HostApiAspect implements
     const state1 = sys.aspect.mutableState.get<string>("state")
     state1.set<string>("0x123");
     this.assertStr("0x123", state1.unwrap());
-    const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
+    const state2 = sys.aspect.mutableState.get<u64>("state-u64")
     state2.set<u64>(999999999999);
     this.assertStr("999999999999", state2.unwrap().toString(), "setState-u64");
   }
@@ -171,7 +171,7 @@ class HostApiAspect implements
   getState(): void {
     const state1 = sys.aspect.mutableState.get<string>("state");
     this.assertStr("0x123", state1.unwrap());
-    const state2 = sys.aspect.transientStorage.get<u64>("state-u64")
+    const state2 = sys.aspect.mutableState.get<u64>("state-u64")
     this.assertStr("999999999999", state2.unwrap().toString(), "getState-u64");
   }
 
