@@ -313,5 +313,80 @@
         "--noAssert"
       ]
     }
+  },
+  {
+    "name": "StaticCallAspect",
+    "description": "Crypto Test",
+    "type": "aspect",
+    "src": "static-call-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "StorageContract",
+    "description": "Simple storage contract",
+    "type": "contract",
+    "src": "storage.sol",
+    "contractName": "Storage"
+  },
+  {
+    "name": "ScheduleTargeContract",
+    "description": "A schedule target contract",
+    "type": "contract",
+    "src": "schedule_target.sol",
+    "contractName": "ScheduleTarget"
+  },
+  {
+    "name": "SimpleAccountFactoryContract",
+    "description": "account-abstraction factory",
+    "type": "contract",
+    "src": "SimpleAccountFactory.sol",
+    "contractName": "AspectEnabledSimpleAccountFactory"
+  },
+  {
+    "name": "SimpleAccountContract",
+    "description": "account-abstraction",
+    "type": "contract",
+    "src": "SimpleAccountFactory.sol",
+    "contractName": "AspectEnabledSimpleAccount"
+  },
+  {
+    "name": "RoyaleContract",
+    "description": "Royale contract for jit gaming",
+    "type": "contract",
+    "src": "Royale.sol",
+    "contractName": "Royale"
+  },
+  {
+    "name": "JITGamingAspect",
+    "description": "jit gaming aspect Test",
+    "type": "aspect",
+    "src": "jit-gaming-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
   }
 ]

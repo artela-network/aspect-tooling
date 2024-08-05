@@ -1,0 +1,271 @@
+{
+    "description": "Test Aspect JIT Gaming",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Factory Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#SimpleAccountFactoryContract.bytecode",
+          "abi": "#SimpleAccountFactoryContract.abi",
+          "args": ["0x000000000000000000000000000000000000AAEC"]
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "factoryAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy Royale Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#RoyaleContract.bytecode",
+          "abi": "#RoyaleContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "royaleAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy JIT Gaming Aspect",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.1"
+              }
+            ],
+            "joinPoints": ["PostContractCall"],
+            "code": "#JITGamingAspect.bytecode"
+          },
+          "gas": "2000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind Royale Contract with Jit Gaming Apsect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$royaleAddress",
+          "version": 1,
+          "priority": 1,
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call factory contract and create AA",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$factoryAddress",
+          "method": "createAccount",
+          "abi": "#SimpleAccountFactoryContract.abi",
+          "args": ["$accounts.0", 1],
+          "gas": "10000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call factory contract and get AA address",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$factoryAddress",
+          "method": "getAddress",
+          "abi": "#SimpleAccountFactoryContract.abi",
+          "args": ["$accounts.0", 1],
+          "gas": "10000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "walletAddr": "result.ret"
+        }
+      },
+      {
+        "description": "Tansfer Token to AA address",
+        "account": "",
+        "type": "transfer",
+        "options": {
+          "to": "$walletAddr",
+          "amount": "1"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "AA wallet Approve Aspect",
+        "account": "$accounts.0",
+        "type": "callContract",
+        "options": {
+          "contract": "$walletAddr",
+          "method": "approveAspects",
+          "abi": "#SimpleAccountContract.abi",
+          "args": [["$aspectId"]],
+          "gas": "10000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Register Sys Player",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001$walletAddr",
+          "version": 1,
+          "gas":"2000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Register Sys Player",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x1001",
+          "version": 1,
+          "gas":"2000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "result.ret": {
+            "notEq": ""
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call Royale Contract Move",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$royaleAddress",
+          "method": "move",
+          "abi": "#RoyaleContract.abi",
+          "args": [1, 2],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call Royale Contract Get Status",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$royaleAddress",
+          "method": "getGameStatus",
+          "abi": "#RoyaleContract.abi",
+          "args": [],
+          "gas": "1000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.ret.board.length": {
+            "eq": 100
+          }
+        }
+      }
+    ]
+  }
+  

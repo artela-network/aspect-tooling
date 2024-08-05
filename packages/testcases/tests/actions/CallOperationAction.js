@@ -7,15 +7,28 @@ export class CallOperationAction extends Action {
             context,
         );
 
+        const regex = /\$[a-zA-Z0-9_]+/g;
+        const data = operationData.replace(regex, (match) => {
+            const key = match.slice(1);
+            const value = testManager.replaceVariables(
+                '$' + key,
+                context,
+            );
+            if (value.startsWith('0x')) {
+                return value.slice(2);
+            }
+            return value;
+        });
+
         const aspectInstance = new testManager.web3.atl.Aspect(aspectID);
-        const operation = aspectInstance.operation(operationData);
+        const operation = aspectInstance.operation(data);
 
         const from = this.getAccount(testManager, context);
 
         if (isCall) {
             // Call Operation
             const result = await testManager.web3.eth.call({
-                to: ASPECT_ADDR, // contract address
+                to: testManager.ARTELA_ADDRESS, // contract address
                 data: operation.encodeABI()
             });
             return { result: { ret: result } };
@@ -40,5 +53,17 @@ export class CallOperationAction extends Action {
                 throw new Error(ret);
             }
         }
+    }
+
+    extractAllPlaceholders(str) {
+        const regex = /\$([a-zA-Z0-9_]+)/g;
+        let matches;
+        const results = [];
+
+        while ((matches = regex.exec(str)) !== null) {
+            results.push(matches[1]);
+        }
+
+        return results;
     }
 }

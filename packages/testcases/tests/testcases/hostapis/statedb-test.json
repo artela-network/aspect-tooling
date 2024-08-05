@@ -43,7 +43,7 @@
       {
         "description": "Query Basic",
         "account": "",
-        "type": "QueryBasic",
+        "type": "queryBasic",
         "options": {
           "accountQ": "$accounts.1",
           "contractQ": "contractAddress1",
