@@ -1,0 +1,199 @@
+{
+    "description": "Test HostApi StateDB",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Contract 1",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress1": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Query Basic",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "accountQ": "$accounts.1",
+          "contractQ": "contractAddress1",
+          "args": []
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "nonce": "result.nonce",
+          "balance": "result.balance",
+          "sender": "result.sender"
+        }
+      },
+      {
+        "description": "Deploy Aspect 1",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.1"
+              },
+              {
+                "key": "test",
+                "value": "0x04"
+              },
+              {
+                "key": "nonce",
+                "value": "$nonce"
+              },
+              {
+                "key": "balance",
+                "value": "$balance"
+              },
+              {
+                "key": "sender",
+                "value": "$sender"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall"],
+            "code": "#HostApi.bytecode"
+          },
+          "gas": "auto"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId1": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind contract 1 with Aspect 1",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId1",
+          "account": "$contractAddress1",
+          "version": 1,
+          "priority": -1
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Send Call contract 1",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract 1",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Send Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId1",
+          "operationData": "0x0001100001",
+          "gas":"400000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId1",
+          "operationData": "0x0001100001",
+          "gas":"400000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  

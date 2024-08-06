@@ -1,0 +1,419 @@
+{
+    "description": "Test HostApi State",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2,
+          "gas": "1000000"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy Aspect",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.1"
+              },
+              {
+                "key": "test",
+                "value": "0x02"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+            "code": "#HostApi.bytecode"
+          },
+          "gas": "5000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind contract with Aspect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1,
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call contract",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "error": {
+            "include": "expect 0x123, got"
+          }
+        }
+      },
+      {
+        "description": "Call contract Call",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "include": "expect 0x123, got"
+          }
+        }
+      },
+      {
+        "description": "Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation Call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract again",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          }
+        }
+      },
+      {
+        "description": "Call contract again call",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Upgrade HostApi Aspect to version 2",
+        "account": "$accounts.1",
+        "type": "upgradeAspect",
+        "options": {
+          "args": {
+            "code": "#HostApi.bytecode",
+            "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+            "properties": [
+                {
+                  "key": "prop-key2",
+                  "value": "0x1234567890"
+                }
+              ]
+          },
+          "aspect": "$aspectId",
+          "gas": "5000000"
+        },
+        "expect": {
+            "receipt.status": {
+              "eq": true
+            },
+            "error": {
+              "eq": ""
+            }
+          }
+      },
+      {
+        "description": "Call operation with version 1",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "version": 1,
+          "gas":"1000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation with version 1 call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "version": 1,
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation with version 2",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "version": 2,
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation with version 2 call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "version": 2,
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "result.ret.length": {
+            "notEq": 0
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract with aspect version 1",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          }
+        }
+      },
+      {
+        "description": "Change Aspect bind version to 2",
+        "account": "",
+        "type": "changeVersion",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "version": 2,
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract with aspect version 2",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Unbind Contract from Aspect",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          }
+        }
+      },
+      {
+        "description": "Bind contract with Aspect version 1",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1,
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call contract with aspect version 1",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  

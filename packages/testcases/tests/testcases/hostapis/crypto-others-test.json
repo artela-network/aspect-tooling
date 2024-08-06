@@ -1,0 +1,135 @@
+{
+    "description": "Test Cryptos Sha256 Ripemd160 Keccak",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy Aspect",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.1"
+              },
+              {
+                "key": "test",
+                "value": "0x07"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute", "VerifyTx"],
+            "code": "#HostApiCrypto.bytecode"
+          },
+          "gas": "5000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind contract with Aspect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1,
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call contract",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas": "1000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  

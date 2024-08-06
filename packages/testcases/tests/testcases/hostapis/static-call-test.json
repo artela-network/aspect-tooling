@@ -1,0 +1,202 @@
+{
+    "description": "Test Aspect Staic Call",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Storage Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#StorageContract.bytecode",
+          "abi": "#StorageContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress1": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy ScheduleTarget Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#ScheduleTargeContract.bytecode",
+          "abi": "#ScheduleTargeContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress2": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call ScheduleTarget contract store",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "store",
+          "abi": "#ScheduleTargeContract.abi",
+          "args": [100],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call ScheduleTarget contract retrieve",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "retrieve",
+          "abi": "#ScheduleTargeContract.abi",
+          "args": [],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "ScheduleTargetCalldata": "tx.data"
+        }
+      },
+      {
+        "description": "Deploy StaticCallAspect",
+        "account": "$accounts.1",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "from",
+                "value": "$accounts.1"
+              },
+              {
+                "key": "to",
+                "value": "$contractAddress2"
+              },
+              {
+                "key": "data",
+                "value": "$ScheduleTargetCalldata"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute", "VerifyTx"],
+            "code": "#StaticCallAspect.bytecode"
+          },
+          "gas": "5000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Call StaticCallAspect operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x1167c2e50dFE34b9Ad593d2c6694731097147317",
+          "version": 1,
+          "gas":"20000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Bind contract with Aspect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress1",
+          "version": 1,
+          "priority": -1,
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call storage contract",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "store",
+          "abi": "#StorageContract.abi",
+          "args": [100],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  
