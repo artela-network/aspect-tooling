@@ -37,7 +37,7 @@
           "error": ""
         },
         "output": {
-          "contractAddress1": "receipt.contractAddress"
+          "contractAddress": "receipt.contractAddress"
         }
       },
       {
@@ -55,7 +55,7 @@
             "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute", "VerifyTx"],
             "code": "#JoinPoints.bytecode"
           },
-          "gas": "2000000"
+          "gas": "8000000"
         },
         "expect": {
           "receipt.status": {
@@ -66,19 +66,19 @@
           }
         },
         "output": {
-          "aspectId1": "receipt.aspectAddress"
+          "aspectId": "receipt.aspectAddress"
         }
       },
       {
-        "description": "Bind contract 1 with Aspect 1",
+        "description": "Bind contract with Aspect",
         "account": "",
         "type": "bind",
         "options": {
-          "aspect": "$aspectId1",
-          "account": "$contractAddress1",
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
           "version": 1,
           "priority": -1,
-          "gas": "300000"
+          "gas": "10000000"
         },
         "expect": {
           "receipt.status": {
@@ -88,15 +88,15 @@
         }
       },
       {
-        "description": "Call contract 1",
+        "description": "Call contract",
         "account": "",
         "type": "callContract",
         "options": {
-          "contract": "$contractAddress1",
+          "contract": "$contractAddress",
           "method": "increase",
           "abi": "#CounterContract.abi",
           "args": [],
-          "gas": "300000"
+          "gas": "13000000"
         },
         "expect": {
           "receipt.status": {
@@ -108,19 +108,54 @@
         }
       },
       {
+        "description": "Call contract call",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "13000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
         "description": "Call operation",
         "account": "",
         "type": "callOperation",
         "options": {
-          "aspectID": "$aspectId1",
+          "aspectID": "$aspectId",
           "operationData": "0x0001100001",
-          "gas": "300000",
+          "gas": "3000000",
           "args": []
         },
         "expect": {
           "receipt.status": {
             "eq": true
           },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas": "3000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
           "error": {
             "eq": ""
           }

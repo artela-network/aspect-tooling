@@ -47,6 +47,7 @@ export class CallOperationAction extends Action {
                 return { result: null, receipt, tx };
             } catch (e) {
                 const ret = await testManager.web3.eth.call({
+                    from,
                     to: testManager.ARTELA_ADDRESS,
                     data: operation.encodeABI()
                 });

@@ -133,10 +133,10 @@ class HostApiAspect implements
   }
 
   setContext(): void {
-    const context1 = sys.aspect.transientStorage.get<string>("context")
+    const context1 = sys.aspect.transientStorage.get<string>("context");
     context1.set<string>("0xaaaa");
     this.assertStr("0xaaaa", context1.unwrap());
-    const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
+    const context2 = sys.aspect.transientStorage.get<u64>("context-u64");
     context2.set<u64>(999999999999);
     this.assertStr("999999999999", context2.unwrap().toString(), "setContext");
   }
@@ -144,7 +144,7 @@ class HostApiAspect implements
   getContext(): void {
     const context1 = sys.aspect.transientStorage.get<string>("context");
     this.assertStr("0xaaaa", context1.unwrap());
-    const context2 = sys.aspect.transientStorage.get<u64>("context-u64")
+    const context2 = sys.aspect.transientStorage.get<u64>("context-u64");
     this.assertStr("999999999999", context2.unwrap().toString(), "getContext");
   }
 
@@ -153,17 +153,17 @@ class HostApiAspect implements
       return;
     }
     if (set) {
-      this.setState()
+      this.setState();
     } else {
-      this.getState()
+      this.getState();
     }
   }
 
   setState(): void {
-    const state1 = sys.aspect.mutableState.get<string>("state")
+    const state1 = sys.aspect.mutableState.get<string>("state");
     state1.set<string>("0x123");
     this.assertStr("0x123", state1.unwrap());
-    const state2 = sys.aspect.mutableState.get<u64>("state-u64")
+    const state2 = sys.aspect.mutableState.get<u64>("state-u64");
     state2.set<u64>(999999999999);
     this.assertStr("999999999999", state2.unwrap().toString(), "setState-u64");
   }
@@ -171,8 +171,11 @@ class HostApiAspect implements
   getState(): void {
     const state1 = sys.aspect.mutableState.get<string>("state");
     this.assertStr("0x123", state1.unwrap());
-    const state2 = sys.aspect.mutableState.get<u64>("state-u64")
+    const state2 = sys.aspect.mutableState.get<u64>("state-u64");
     this.assertStr("999999999999", state2.unwrap().toString(), "getState-u64");
+
+    const readState = sys.aspect.readonlyState.get<u64>("state-u64");
+    this.assertStr("999999999999", readState.unwrap().toString(), "getState-u64")
   }
 
   checkPoperty(): void {

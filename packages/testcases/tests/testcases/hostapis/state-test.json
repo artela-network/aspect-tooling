@@ -111,6 +111,24 @@
         }
       },
       {
+        "description": "Call contract Call",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "include": "expect 0x123, got"
+          }
+        }
+      },
+      {
         "description": "Call operation",
         "account": "",
         "type": "callOperation",
@@ -130,7 +148,24 @@
         }
       },
       {
-        "description": "Call contract",
+        "description": "Call operation Call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract again",
         "account": "",
         "type": "callContract",
         "options": {
@@ -143,6 +178,24 @@
         "expect": {
           "receipt.status": {
             "eq": true
+          }
+        }
+      },
+      {
+        "description": "Call contract again call",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "1000000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
           }
         }
       },
@@ -194,6 +247,24 @@
         }
       },
       {
+        "description": "Call operation with version 1 call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "operationData": "0x0001100001",
+          "version": 1,
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
         "description": "Call operation with version 2",
         "account": "",
         "type": "callOperation",
@@ -207,6 +278,27 @@
         "expect": {
           "receipt.status": {
             "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call operation with version 2 call",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "version": 2,
+          "operationData": "0x0001100001",
+          "gas":"1000000",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "result.ret.length": {
+            "notEq": 0
           },
           "error": {
             "eq": ""

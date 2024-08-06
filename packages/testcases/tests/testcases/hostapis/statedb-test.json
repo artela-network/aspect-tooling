@@ -123,6 +123,25 @@
         }
       },
       {
+        "description": "Send Call contract 1",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
         "description": "Call contract 1",
         "account": "",
         "type": "callContract",
@@ -130,6 +149,23 @@
           "contract": "$contractAddress1",
           "method": "increase",
           "abi": "#CounterContract.abi",
+          "args": [],
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Send Call operation",
+        "account": "",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId1",
+          "operationData": "0x0001100001",
+          "gas":"400000",
           "args": []
         },
         "expect": {
@@ -149,12 +185,10 @@
           "aspectID": "$aspectId1",
           "operationData": "0x0001100001",
           "gas":"400000",
-          "args": []
+          "args": [],
+          "isCall": true
         },
         "expect": {
-          "receipt.status": {
-            "eq": true
-          },
           "error": {
             "eq": ""
           }
