@@ -20,7 +20,7 @@ import { UpgradeAspectAction } from '../actions/UpgradeAspectAction.js';
 import { BindMultiAspectsAction } from '../actions/BindMultiAspectsAction.js';
 import { DeployMultiAspectsAction } from '../actions/DeployMultiAspectsAction.js';
 import { CallOperationAction } from '../actions/CallOperationAction.js';
-import { QueryBasicAction } from '../actions/QueryBasic.js';
+import { QueryBasicAction } from '../actions/QueryBasicAction.js';
 import { TransferAction } from '../actions/TransferAction.js';
 
 const listeners = process.listeners('unhandledRejection');
@@ -256,6 +256,24 @@ export class TestManager {
 
   async getGasPrice() {
     return await this.web3.eth.getGasPrice();
+  }
+
+  replaceNestedVariables(str, context, trimPrefix = '') {
+    if (str && str.trim() != "") {
+      const regex = /\$[a-zA-Z0-9_]+/g;
+      const data = str.replace(regex, (match) => {
+        const key = match.slice(1);
+        const value = this.replaceVariables(
+          '$' + key,
+          context,
+        );
+        if (trimPrefix && trimPrefix != '' && value.startsWith(trimPrefix)) {
+          return value.slice(trimPrefix.length);
+        }
+        return value;
+      });
+      return data;
+    }
   }
 
   replaceVariables(obj, context) {

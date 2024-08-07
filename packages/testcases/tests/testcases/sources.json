@@ -388,5 +388,12 @@
         "--noAssert"
       ]
     }
+  },
+  {
+    "name": "StorageContract",
+    "description": "Storage contract store a Person struct",
+    "type": "contract",
+    "src": "storage.sol",
+    "contractName": "Storage"
   }
 ]

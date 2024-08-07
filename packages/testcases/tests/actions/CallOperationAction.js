@@ -7,18 +7,7 @@ export class CallOperationAction extends Action {
             context,
         );
 
-        const regex = /\$[a-zA-Z0-9_]+/g;
-        const data = operationData.replace(regex, (match) => {
-            const key = match.slice(1);
-            const value = testManager.replaceVariables(
-                '$' + key,
-                context,
-            );
-            if (value.startsWith('0x')) {
-                return value.slice(2);
-            }
-            return value;
-        });
+        const data = testManager.replaceNestedVariables(operationData, context, '0x');
 
         const aspectInstance = new testManager.web3.atl.Aspect(aspectID);
         const operation = aspectInstance.operation(data);
