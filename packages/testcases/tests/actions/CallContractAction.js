@@ -2,10 +2,13 @@ import { Action } from './Action.js';
 
 export class CallContractAction extends Action {
   async execute(testManager, context) {
-    const { contract, method, args, abi, isCall, gas } = testManager.replaceVariables(
+    const { contract, method, args, abi, isCall, gas, maxFeePerGasGwei, maxPriorityFeePerGasGwei, accessList } = testManager.replaceVariables(
       this.action.options,
       context,
     );
+
+    // accessList is a formatted json string, replace the variable inline
+    const access = testManager.replaceNestedVariables(accessList, context);
 
     // Get contract ABI
     const instance = new testManager.web3.eth.Contract(abi, contract);
@@ -18,12 +21,21 @@ export class CallContractAction extends Action {
       return { result: { ret: result } };
     } else {
       // Send transaction
-      const tx = {
+      let tx = {
         from,
         gas,
         to: contract,
         data: instance.methods[method](...args).encodeABI(),
       };
+
+      if (accessList && accessList.trim() != "") {
+        tx.accessList = JSON.parse(access);
+      }
+
+      if (parseFloat(maxPriorityFeePerGasGwei) > 0 && parseFloat(maxFeePerGasGwei) > 0) {
+        tx.maxFeePerGas = testManager.web3.utils.toWei(maxFeePerGasGwei, 'gwei');
+        tx.maxPriorityFeePerGas = testManager.web3.utils.toWei(maxPriorityFeePerGasGwei, 'gwei');
+      }
 
       await this.estimateGas(tx, testManager, context);
 

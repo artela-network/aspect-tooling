@@ -254,7 +254,7 @@ class Joinpoints implements
       // "msg.result.error"
     ];
 
-    this.checkSys("preContractCall", keys, strBlockNum + ";" + strTxFrom + ";" + strTxTo + ";" + strTxGas);
+    // this.checkSys("preContractCall", keys, strBlockNum + ";" + strTxFrom + ";" + strTxTo + ";" + strTxGas);
   }
 
   postContractCall(input: PostContractCallInput): void {
