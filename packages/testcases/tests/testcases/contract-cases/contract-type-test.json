@@ -1,0 +1,315 @@
+{
+    "description": "Test Contract Types",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 2
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 2
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy counter contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress1": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call counter contract with legacy",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call counter contract call with legacy",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call counter contract with dynamic fee",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000",
+          "maxFeePerGasGwei": "100",
+          "maxPriorityFeePerGasGwei": "2"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call counter contract call with dyanmic fee",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true,
+          "maxFeePerGasGwei": "100",
+          "maxPriorityFeePerGasGwei": "2"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call counter contract with accesslist",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000",
+          "accessList": "[{\"address\":\"$contractAddress1\",\"storageKeys\":[\"0x0000000000000000000000000000000000000000000000000000000000000000\"]}]"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call counter contract call with accesslist",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress1",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true,
+          "accessList": "[{\"address\":\"$contractAddress1\",\"storageKeys\":[\"0x0000000000000000000000000000000000000000000000000000000000000000\"]}]"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Deploy storage contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#StorageContract.bytecode",
+          "abi": "#StorageContract.abi",
+          "args": [],
+          "gas": "900000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress2": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call storage contract with legacy",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "store",
+          "abi": "#StorageContract.abi",
+          "args": [100],
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call storage contract call with legacy",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "retrieve",
+          "abi": "#StorageContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.ret": {
+            "eq": "100"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call storage contract with dynamic fee",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "store",
+          "abi": "#StorageContract.abi",
+          "args": [200],
+          "gas": "300000",
+          "maxFeePerGasGwei": "100",
+          "maxPriorityFeePerGasGwei": "2"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call storage contract call with dyanmic fee",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "retrieve",
+          "abi": "#StorageContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true,
+          "maxFeePerGasGwei": "100",
+          "maxPriorityFeePerGasGwei": "2"
+        },
+        "expect": {
+          "result.ret": {
+            "eq": "300"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call storage contract with accesslist",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "store",
+          "abi": "#StorageContract.abi",
+          "args": [300],
+          "gas": "300000",
+          "accessList": "[{\"address\":\"$contractAddress1\",\"storageKeys\":[\"0x0000000000000000000000000000000000000000000000000000000000000000\"]}]"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call storage contract call with accesslist",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress2",
+          "method": "retrieve",
+          "abi": "#StorageContract.abi",
+          "args": [],
+          "gas": "300000",
+          "isCall": true,
+          "accessList": "[{\"address\":\"$contractAddress1\",\"storageKeys\":[\"0x0000000000000000000000000000000000000000000000000000000000000000\"]}]"
+        },
+        "expect": {
+          "result.ret": {
+            "eq": "600"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  
