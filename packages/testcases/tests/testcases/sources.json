@@ -395,5 +395,39 @@
     "type": "contract",
     "src": "storage.sol",
     "contractName": "Storage"
+  },
+  {
+    "name": "HoneyPotContract",
+    "description": "HoneyPot contract for the attack and defense drills",
+    "type": "contract",
+    "src": "HoneyPotAttack.sol",
+    "contractName": "HoneyPot"
+  },
+  {
+    "name": "AttackContract",
+    "description": "Attack contract for the attack and defense drills",
+    "type": "contract",
+    "src": "HoneyPotAttack.sol",
+    "contractName": "Attack"
+  },
+  {
+    "name": "GuardByCountAspect",
+    "description": "guard by count aspect Test",
+    "type": "aspect",
+    "src": "guard-by-count.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
   }
 ]

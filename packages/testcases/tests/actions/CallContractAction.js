@@ -2,7 +2,7 @@ import { Action } from './Action.js';
 
 export class CallContractAction extends Action {
   async execute(testManager, context) {
-    const { contract, method, args, abi, isCall, gas, maxFeePerGasGwei, maxPriorityFeePerGasGwei, accessList } = testManager.replaceVariables(
+    const { contract, method, args, abi, isCall, gas, value, maxFeePerGasGwei, maxPriorityFeePerGasGwei, accessList } = testManager.replaceVariables(
       this.action.options,
       context,
     );
@@ -37,12 +37,17 @@ export class CallContractAction extends Action {
         tx.maxPriorityFeePerGas = testManager.web3.utils.toWei(maxPriorityFeePerGasGwei, 'gwei');
       }
 
+      if (parseFloat(value) > 0) {
+        tx.value = testManager.web3.utils.toWei(value.toString(), 'ether');
+      }
+
       await this.estimateGas(tx, testManager, context);
 
       try {
         const { receipt } = await this.sendTransaction(tx, testManager, context);
         return { result: null, receipt, tx };
       } catch (e) {
+        console.log("sendTransaction error", e)
         const ret = await instance.methods[method](...args).call({ from, gas: tx.gas });
         throw new Error(ret);
       }
