@@ -429,5 +429,25 @@
         "--noAssert"
       ]
     }
+  },
+  {
+    "name": "GuardByLockAspect",
+    "description": "guard by lock aspect Test",
+    "type": "aspect",
+    "src": "guard-by-lock.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
   }
 ]
