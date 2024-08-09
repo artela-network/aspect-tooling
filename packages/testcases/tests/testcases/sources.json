@@ -449,5 +449,32 @@
         "--noAssert"
       ]
     }
+  },
+  {
+    "name": "SessionKeyAspect",
+    "description": "session key aspect",
+    "type": "aspect",
+    "src": "session-key-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "SessionKeyContract",
+    "description": "SessionKey contract that record the points of users",
+    "type": "contract",
+    "src": "SessionKey.sol",
+    "contractName": "SessionKey"
   }
 ]
