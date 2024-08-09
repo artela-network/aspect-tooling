@@ -2,13 +2,21 @@ import { Action } from './Action.js';
 
 export class QueryBasicAction extends Action {
     async execute(testManager, context) {
-        const { accountQ, contractQ } = testManager.replaceVariables(this.action.options, context);
+        const { queryAccount, queryContract } = testManager.replaceVariables(this.action.options, context);
         const from = this.getAccount(testManager, context);
 
-        const nonce = await testManager.web3.atl.getTransactionCount(from);
-        const balance = await testManager.web3.atl.getBalance(from);
+        const nonceFrom = await testManager.web3.atl.getTransactionCount(from);
+        const balanceFrom = await testManager.web3.atl.getBalance(from);
+        const balance = await testManager.web3.atl.getBalance(queryAccount);
 
-        return { result: { nonce: "0x" + this.addLeadingZeroIfNeeded(nonce.toString(16)), balance: "0x" + this.addLeadingZeroIfNeeded(BigInt(balance).toString(16)), sender: from } };
+        return {
+            result: {
+                nonceFrom: "0x" + this.addLeadingZeroIfNeeded(nonceFrom.toString(16)),
+                balanceFrom: "0x" + this.addLeadingZeroIfNeeded(BigInt(balanceFrom).toString(16)),
+                sender: from,
+                balance: balance,
+            }
+        };
     }
 
     addLeadingZeroIfNeeded(hexString) {

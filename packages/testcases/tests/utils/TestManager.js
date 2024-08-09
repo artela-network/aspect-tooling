@@ -22,6 +22,7 @@ import { DeployMultiAspectsAction } from '../actions/DeployMultiAspectsAction.js
 import { CallOperationAction } from '../actions/CallOperationAction.js';
 import { QueryBasicAction } from '../actions/QueryBasicAction.js';
 import { TransferAction } from '../actions/TransferAction.js';
+import { GetSessionKeyCallDataAction } from '../actions/GetSessionKeyCallDataAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -78,6 +79,7 @@ export class TestManager {
     this.registerAction('callOperation', CallOperationAction);
     this.registerAction('queryBasic', QueryBasicAction);
     this.registerAction('transfer', TransferAction);
+    this.registerAction("getSessionKeyCallData", GetSessionKeyCallDataAction);
   }
 
   async compileAspect(source) {

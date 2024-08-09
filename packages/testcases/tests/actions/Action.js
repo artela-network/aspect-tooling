@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import { Transaction as EthereumTx } from 'ethereumjs-tx';
+
 
 export class Action {
   constructor(action) {
@@ -134,25 +136,35 @@ export class Action {
     return tx;
   }
 
-  async sendTransaction(tx, testManager, context) {
+  async sendTransaction(tx, testManager, context, notSign, notSend) {
     const account = testManager.web3.eth.accounts.wallet[tx.from];
     if (!account) {
       throw new Error(`Account ${tx.from} not found in web3 wallet`);
     }
 
-    const signedTx = await account.signTransaction(tx);
+    let rawTx, signedTx;
+    if (!notSign) {
+      signedTx = await account.signTransaction(tx);
+      rawTx = signedTx.rawTransaction;
+    } else {
+      rawTx = '0x' + new EthereumTx(tx).serialize().toString('hex');
+    }
 
     if (process.env.SHOW_TX_DETAILS === 'true') {
       console.log('📒 Transaction Details:', signedTx);
     }
 
-    const receipt = await testManager.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+    if (notSend) {
+      return { signedTx }
+    }
+
+    const receipt = await testManager.web3.eth.sendSignedTransaction(rawTx);
 
     if (process.env.SHOW_TX_DETAILS === 'true') {
       console.log('🧾 Transaction Receipt:', receipt);
     }
 
-    return { tx: signedTx, receipt };
+    return { receipt };
   }
 
   async sendTransactions(from, txs, testManager, context) {

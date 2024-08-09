@@ -1,0 +1,406 @@
+{
+    "description": "Guard by count, honeyPot 1 is attacked and honeyPot 2 is protected by aspect",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 1,
+          "accountNumber": 4
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 4
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy HoneyPot1 Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#HoneyPotContract.bytecode",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "gas": "3000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "honeyPotAddress1": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call contract honeyPot1 deposit",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$honeyPotAddress1",
+          "method": "deposit",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "value": "0.1",
+          "gas": "3000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Query honeyPot1 balance 0.1 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress1",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress1",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "100000000000000000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Deploy Attack1 Contract",
+        "account": "$accounts.1",
+        "type": "deployContract",
+        "options": {
+          "code": "#AttackContract.bytecode",
+          "abi": "#AttackContract.abi",
+          "args": ["$honeyPotAddress1"],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "attackAddress1": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call attack1 contract deposit",
+        "account": "$accounts.1",
+        "type": "callContract",
+        "options": {
+          "contract": "$attackAddress1",
+          "method": "deposit",
+          "abi": "#AttackContract.abi",
+          "args": [],
+          "value": "0.1",
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Query honeyPot1 balance 0.2 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress1",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress1",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "200000000000000000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call attack1 contract attack",
+        "account": "$accounts.1",
+        "type": "callContract",
+        "options": {
+          "contract": "$attackAddress1",
+          "method": "attack",
+          "abi": "#AttackContract.abi",
+          "args": [],
+          "gas": "300000"
+        },
+        "expect": {
+            "receipt.status": {
+              "eq": true
+            },
+            "error": ""
+          }
+      },
+      {
+        "description": "Query honeyPot1 balance 0 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress1",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress1",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "0"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Deploy HoneyPot2 Contract",
+        "account": "",
+        "type": "deployContract",
+        "options": {
+          "code": "#HoneyPotContract.bytecode",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "gas": "3000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "honeyPotAddress2": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call contract honeyPot2 deposit",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$honeyPotAddress2",
+          "method": "deposit",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "value": "0.1",
+          "gas": "3000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Query honeyPot2 balance 0.1 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress2",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress2",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "100000000000000000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Deploy Attack2 Contract",
+        "account": "$accounts.3",
+        "type": "deployContract",
+        "options": {
+          "code": "#AttackContract.bytecode",
+          "abi": "#AttackContract.abi",
+          "args": ["$honeyPotAddress2"],
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "attackAddress2": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Call attack2 contract deposit",
+        "account": "$accounts.3",
+        "type": "callContract",
+        "options": {
+          "contract": "$attackAddress2",
+          "method": "deposit",
+          "abi": "#AttackContract.abi",
+          "args": [],
+          "value": "0.1",
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Query honeyPot2 balance 0.2 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress2",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress2",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "200000000000000000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Deploy Guard By Count Aspect",
+        "account": "",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.3"
+              },
+              {
+                "key": "HoneyPotAddr",
+                "value": "$honeyPotAddress2"
+              },
+              {
+                "key": "binding",
+                "value": "$honeyPotAddress2"
+              }
+            ],
+            "joinPoints": ["PreContractCall", "PostContractCall"],
+            "code": "#GuardByCountAspect.bytecode"
+          },
+          "gas": "5000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind honeyPot contract 2 with Aspect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$honeyPotAddress2",
+          "version": 1,
+          "priority": -1,
+          "gas": "300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Call attack2 contract attack",
+        "account": "$accounts.3",
+        "type": "callContract",
+        "options": {
+          "contract": "$attackAddress2",
+          "method": "attack",
+          "abi": "#AttackContract.abi",
+          "args": [],
+          "gas": "300000"
+        },
+        "expect": {
+          "error": {
+            "include": "execution reverted"
+          }
+        }
+      },
+      {
+        "description": "Query honeyPot2 balance 0.2 art",
+        "account": "",
+        "type": "queryBasic",
+        "options": {
+          "contract": "$honeyPotAddress2",
+          "abi": "#HoneyPotContract.abi",
+          "args": [],
+          "queryAccount": "$honeyPotAddress2",
+          "gas": "300000",
+          "isCall": true
+        },
+        "expect": {
+          "result.balance": {
+            "eq": "200000000000000000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      }
+    ]
+  }
+  
