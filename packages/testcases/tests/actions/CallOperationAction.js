@@ -2,7 +2,7 @@ import { Action } from './Action.js';
 
 export class CallOperationAction extends Action {
     async execute(testManager, context) {
-        const { aspectID, operationData, isCall, gas } = testManager.replaceVariables(
+        const { aspectID, operationData, isCall, gas, callData } = testManager.replaceVariables(
             this.action.options,
             context,
         );
@@ -10,7 +10,12 @@ export class CallOperationAction extends Action {
         const data = testManager.replaceNestedVariables(operationData, context, '0x');
 
         const aspectInstance = new testManager.web3.atl.Aspect(aspectID);
-        const operation = aspectInstance.operation(data);
+        let operationEncoded;
+        if (callData) {
+            operationEncoded = callData;
+        } else {
+            operationEncoded = aspectInstance.operation(data).encodeABI();
+        }
 
         const from = this.getAccount(testManager, context);
 
@@ -18,7 +23,7 @@ export class CallOperationAction extends Action {
             // Call Operation
             const result = await testManager.web3.eth.call({
                 to: testManager.ARTELA_ADDRESS, // contract address
-                data: operation.encodeABI()
+                data: operationEncoded
             });
             return { result: { ret: result } };
         } else {
@@ -26,7 +31,7 @@ export class CallOperationAction extends Action {
                 from,
                 to: testManager.ARTELA_ADDRESS,
                 gas,
-                data: operation.encodeABI(),
+                data: operationEncoded,
             };
 
             await this.estimateGas(tx, testManager, context);
@@ -38,7 +43,7 @@ export class CallOperationAction extends Action {
                 const ret = await testManager.web3.eth.call({
                     from,
                     to: testManager.ARTELA_ADDRESS,
-                    data: operation.encodeABI()
+                    data: operationEncoded
                 });
                 throw new Error(ret);
             }

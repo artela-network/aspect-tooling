@@ -45,8 +45,8 @@
         "account": "",
         "type": "queryBasic",
         "options": {
-          "accountQ": "$accounts.1",
-          "contractQ": "contractAddress1",
+          "queryAccount": "$accounts.1",
+          "queryContract": "contractAddress1",
           "args": []
         },
         "expect": {
@@ -55,8 +55,8 @@
           }
         },
         "output": {
-          "nonce": "result.nonce",
-          "balance": "result.balance",
+          "nonce": "result.nonceFrom",
+          "balance": "result.balanceFrom",
           "sender": "result.sender"
         }
       },
