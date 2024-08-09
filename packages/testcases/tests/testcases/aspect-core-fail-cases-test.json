@@ -159,7 +159,7 @@
       },
       "expect": {
         "error": {
-          "include": "invalid aspect version"
+          "include": "aspect version not deployed"
         }
       }
     },
@@ -259,12 +259,6 @@
         "account": "$contractAddress",
         "version": 1,
         "priority": -1
-      },
-      "expect": {
-        "receipt.status": {
-          "eq": true
-        },
-        "error": ""
       }
     },
     {

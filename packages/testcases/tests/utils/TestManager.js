@@ -430,6 +430,7 @@ export class TestManager {
     const testCases = this.loadTestCases(name);
     const expectFail = this.expectFail;
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
+    const testManager = this;
 
     describe('⌚️ Start executing test cases', function () {
       this.timeout(300000);
@@ -441,7 +442,9 @@ export class TestManager {
       for (const testCase of testCases) {
         it(`👉 ${testCase.description}`, async function () {
           console.log(`👉 Start test case: ${testCase.description}`);
-          const context = {};
+          const context = {
+            '_defaultAccount': testManager.account.address
+          };
           for (let i = 0; i < testCase.actions.length; ++i) {
             const action = testCase.actions[i];
             console.log(`⤷ ${expectFail(action) ? '🔴' : '🟢'} Executing step ${i + 1}: ${action.description}`);
