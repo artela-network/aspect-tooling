@@ -23,6 +23,8 @@ import { CallOperationAction } from '../actions/CallOperationAction.js';
 import { QueryBasicAction } from '../actions/QueryBasicAction.js';
 import { TransferAction } from '../actions/TransferAction.js';
 import { GetSessionKeyCallDataAction } from '../actions/GetSessionKeyCallDataAction.js';
+import { DeployMultiContractsAction } from '../actions/DeployMultiContractsAction.js';
+import { BindMultiContractsAction } from '../actions/BindMultiContractsAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -80,6 +82,8 @@ export class TestManager {
     this.registerAction('queryBasic', QueryBasicAction);
     this.registerAction('transfer', TransferAction);
     this.registerAction("getSessionKeyCallData", GetSessionKeyCallDataAction);
+    this.registerAction('deployMultiContracts', DeployMultiContractsAction);
+    this.registerAction('bindMultiContracts', BindMultiContractsAction);
   }
 
   async compileAspect(source) {
@@ -434,7 +438,7 @@ export class TestManager {
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
 
     describe('⌚️ Start executing test cases', function () {
-      this.timeout(300000);
+      this.timeout(1800000);
 
       before(async function () {
         await loadSources();

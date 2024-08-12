@@ -1,0 +1,173 @@
+{
+    "description": "Test binding large number of contract",
+    "actions": [
+      {
+        "description": "Deploy 3000 Contracts",
+        "account": "",
+        "type": "deployMultiContracts",
+        "options": {
+          "code": "#CounterContract.bytecode",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "800000",
+          "count": 3000
+        },
+        "expect": {
+          "result.failures.length": {
+            "eq": 0
+          },
+          "error": ""
+        },
+        "output": {
+          "addrs": "result.addrs"
+        }
+      },
+      {
+        "description": "Deploy Aspect",
+        "account": "",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "joinPoints": ["PreContractCall"],
+            "code": "#BasicAspectCompressed.bytecode"
+          },
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind 3000 contracts with Aspect",
+        "account": "",
+        "type": "bindMultiContracts",
+        "options": {
+          "aspect": "$aspectId",
+          "accounts": "$addrs",
+          "version": 1,
+          "priority": -1,
+          "gas": "1000000",
+          "count": 3000
+        },
+        "expect": {
+          "result.failures.length": {
+            "eq": 0
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 3000",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "include": "$addrs.2600"
+          },
+          "result.contracts.length": {
+            "eq": 3000
+          }
+        }
+      },
+      {
+        "description": "Check contract No.2600 bindings, expect 1",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.2600"
+        },
+        "expect": {
+          "result.aspects": {
+            "include": [
+              {
+                "aspectId": "$aspectId",
+                "version": "1",
+                "priority": "-1"
+              }
+            ]
+          },
+          "result.aspects.length": {
+            "eq": 1
+          }
+        }
+      },
+      {
+        "description": "Call contract No.2600",
+        "account": "",
+        "type": "callContract",
+        "options": {
+          "contract": "$addrs.2600",
+          "method": "increase",
+          "abi": "#CounterContract.abi",
+          "args": [],
+          "gas": "3000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Unbind Aspect No.2600 with contract",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$addrs.2600"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Check contract No.2600 bindings, expect 0",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.2600"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 0
+          }
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 2999",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "notInclude": "$addrs.2600"
+          },
+          "result.contracts.length": {
+            "eq": 2999
+          }
+        }
+      }
+    ]
+  }
+  

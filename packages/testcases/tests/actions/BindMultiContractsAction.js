@@ -1,19 +1,19 @@
 import { Action } from './Action.js';
 
-export class BindMultiAspectsAction extends Action {
+export class BindMultiContractsAction extends Action {
     async execute(testManager, context) {
-        const { account, aspects, priority, version, gas, count } = testManager.replaceVariables(this.action.options, context);
+        const { accounts, aspect, priority, version, gas, count } = testManager.replaceVariables(this.action.options, context);
         const from = this.getAccount(testManager, context);
 
-        const instance = new testManager.web3.eth.Contract([], account);
-
-        if (aspects.length < count) {
-            throw new Error("deployed aspects are not enough for binding, expect " + count.toString() + ", got " + accounts.length.toString());
+        if (accounts.length < count) {
+            throw new Error("deployed contracts are not enough for binding, expect " + count.toString() + ", got " + accounts.length.toString());
         }
 
         let txs = [];
         for (let i = 0; i < count; i++) {
-            const bind = instance.bind({ aspectId: aspects[i], priority, aspectVersion: version });
+            const instance = new testManager.web3.eth.Contract([], accounts[i]);
+
+            const bind = instance.bind({ aspectId: aspect, priority, aspectVersion: version });
 
             const tx = {
                 gas,
