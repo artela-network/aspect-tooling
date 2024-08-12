@@ -28,7 +28,7 @@ export class DeployMultiAspectsAction extends Action {
       txs.push(tx);
     }
 
-    const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context);
+    const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context, 20);
     const ids = [];
     for (const receipt of receipts) {
       ids.push(receipt.contractAddress);

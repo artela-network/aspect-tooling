@@ -25,7 +25,7 @@ export class BindMultiContractsAction extends Action {
             await this.estimateGas(tx, testManager, context);
             txs.push(tx);
         }
-        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context);
+        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context, 10);
         return { result: { receipts, failures }, receipt: null, tx: null };
     }
 }

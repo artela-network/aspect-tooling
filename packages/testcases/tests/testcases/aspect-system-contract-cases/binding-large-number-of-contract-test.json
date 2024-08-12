@@ -73,7 +73,7 @@
         },
         "expect": {
           "result.contracts": {
-            "include": "$addrs.2600"
+            "include": ["$addrs.0", "$addrs.2600", "$addrs.110", "$addrs.2999"]
           },
           "result.contracts.length": {
             "eq": 3000
@@ -165,6 +165,204 @@
           },
           "result.contracts.length": {
             "eq": 2999
+          }
+        }
+      },
+      {
+        "description": "Unbind Aspect No.110 with contract",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$addrs.110"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Check contract No.110 bindings, expect 0",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.110"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 0
+          }
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 2998",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "notInclude": "$addrs.110"
+          },
+          "result.contracts.length": {
+            "eq": 2998
+          }
+        }
+      },
+      {
+        "description": "Check contract No.2999 bindings, expect 1",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.2999"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 1
+          }
+        }
+      },
+      {
+        "description": "Unbind Aspect No.2999 with contract",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$addrs.2999"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Check contract No.2999 bindings, expect 0",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.2999"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 0
+          }
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 2997",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "notInclude": "$addrs.2999"
+          },
+          "result.contracts.length": {
+            "eq": 2997
+          }
+        }
+      },
+      {
+        "description": "Unbind Aspect No.0 with contract",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$addrs.0"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Check contract No.0 bindings, expect 0",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.0"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 0
+          }
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 2996",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "notInclude": "$addrs.0"
+          },
+          "result.contracts.length": {
+            "eq": 2996
+          }
+        }
+      },
+      {
+        "description": "Re-bind contract No.2999 with Aspect",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$addrs.2999",
+          "version": 1,
+          "priority": -1,
+          "gas": "1000000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Check contract No.2999 bindings, expect 1",
+        "account": "",
+        "type": "queryContractBindings",
+        "options": {
+          "contract": "$addrs.2999"
+        },
+        "expect": {
+          "result.aspects.length": {
+            "eq": 1
+          }
+        }
+      },
+      {
+        "description": "Check aspect bindings, expect 2997",
+        "account": "",
+        "type": "queryAspectBindings",
+        "options": {
+          "aspect": "$aspectId"
+        },
+        "expect": {
+          "result.contracts": {
+            "include": "$addrs.2999"
+          },
+          "result.contracts.length": {
+            "eq": 2997
           }
         }
       }

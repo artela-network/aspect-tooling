@@ -167,7 +167,7 @@ export class Action {
     return { receipt };
   }
 
-  async sendTransactions(from, txs, testManager, context) {
+  async sendTransactions(from, txs, testManager, context, tps) {
     const account = testManager.web3.eth.accounts.wallet[from];
     if (!account) {
       throw new Error(`Account ${from} not found in web3 wallet`);
@@ -176,7 +176,9 @@ export class Action {
     let nonce = await testManager.web3.atl.getTransactionCount(from);
     let fetch = new fetchBlock(testManager);
 
+    let i = 0;
     for (let tx of txs) {
+      const startTime = Date.now();
       tx.nonce = nonce++;
       const signedTx = await account.signTransaction(tx);
 
@@ -185,9 +187,14 @@ export class Action {
       }
 
       fetch.fetchAdd(signedTx.transactionHash);
+      if (process.env.SHOW_TX_DETAILS === 'true') {
+        console.log("sending tx, index", i++, "total", txs.length, "hash", signedTx.transactionHash);
+      }
       testManager.web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-      await new Promise(r => setTimeout(r, 50));
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, (1000 / tps) - elapsedTime);
+      await new Promise(r => setTimeout(r, remainingTime));
     }
     const [receipts, failures] = await fetch.fetchCheck();
     return [receipts, [...failures]];

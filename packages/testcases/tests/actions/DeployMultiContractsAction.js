@@ -20,7 +20,7 @@ export class DeployMultiContractsAction extends Action {
             await this.estimateGas(tx, testManager, context);
             txs.push(tx);
         }
-        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context);
+        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context, 20);
 
         const addrs = [];
         for (const receipt of receipts) {
