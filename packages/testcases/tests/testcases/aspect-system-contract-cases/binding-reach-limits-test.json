@@ -2,7 +2,7 @@
     "description": "Test binding reach limits",
     "actions": [
       {
-        "description": "Deploy 255 Aspects",
+        "description": "Deploy 254 Aspects",
         "account": "",
         "type": "deployMultiAspects",
         "options": {
@@ -12,7 +12,7 @@
             "code": "#BasicAspectCompressed.bytecode"
           },
           "gas": "auto",
-          "count": 255
+          "count": 254
         },
         "output": {
           "multiAspects": "result.ids"
@@ -37,7 +37,7 @@
         }
       },
       {
-        "description": "Bind 255 Aspects with contract",
+        "description": "Bind 254 Aspects with contract",
         "account": "",
         "type": "bindMultiAspects",
         "options": {
@@ -45,7 +45,8 @@
           "account": "$contractAddress",
           "version": 1,
           "priority": -1,
-          "count": 255
+          "count": 254,
+          "gas": "500000"
         },
         "expect": {
           "result.failures.length": {
@@ -100,12 +101,62 @@
         "output": {
           "basicAspect": "receipt.aspectAddress"
         }
-      },{
+      },
+      {
         "description": "Bind Aspect with contract",
         "account": "",
         "type": "bind",
         "options": {
           "aspect": "$basicAspect",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1
+        },
+        "expect": {
+          "error": {
+            "include": "binding limit exceeded"
+          }
+        }
+      },
+      {
+        "description": "Unbind Aspect No.100 with contract",
+        "account": "",
+        "type": "unbind",
+        "options": {
+          "aspect": "$multiAspects.99",
+          "account": "$contractAddress"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Bind Aspect with contract",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$basicAspect",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": -1
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Bind Aspect 100 with contract",
+        "account": "",
+        "type": "bind",
+        "options": {
+          "aspect": "$multiAspects.99",
           "account": "$contractAddress",
           "version": 1,
           "priority": -1
