@@ -8,7 +8,7 @@ export class BindMultiAspectsAction extends Action {
         const instance = new testManager.web3.eth.Contract([], account);
 
         if (aspects.length < count) {
-            throw new Error("deployed aspect is not enough for binding");
+            throw new Error("deployed aspects are not enough for binding, expect " + count.toString() + ", got " + accounts.length.toString());
         }
 
         let txs = [];
@@ -25,7 +25,7 @@ export class BindMultiAspectsAction extends Action {
             await this.estimateGas(tx, testManager, context);
             txs.push(tx);
         }
-        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context);
+        const [receipts, failures] = await this.sendTransactions(from, txs, testManager, context, 15);
         return { result: { receipts, failures }, receipt: null, tx: null };
     }
 }
