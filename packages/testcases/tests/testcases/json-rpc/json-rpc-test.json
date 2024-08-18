@@ -1,0 +1,906 @@
+{
+  "description": "Test JsonRPC namesapece eth",
+  "actions": [
+    {
+      "description": "eth_chainId",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_chainId"
+      },
+      "expect": {
+        "result.ret": {
+          "eq": "0x2e2c"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_coinbase",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_coinbase"
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 42
+        },
+        "result.ret": {
+          "include": "art"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_coinbase",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_coinbase"
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 42
+        },
+        "result.ret": {
+          "include": "art"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_blockNumber",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_blockNumber"
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Create new account",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 2,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "eth_getBalance by account with balance",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBalance",
+        "params": ["$accounts.0", "latest"]
+      },
+      "expect": {
+        "result.ret": {
+          "eq": "0x1bc16d674ec80000"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getBalance by account without balance",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBalance",
+        "params": ["0xB3AC868dB93165C2C9A5A9005A98A0bf120B22Ad", "latest"]
+      },
+      "expect": {
+        "result.ret": {
+          "eq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getBalance by empty account",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBalance",
+        "params": ["0x0000000000000000000000000000000000000000", "latest"]
+      },
+      "expect": {
+        "result.ret": {
+          "eq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getBalance by invalid account",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBalance",
+        "params": ["0x3AC868dB93165C2C9A5A9005A98A0bf120B22Ad", "latest"]
+      },
+      "expect": {
+        "error": {
+          "notEq": ""
+        }
+      }
+    },
+    {
+      "description": "Deploy counter contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Call contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": [],
+        "gas": "10000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "callContract_blockNumber": "receipt.blockNumber",
+        "callContract_blockHash": "receipt.blockHash",
+        "callContract_txHash": "receipt.transactionHash",
+        "callContract_txIndex": "receipt.transactionIndex"
+      }
+    },
+    {
+      "description": "eth_getProof",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getProof",
+        "params": ["$contractAddress",["0x0"],"latest"]
+      },
+      "expect": {
+        "result.ret": {
+          "include": {
+            "address": "$contractAddress",
+            "accountProof.length": 2,
+            "nonce": 1,
+            "storageHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "result.ret.accountProof.length": {
+          "eq": 2
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getProof by invalid contract",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getProof",
+        "params": ["0xB3AC868dB9316d",["0x0"],"latest"]
+      },
+      "expect": {
+        "error": {
+          "notEq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getProof by future block",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getProof",
+        "params": ["$contractAddress",["0x0"],"0x10000000000000"]
+      },
+      "expect": {
+        "error": {
+          "notEq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getHeaderByNumber",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getHeaderByNumber",
+        "params": ["0x5"]
+      },
+      "expect": {
+        "result.ret.number": {
+          "eq": "0x5"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getHeaderByNumber latest",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getHeaderByNumber",
+        "params": ["latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getHeaderByNumber earliest",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getHeaderByNumber",
+        "params": ["earliest"]
+      },
+      "expect": {
+        "result.ret.number": {
+          "eq": "0x1"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getHeaderByNumber invalid block",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getHeaderByNumber",
+        "params": ["0x123456789"]
+      },
+      "expect": {
+        "error": {
+          "notEq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_getHeaderByHash",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getHeaderByHash",
+        "params": ["$callContract_blockHash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.hash": {
+          "eq": "$callContract_blockHash"
+        }
+      }
+    },
+    {
+      "description": "eth_getBlockByNumber",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockByNumber",
+        "params": ["latest", false]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "getBlockByNumber_number": "result.ret.number",
+        "getBlockByNumber_hash": "result.ret.hash"
+      }
+    },
+    {
+      "description": "eth_getBlockByNumber",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockByNumber",
+        "params": ["$getBlockByNumber_number", true]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.hash": {
+          "eq": "$getBlockByNumber_hash"
+        }
+      }
+    },
+    {
+      "description": "eth_getBlockByHash",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockByHash",
+        "params": ["$callContract_blockHash", true]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.hash": {
+          "eq": "$callContract_blockHash"
+        },
+        "result.ret.transactions.length": {
+          "notEq": 0
+        }
+      }
+    },
+    {
+      "description": "eth_getCode",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getCode",
+        "params": ["$contractAddress", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 1598
+        }
+      }
+    },
+    {
+      "description": "eth_getCode with empty address",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getCode",
+        "params": ["0x0000000000000000000000000000000000000000", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x"
+        }
+      }
+    },
+    {
+      "description": "eth_getStorageAt slot 0",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getStorageAt",
+        "params": ["$contractAddress", "0x0", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x00000000000000000000000003ed94981ea41f068f38ba8334430fe31cac74c2"
+        }
+      }
+    },
+    {
+      "description": "eth_getStorageAt slot 1",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getStorageAt",
+        "params": ["$contractAddress", "0x1", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x0000000000000000000000000000000000000000000000000000000000000001"
+        }
+      }
+    },
+    {
+      "description": "personal_newAccount",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_newAccount",
+        "params": ["testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 42
+        }
+      },
+      "output": {
+        "newAccount_address": "result.ret"
+      }
+    },
+    {
+      "description": "eth_accounts",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_accounts",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": "0"
+        }
+      }
+    },
+    {
+      "description": "eth_protocolVersion",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_protocolVersion",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x44"
+        }
+      }
+    },
+    {
+      "description": "eth_gasPrice",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_gasPrice",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "notEq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_maxPriorityFeePerGas",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_maxPriorityFeePerGas",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "eth_feeHistory",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_feeHistory",
+        "params": [8, "latest", [ 25,75 ]]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.reward.length": {
+          "eq": 8
+        },
+        "result.ret.baseFeePerGas.length": {
+          "eq": 9
+        }
+      }
+    },
+    {
+      "description": "eth_syncing",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_syncing",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": false
+        }
+      }
+    },
+    {
+      "description": "eth_getBlockTransactionCountByNumber not zero",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockTransactionCountByNumber",
+        "params": ["numberToHex($callContract_blockNumber)"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "notEq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getBlockTransactionCountByNumber zero",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockTransactionCountByNumber",
+        "params": ["0x1"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getBlockTransactionCountByHash not zero",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getBlockTransactionCountByHash",
+        "params": ["$callContract_blockHash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "notEq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByBlockNumberAndIndex",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByBlockNumberAndIndex",
+        "params": ["numberToHex($callContract_blockNumber)", "0x0"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.blockHash": {
+          "eq": "$callContract_blockHash"
+        },
+        "result.ret.transactionIndex": {
+          "eq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByBlockNumberAndIndex not found",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByBlockNumberAndIndex",
+        "params": ["numberToHex($callContract_blockNumber)", "0x100"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": null
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByBlockHashAndIndex",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByBlockHashAndIndex",
+        "params": ["$callContract_blockHash", "numberToHex($callContract_txIndex)"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.blockHash": {
+          "eq": "$callContract_blockHash"
+        },
+        "result.ret.hash": {
+          "eq": "$callContract_txHash"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByBlockHashAndIndex not found",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByBlockHashAndIndex",
+        "params": ["$callContract_blockHash", "0x100"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": null
+        }
+      }
+    },
+    {
+      "description": "eth_getRawTransactionByBlockNumberAndIndex",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getRawTransactionByBlockNumberAndIndex",
+        "params": ["numberToHex($callContract_blockNumber)", "0x0"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "getRawTransactionByBlockHashAndIndex_RawTx": "result.ret"
+      }
+    },
+    {
+      "description": "eth_getRawTransactionByBlockHashAndIndex",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getRawTransactionByBlockHashAndIndex",
+        "params": ["$callContract_blockHash", "0x0"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        },
+        "result.ret": {
+          "eq": "$getRawTransactionByBlockHashAndIndex_RawTx"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionCount block 0",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionCount",
+        "params": ["$accounts.0", "0x0"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionCount before accounts.1 call",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionCount",
+        "params": ["$accounts.1", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "Call contract by accounts.1",
+      "account": "$accounts.1",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": [],
+        "gas": "10000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "counterCountract_hash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "eth_getTransactionCount after accounts.1 call",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionCount",
+        "params": ["$accounts.1", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x1"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionCount empty account",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionCount",
+        "params": ["0x0000000000000000000000000000000000000000", "latest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x0"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByHash",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByHash",
+        "params": ["$counterCountract_hash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.hash": {
+          "eq": "$counterCountract_hash"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionByHash not found",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionByHash",
+        "params": ["0x16079215344f1f43b087b23222acbb6b4149ce5e0975dacea2938a76f7b480ac"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": null
+        }
+      }
+    },
+    {
+      "description": "eth_getRawTransactionByHash",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getRawTransactionByHash",
+        "params": ["$callContract_blockHash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "$getRawTransactionByBlockHashAndIndex_RawTx"
+        }
+      }
+    },
+    {
+      "description": "eth_getRawTransactionByHash not found",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getRawTransactionByHash",
+        "params": ["0x16079215344f1f43b087b23222acbb6b4149ce5e0975dacea2938a76f7b480ac"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": null
+        }
+      }
+    }
+  ]
+}
