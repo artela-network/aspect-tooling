@@ -25,6 +25,7 @@ import { TransferAction } from '../actions/TransferAction.js';
 import { GetSessionKeyCallDataAction } from '../actions/GetSessionKeyCallDataAction.js';
 import { DeployMultiContractsAction } from '../actions/DeployMultiContractsAction.js';
 import { BindMultiContractsAction } from '../actions/BindMultiContractsAction.js';
+import { JsonRPCAction } from '../actions/JsonRPCAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -58,7 +59,8 @@ export class TestManager {
     this.privateKeyPath = path.join(this.rootDir, 'privateKey.txt');
     this.sourcesPath = path.join(this.rootDir, 'tests/testcases/sources.json');
 
-    this.web3 = this.connectToNode();
+    this.nodeUrl = this.getNodeUrl();
+    this.web3 = this.connectToNode(this.nodeUrl);
     this.account = this.addAccount(this.web3, this.readPrivateKey());
     this.actionRegistry = {};
     this.context = {};
@@ -84,6 +86,7 @@ export class TestManager {
     this.registerAction("getSessionKeyCallData", GetSessionKeyCallDataAction);
     this.registerAction('deployMultiContracts', DeployMultiContractsAction);
     this.registerAction('bindMultiContracts', BindMultiContractsAction);
+    this.registerAction('jsonRPC', JsonRPCAction);
   }
 
   async compileAspect(source) {
@@ -213,7 +216,11 @@ export class TestManager {
     console.log(`  ⤷ ✅ Contract ${source.name} compiled successfully!`);
   }
 
-  connectToNode() {
+  connectToNode(nodeUrl) {
+    return new Web3(nodeUrl);
+  }
+
+  getNodeUrl() {
     let nodeUrl;
     if (this.configPath.startsWith('http')) {
       nodeUrl = this.configPath;
@@ -225,7 +232,7 @@ export class TestManager {
     if (!nodeUrl) {
       throw new Error('Node URL cannot be empty. Please provide a valid configuration.');
     }
-    return new Web3(nodeUrl);
+    return nodeUrl;
   }
 
   readPrivateKey() {
@@ -264,22 +271,29 @@ export class TestManager {
     return await this.web3.eth.getGasPrice();
   }
 
-  replaceNestedVariables(str, context, trimPrefix = '') {
-    if (str && str.trim() != "") {
-      const regex = /\$[a-zA-Z0-9_]+/g;
-      const data = str.replace(regex, (match) => {
-        const key = match.slice(1);
-        const value = this.replaceVariables(
-          '$' + key,
-          context,
-        );
-        if (trimPrefix && trimPrefix != '' && value.startsWith(trimPrefix)) {
-          return value.slice(trimPrefix.length);
-        }
-        return value;
-      });
-      return data;
+  replaceNestedVariables(input, context, trimPrefix = '') {
+    if (Array.isArray(input)) {
+      return input.map(str => this.replaceNestedVariables(str, context, trimPrefix));
+    } else if (typeof input === 'string') {
+
+      if (input && input.trim() != "") {
+        const regex = /\$[a-zA-Z0-9_]+/g;
+        const data = input.replace(regex, (match) => {
+          const key = match.slice(1);
+          const value = this.replaceVariables(
+            '$' + key,
+            context,
+          );
+          if (trimPrefix && trimPrefix != '' && value.startsWith(trimPrefix)) {
+            return value.slice(trimPrefix.length);
+          }
+          return value;
+        });
+        return data;
+      }
     }
+
+    return input;
   }
 
   replaceVariables(obj, context) {
