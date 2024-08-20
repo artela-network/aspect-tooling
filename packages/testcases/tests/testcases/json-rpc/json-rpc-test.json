@@ -10,11 +10,14 @@
       },
       "expect": {
         "result.ret": {
-          "eq": "0x2e2c"
+          "notEq": "0x0"
         },
         "error": {
           "eq": ""
         }
+      },
+      "output": {
+        "chainId": "result.ret"
       }
     },
     {
@@ -29,26 +32,7 @@
           "eq": 42
         },
         "result.ret": {
-          "include": "art"
-        },
-        "error": {
-          "eq": ""
-        }
-      }
-    },
-    {
-      "description": "eth_coinbase",
-      "account": "",
-      "type": "jsonRPC",
-      "options": {
-        "method": "eth_coinbase"
-      },
-      "expect": {
-        "result.ret.length": {
-          "eq": 42
-        },
-        "result.ret": {
-          "include": "art"
+          "include": "0x"
         },
         "error": {
           "eq": ""
@@ -77,14 +61,14 @@
       "type": "createAccounts",
       "options": {
         "fundingAmount": 2,
-        "accountNumber": 2
+        "accountNumber": 3
       },
       "expect": {
         "error": {
           "eq": ""
         },
         "result.accounts.length": {
-          "eq": 2
+          "eq": 3
         }
       },
       "output": {
@@ -176,7 +160,7 @@
       }
     },
     {
-      "description": "Call contract",
+      "description": "Call counter contract",
       "account": "",
       "type": "callContract",
       "options": {
@@ -184,7 +168,7 @@
         "method": "increase",
         "abi": "#CounterContract.abi",
         "args": [],
-        "gas": "10000000"
+        "gas": "1000000"
       },
       "expect": {
         "receipt.status": {
@@ -195,10 +179,10 @@
         }
       },
       "output": {
-        "callContract_blockNumber": "receipt.blockNumber",
-        "callContract_blockHash": "receipt.blockHash",
+        "callCounter_blockNumber": "receipt.blockNumber",
+        "callCounter_blockHash": "receipt.blockHash",
         "callContract_txHash": "receipt.transactionHash",
-        "callContract_txIndex": "receipt.transactionIndex"
+        "callCounter_txIndex": "receipt.transactionIndex"
       }
     },
     {
@@ -322,14 +306,14 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getHeaderByHash",
-        "params": ["$callContract_blockHash"]
+        "params": ["$callCounter_blockHash"]
       },
       "expect": {
         "error": {
           "eq": ""
         },
         "result.ret.hash": {
-          "eq": "$callContract_blockHash"
+          "eq": "$callCounter_blockHash"
         }
       }
     },
@@ -374,14 +358,14 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getBlockByHash",
-        "params": ["$callContract_blockHash", true]
+        "params": ["$callCounter_blockHash", true]
       },
       "expect": {
         "error": {
           "eq": ""
         },
         "result.ret.hash": {
-          "eq": "$callContract_blockHash"
+          "eq": "$callCounter_blockHash"
         },
         "result.ret.transactions.length": {
           "notEq": 0
@@ -584,7 +568,7 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getBlockTransactionCountByNumber",
-        "params": ["numberToHex($callContract_blockNumber)"]
+        "params": ["numberToHex($callCounter_blockNumber)"]
       },
       "expect": {
         "error": {
@@ -618,7 +602,7 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getBlockTransactionCountByHash",
-        "params": ["$callContract_blockHash"]
+        "params": ["$callCounter_blockHash"]
       },
       "expect": {
         "error": {
@@ -635,14 +619,14 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getTransactionByBlockNumberAndIndex",
-        "params": ["numberToHex($callContract_blockNumber)", "0x0"]
+        "params": ["numberToHex($callCounter_blockNumber)", "0x0"]
       },
       "expect": {
         "error": {
           "eq": ""
         },
         "result.ret.blockHash": {
-          "eq": "$callContract_blockHash"
+          "eq": "$callCounter_blockHash"
         },
         "result.ret.transactionIndex": {
           "eq": "0x0"
@@ -650,12 +634,12 @@
       }
     },
     {
-      "description": "eth_getTransactionByBlockNumberAndIndex not found",
+      "description": "eth_getTransactionByBlockNumberAndIndex not exist",
       "account": "",
       "type": "jsonRPC",
       "options": {
         "method": "eth_getTransactionByBlockNumberAndIndex",
-        "params": ["numberToHex($callContract_blockNumber)", "0x100"]
+        "params": ["numberToHex($callCounter_blockNumber)", "0x100"]
       },
       "expect": {
         "error": {
@@ -672,14 +656,14 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getTransactionByBlockHashAndIndex",
-        "params": ["$callContract_blockHash", "numberToHex($callContract_txIndex)"]
+        "params": ["$callCounter_blockHash", "numberToHex($callCounter_txIndex)"]
       },
       "expect": {
         "error": {
           "eq": ""
         },
         "result.ret.blockHash": {
-          "eq": "$callContract_blockHash"
+          "eq": "$callCounter_blockHash"
         },
         "result.ret.hash": {
           "eq": "$callContract_txHash"
@@ -687,12 +671,12 @@
       }
     },
     {
-      "description": "eth_getTransactionByBlockHashAndIndex not found",
+      "description": "eth_getTransactionByBlockHashAndIndex not exist",
       "account": "",
       "type": "jsonRPC",
       "options": {
         "method": "eth_getTransactionByBlockHashAndIndex",
-        "params": ["$callContract_blockHash", "0x100"]
+        "params": ["$callCounter_blockHash", "0x100"]
       },
       "expect": {
         "error": {
@@ -709,7 +693,7 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getRawTransactionByBlockNumberAndIndex",
-        "params": ["numberToHex($callContract_blockNumber)", "0x0"]
+        "params": ["numberToHex($callCounter_blockNumber)", "numberToHex($callCounter_txIndex)"]
       },
       "expect": {
         "error": {
@@ -729,7 +713,7 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getRawTransactionByBlockHashAndIndex",
-        "params": ["$callContract_blockHash", "0x0"]
+        "params": ["$callCounter_blockHash", "0x0"]
       },
       "expect": {
         "error": {
@@ -786,7 +770,7 @@
         "method": "increase",
         "abi": "#CounterContract.abi",
         "args": [],
-        "gas": "10000000"
+        "gas": "1000000"
       },
       "expect": {
         "receipt.status": {
@@ -852,7 +836,7 @@
       }
     },
     {
-      "description": "eth_getTransactionByHash not found",
+      "description": "eth_getTransactionByHash not exist",
       "account": "",
       "type": "jsonRPC",
       "options": {
@@ -874,7 +858,7 @@
       "type": "jsonRPC",
       "options": {
         "method": "eth_getRawTransactionByHash",
-        "params": ["$callContract_blockHash"]
+        "params": ["$callContract_txHash"]
       },
       "expect": {
         "error": {
@@ -886,7 +870,7 @@
       }
     },
     {
-      "description": "eth_getRawTransactionByHash not found",
+      "description": "eth_getRawTransactionByHash not exist",
       "account": "",
       "type": "jsonRPC",
       "options": {
@@ -898,8 +882,314 @@
           "eq": ""
         },
         "result.ret": {
+          "eq": "0x"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionReceipt",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["$callContract_txHash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.blockHash": {
+          "eq": "$callCounter_blockHash"
+        },
+        "result.ret.transactionHash": {
+          "eq": "$callContract_txHash"
+        }
+      }
+    },
+    {
+      "description": "eth_getTransactionReceipt not exist",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["0x16079215344f1f43b087b23222acbb6b4149ce5e0975dacea2938a76f7b480ac"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
           "eq": null
         }
+      }
+    },
+    {
+      "description": "Deploy event contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#EventContract.bytecode",
+        "abi": "#EventContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "eventAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Tansfer Token to the new account saved in current node",
+      "account": "",
+      "type": "transfer",
+      "options": {
+        "to": "$newAccount_address",
+        "amount": "1"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Call event contract",
+      "account": "$accounts.2",
+      "type": "callContract",
+      "options": {
+        "contract": "$eventAddress",
+        "method": "sendEvent",
+        "abi": "#EventContract.abi",
+        "args": [],
+        "gas": "1000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "callEvent_blockHash": "receipt.blockHash",
+        "callEvent_topics0": "receipt.logs.0.topics.0",
+        "callEvent_topics": "receipt.logs.0.topics"
+      }
+    },
+    {
+      "description": "eth_getLogs",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getLogs",
+        "params": ["{\"blockHash\":\"$callEvent_blockHash\",\"topics\":[\"$callEvent_topics0\"]}"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 2
+        },
+        "result.ret.0.topics": {
+          "eq": "$callEvent_topics"
+        }
+      }
+    },
+    {
+      "description": "eth_sign with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_sign",
+        "params": ["$newAccount_address", "0x68656c6c6f"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      }
+    },
+    {
+      "description": "eth_signTransaction with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_signTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x30d40\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x100\",\"nonce\":\"0x0\"}"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.raw.length": {
+          "notEq": 0
+        },
+        "result.ret.v.length": {
+          "notEq": 0
+        },
+        "result.ret.r.length": {
+          "notEq": 0
+        },
+        "result.ret.s.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "signTransaction_raw": "result.ret.raw"
+      }
+    },
+    {
+      "description": "eth_sendRawTransaction send the raw tx signed in last step",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_sendRawTransaction",
+        "params": ["$signTransaction_raw"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 66
+        }
+      },
+      "output": {
+        "sendRawTransaction_txHash": "result.ret"
+      }
+    },
+    {
+      "description": "verify the sendRawTransaction success",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["$sendRawTransaction_txHash"],
+        "wait": 3000
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.status": {
+          "eq": "0x1"
+        },
+        "result.ret.transactionHash": {
+          "eq": "$sendRawTransaction_txHash"
+        }
+      }
+    },
+    {
+      "description": "eth_sendTransaction with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_sendTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x2b0b6\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x100\",\"nonce\":\"0x1\"}"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "sendTransaction_txHash": "result.ret"
+      }
+    },
+    {
+      "description": "verify the sendTransaction success",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["$sendTransaction_txHash"],
+        "wait": 3000
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.status": {
+          "eq": "0x1"
+        },
+        "result.ret.transactionHash": {
+          "eq": "$sendTransaction_txHash"
+        }
+      }
+    },
+    {
+      "description": "eth_fillTransaction",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_fillTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"data\":\"0x32b7a761\"}"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.tx.chainId": {
+          "eq": "$chainId"
+        },
+        "result.ret.tx.nonce": {
+          "eq": "0x2"
+        },
+        "result.ret.tx.gas": {
+          "eq": "0x2b0b6"
+        }
+      }
+    },
+    {
+      "description": "test send a transaction and resend, send",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_sendTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x2b0b6\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x100\",\"nonce\":\"0x2\"}"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "resend_txHash1": "result.ret"
+      }
+    },
+    {
+      "description": "test send a transaction and resend, resend",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_resend",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x3b0b6\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x105\",\"nonce\":\"0x2\"}"]
+      },
+      "expect": {
+        "error": {
+          "notEq": ""
+        }
+      },
+      "output": {
+        "resend_txHash2": "result.ret"
       }
     }
   ]

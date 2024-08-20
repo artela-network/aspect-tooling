@@ -6,7 +6,7 @@ const hexToNumber = Web3Utils.hexToNumber;
 
 export class JsonRPCAction extends Action {
     async execute1(testManager, context) {
-        const { method, params } = testManager.replaceVariables(this.action.options, context);
+        const { method, params, wait } = testManager.replaceVariables(this.action.options, context);
         const from = this.getAccount(testManager, context);
         const methodParts = method.split('_');
 
@@ -27,7 +27,7 @@ export class JsonRPCAction extends Action {
     }
 
     async execute(testManager, context) {
-        const { method, params } = testManager.replaceVariables(this.action.options, context);
+        const { method, params, wait } = testManager.replaceVariables(this.action.options, context);
 
         let data = [];
         if (params && params.length > 0) {
@@ -46,6 +46,10 @@ export class JsonRPCAction extends Action {
                 }
                 return item;
             });
+
+            if (this.isJsonString(data)) {
+                data = [JSON.parse(data)];
+            }
         }
 
         const payload = {
@@ -55,8 +59,9 @@ export class JsonRPCAction extends Action {
             id: new Date().getTime()
         };
 
-
-        console.log("calling payload: ", payload)
+        if (wait && wait > 0) {
+            await new Promise(r => setTimeout(r, wait));
+        }
 
         try {
             const rpcUrl = testManager.nodeUrl;
@@ -77,6 +82,15 @@ export class JsonRPCAction extends Action {
         } catch (error) {
             console.error('RPC Error:', error);
             throw error;
+        }
+    }
+
+    isJsonString(str) {
+        try {
+            JSON.parse(str);
+            return true;
+        } catch (e) {
+            return false;
         }
     }
 }

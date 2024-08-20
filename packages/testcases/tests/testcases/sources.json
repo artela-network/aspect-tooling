@@ -476,5 +476,12 @@
     "type": "contract",
     "src": "SessionKey.sol",
     "contractName": "SessionKey"
+  },
+  {
+    "name": "EventContract",
+    "description": "EventContract publish hello event ",
+    "type": "contract",
+    "src": "event.sol",
+    "contractName": "Event"
   }
 ]
