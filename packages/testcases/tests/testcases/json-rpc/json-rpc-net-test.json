@@ -1,0 +1,55 @@
+{
+  "description": "Test JsonRPC namesapece net",
+  "actions": [
+    {
+      "description": "net_listening",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "net_listening"
+      },
+      "expect": {
+        "result.ret": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "net_peerCount",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "net_peerCount",
+        "params": []
+      },
+      "expect": {
+        "result.ret": {
+          "include": "0x"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "net_version",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "net_version",
+        "params": []
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}
