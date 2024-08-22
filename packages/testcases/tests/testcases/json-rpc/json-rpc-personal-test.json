@@ -34,7 +34,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 0
         }
       }
     },
@@ -107,7 +107,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 0
         }
       },
       "output": {
@@ -148,7 +148,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 2
         }
       }
     },
@@ -165,16 +165,16 @@
           "eq": ""
         },
         "result.ret.raw.length": {
-          "notEq": 0
+          "gt": 100
         },
-        "result.ret.v.length": {
-          "notEq": 0
+        "result.ret.tx.v.length": {
+          "gt": 2
         },
-        "result.ret.r.length": {
-          "notEq": 0
+        "result.ret.tx.r.length": {
+          "gt": 2
         },
-        "result.ret.s.length": {
-          "notEq": 0
+        "result.ret.tx.s.length": {
+          "gt": 2
         }
       },
       "output": {

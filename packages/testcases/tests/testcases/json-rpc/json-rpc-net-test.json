@@ -44,7 +44,7 @@
       },
       "expect": {
         "result.ret": {
-          "notEq": 0
+          "gt": 0
         },
         "error": {
           "eq": ""

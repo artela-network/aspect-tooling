@@ -61,6 +61,32 @@ export class Action {
           }
           validated = true;
         }
+        if (expectedValue.gt !== undefined) {
+          if (process.env.SHOW_TX_DETAILS === 'true') {
+            console.log(
+              `🔍 Validating data: ${key}, condition: gt, expected: ${JSON.stringify(expectedValue.gt)}, actual: ${JSON.stringify(actualValue)}`,
+            );
+          }
+          if (typeof expectedValue.gt === 'object') {
+            expect(actualValue).to.be.above(expectedValue.gt);
+          } else {
+            expect(actualValue).to.be.gt(expectedValue.gt);
+          }
+          validated = true;
+        }
+        if (expectedValue.lt !== undefined) {
+          if (process.env.SHOW_TX_DETAILS === 'true') {
+            console.log(
+              `🔍 Validating data: ${key}, condition: lt, expected: ${JSON.stringify(expectedValue.lt)}, actual: ${JSON.stringify(actualValue)}`,
+            );
+          }
+          if (typeof expectedValue.lt === 'object') {
+            expect(actualValue).to.be.below(expectedValue.lt);
+          } else {
+            expect(actualValue).to.be.lt(expectedValue.lt);
+          }
+          validated = true;
+        }
         if (expectedValue.notEq !== undefined) {
           if (process.env.SHOW_TX_DETAILS === 'true') {
             console.log(

@@ -1,0 +1,198 @@
+{
+  "description": "Test JsonRPC namesapece net",
+  "actions": [
+    {
+      "description": "debug_getRawHeader 1",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawHeader",
+        "params": ["0x1"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getRawHeader latest",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawHeader",
+        "params": ["latest"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getRawBlock 1",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawBlock",
+        "params": ["0x1"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getRawBlock latest",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawBlock",
+        "params": ["latest"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Deploy event contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#EventContract.bytecode",
+        "abi": "#EventContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "eventAddress": "receipt.contractAddress",
+        "deployEvent_blockHash": "receipt.blockHash",
+        "deployEvent_txhash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "Call event contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$eventAddress",
+        "method": "sendEvent",
+        "abi": "#EventContract.abi",
+        "args": [],
+        "gas": "1000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "callEvent_blockHash": "receipt.blockHash",
+        "callEvent_txhash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "debug_getReceipts deploy contract tx",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getReceipts",
+        "params": ["$deployEvent_blockHash"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "result.ret.0.transactionHash": {
+          "eq": "$deployEvent_txhash"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getReceipts call contract tx",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getReceipts",
+        "params": ["$callEvent_blockHash"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "result.ret.0.transactionHash": {
+          "eq": "$callEvent_txhash"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getRawReceipts deploy contract tx",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawReceipts",
+        "params": ["$deployEvent_blockHash"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "result.ret.0.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_getRawReceipts call contract tx",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawReceipts",
+        "params": ["$callEvent_blockHash"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "result.ret.0.length": {
+          "gt": 100
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}
