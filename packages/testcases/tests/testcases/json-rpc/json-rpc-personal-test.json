@@ -1,0 +1,243 @@
+{
+  "description": "Test JsonRPC namesapece personal",
+  "actions": [
+    {
+      "description": "personal_newAccount",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_newAccount",
+        "params": ["testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 42
+        }
+      },
+      "output": {
+        "newAccount_address": "result.ret"
+      }
+    },
+    {
+      "description": "personal_listAccounts",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_listAccounts",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      }
+    },
+    {
+      "description": "personal_importRawKey",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_importRawKey",
+        "params": ["faf950a1d495d838b43d8281be3dd37950614577c00dde779d49e806e0f5c0a4", "testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0xacf180ac2d3663dc71a3a694e62712d7d4f4004c"
+        }
+      },
+      "output": {
+        "imported_account": "result.ret"
+      }
+    },
+    {
+      "description": "Tansfer Token to the new account saved in current node",
+      "account": "",
+      "type": "transfer",
+      "options": {
+        "to": "$newAccount_address",
+        "amount": "1"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Deploy event contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#EventContract.bytecode",
+        "abi": "#EventContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "eventAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "personal_sendTransaction with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_sendTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x2b0b6\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x100\",\"nonce\":\"0x0\"}", "testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "sendTransaction_txHash": "result.ret"
+      }
+    },
+    {
+      "description": "verify the sendTransaction success",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["$sendTransaction_txHash"],
+        "wait": 3000
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.status": {
+          "eq": "0x1"
+        },
+        "result.ret.transactionHash": {
+          "eq": "$sendTransaction_txHash"
+        }
+      }
+    },
+    {
+      "description": "personal_sign with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_sign",
+        "params": ["0x68656c6c6f", "$newAccount_address", "testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "notEq": 0
+        }
+      }
+    },
+    {
+      "description": "personal_signTransaction with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_signTransaction",
+        "params": ["{\"from\":\"$newAccount_address\",\"to\":\"$eventAddress\",\"gas\":\"0x30d40\",\"data\":\"0x32b7a761\",\"gasPrice\":\"0x100\",\"nonce\":\"0x1\"}", "testtest"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.raw.length": {
+          "notEq": 0
+        },
+        "result.ret.v.length": {
+          "notEq": 0
+        },
+        "result.ret.r.length": {
+          "notEq": 0
+        },
+        "result.ret.s.length": {
+          "notEq": 0
+        }
+      },
+      "output": {
+        "signTransaction_raw": "result.ret.raw"
+      }
+    },
+    {
+      "description": "eth_sendRawTransaction send the raw tx signed in last step",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_sendRawTransaction",
+        "params": ["$signTransaction_raw"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "eq": 66
+        }
+      },
+      "output": {
+        "sendRawTransaction_txHash": "result.ret"
+      }
+    },
+    {
+      "description": "verify the sendRawTransaction success",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getTransactionReceipt",
+        "params": ["$sendRawTransaction_txHash"],
+        "wait": 3000
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.status": {
+          "eq": "0x1"
+        },
+        "result.ret.transactionHash": {
+          "eq": "$sendRawTransaction_txHash"
+        }
+      }
+    },
+    {
+      "description": "personal_ecRecover with account save on current node",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "personal_ecRecover",
+        "params": ["0xaabbccdd", "0x5b6693f153b48ec1c706ba4169960386dbaa6903e249cc79a8e6ddc434451d417e1e57327872c7f538beeb323c300afa9999a3d4a5de6caf3be0d5ef832b67ef1c"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "0x1923f626bb8dc025849e00f99c25fe2b2f7fb0db"
+        }
+      }
+    }
+  ]
+}
