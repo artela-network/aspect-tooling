@@ -193,6 +193,232 @@
           "eq": ""
         }
       }
+    },
+    {
+      "description": "eth_getRawTransactionByHash",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "eth_getRawTransactionByHash",
+        "params": ["$deployEvent_txhash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "gt": 100
+        }
+      },
+      "output": {
+        "eth_rawTx": "result.ret"
+      }
+    },
+    {
+      "description": "debug_getRawTransaction",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getRawTransaction",
+        "params": ["$deployEvent_txhash"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": "$eth_rawTx"
+        }
+      }
+    },
+    {
+      "description": "debug_printBlock",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_printBlock",
+        "params": [1]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "gt": 100
+        }
+      }
+    },
+    {
+      "description": "debug_chaindbProperty",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_chaindbProperty",
+        "params": ["stats"]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "gt": 10
+        }
+      }
+    },
+    {
+      "description": "debug_chaindbCompact",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_chaindbCompact",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_gcStats",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_gcStats",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.LastGC": {
+          "notEq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_memStats",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_memStats",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.Alloc": {
+          "gt": 10000
+        }
+      }
+    },
+    {
+      "description": "debug_setBlockProfileRate",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_setBlockProfileRate",
+        "params": [1000]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_stacks",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_stacks",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_freeOSMemory",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_freeOSMemory",
+        "params": []
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_setGCPercent",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_setGCPercent",
+        "params": [150]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_setGCPercent second time",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_setGCPercent",
+        "params": [150]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret": {
+          "eq": 150
+        }
+      }
+    },
+    {
+      "description": "debug_getHeaderRlp",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getHeaderRlp",
+        "params": [1]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "gt": 100
+        }
+      }
+    },
+    {
+      "description": "debug_getBlockRlp",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_getBlockRlp",
+        "params": [1]
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.ret.length": {
+          "gt": 100
+        }
+      }
     }
   ]
 }
