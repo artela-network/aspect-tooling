@@ -44,12 +44,18 @@ export class JsonRPCAction extends Action {
 
                     return hexToNumber(hexStr);
                 }
+
+                try {
+                    const parsed = JSON.parse(item);
+                    if (typeof parsed === 'object' && parsed !== null) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+
                 return item;
             });
-
-            if (this.isJsonString(data)) {
-                data = [JSON.parse(data)];
-            }
         }
 
         const payload = {
@@ -82,15 +88,6 @@ export class JsonRPCAction extends Action {
         } catch (error) {
             console.error('RPC Error:', error);
             throw error;
-        }
-    }
-
-    isJsonString(str) {
-        try {
-            JSON.parse(str);
-            return true;
-        } catch (e) {
-            return false;
         }
     }
 }

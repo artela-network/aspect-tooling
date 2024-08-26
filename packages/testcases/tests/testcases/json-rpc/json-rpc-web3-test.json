@@ -1,0 +1,38 @@
+{
+  "description": "Test JsonRPC namesapece web3",
+  "actions": [
+    {
+      "description": "web3_clientVersion",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "web3_clientVersion"
+      },
+      "expect": {
+        "result.ret": {
+          "include": "artela"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "web3_sha3",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "web3_sha3",
+        "params": ["0x48656c6c6f2c20776f726c6421"]
+      },
+      "expect": {
+        "result.ret": {
+          "eq": "0xb6e16d27ac5ab427a7f68900ac5559ce272dc6c37c82b3e052246c82244c50e4"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}
