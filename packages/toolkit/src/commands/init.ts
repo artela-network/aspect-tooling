@@ -20,7 +20,7 @@ const isWinOS = /^win/i.test(process.platform);
 
 const toolVersion = '^0.0.60';
 const libVersion = '^0.0.36';
-const web3Version = '^1.9.22';
+const web3Version = '^1.9.23';
 
 export default class Init extends Command {
   static description = 'init aspect project in a directory.';
@@ -399,8 +399,8 @@ export default class Init extends Command {
         pkg['devDependencies'] = devDependencies;
         updated = true;
       }
-      if (!devDependencies['@artela/aspect-tool']) {
-        devDependencies['@artela/aspect-tool'] = toolVersion;
+      if (!devDependencies['@artela-next/aspect-tool']) {
+        devDependencies['@artela-next/aspect-tool'] = toolVersion;
         pkg['devDependencies'] = devDependencies;
         updated = true;
       }
@@ -410,13 +410,13 @@ export default class Init extends Command {
         updated = true;
       }
       const dependencies = pkg['dependencies'] || {};
-      if (!dependencies['@artela/aspect-libs']) {
-        dependencies['@artela/aspect-libs'] = libVersion;
+      if (!dependencies['@artela-next/aspect-libs']) {
+        dependencies['@artela-next/aspect-libs'] = libVersion;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
-      if (!dependencies['@artela/web3']) {
-        dependencies['@artela/web3'] = web3Version;
+      if (!dependencies['@artela-next/web3']) {
+        dependencies['@artela-next/web3'] = web3Version;
         pkg['dependencies'] = dependencies;
         updated = true;
       }
@@ -488,8 +488,8 @@ export default class Init extends Command {
             author: '',
             license: 'ISC',
             dependencies: {
-              '@artela/aspect-libs': libVersion,
-              '@artela/web3': web3Version,
+              '@artela-next/aspect-libs': libVersion,
+              '@artela-next/web3': web3Version,
               '@assemblyscript/loader': '^0.27.23',
               'as-proto': '^1.3.0',
               '@ethersproject/bytes': '^5.7.0',
@@ -497,7 +497,7 @@ export default class Init extends Command {
               'brotli': '^1.3.3'
             },
             devDependencies: {
-              '@artela/aspect-tool': toolVersion,
+              '@artela-next/aspect-tool': toolVersion,
               'as-proto-gen': '^1.3.0',
               assemblyscript: '^0.27.23',
               yargs: '^17.7.2',

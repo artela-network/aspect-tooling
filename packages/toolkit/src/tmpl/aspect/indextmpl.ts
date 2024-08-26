@@ -5,7 +5,7 @@ import {
     execute,
     IPostContractCallJP,
     PostContractCallInput,
-} from "@artela/aspect-libs";
+} from "@artela-next/aspect-libs";
 
 /**
  * Please describe what functionality this aspect needs to implement.

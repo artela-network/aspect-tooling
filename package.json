@@ -15,14 +15,14 @@
     "pnpm": ">=8"
   },
   "scripts": {
-    "build": "pnpm --filter=@artela/aspect-* build",
+    "build": "pnpm --filter=@artela-next/aspect-* build",
     "lint": "pnpm lint:prettier && pnpm lint:eslint",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier -c .",
     "release": "pnpm build && changeset publish",
-    "test:cli": "pnpm --filter @artela/aspect-cli test",
-    "test:ts": "pnpm --filter @artela/aspect-ts test",
-    "type-check": "pnpm --filter=@artela/aspect-cli type-check"
+    "test:cli": "pnpm --filter @artela-next/aspect-cli test",
+    "test:ts": "pnpm --filter @artela-next/aspect-ts test",
+    "type-check": "pnpm --filter=@artela-next/aspect-cli type-check"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",

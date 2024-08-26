@@ -11,7 +11,7 @@ contract SessionKey {
     function isOwner(address user) external view returns (bool result) {
         return user == owner;
     }
-    function add(uint256 number) public {
+    function add(uint256 number) public payable {
         counter = counter + number;
     }
     function get() external view returns (uint256 result)  {

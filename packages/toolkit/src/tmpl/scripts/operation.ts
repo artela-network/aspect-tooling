@@ -1,6 +1,6 @@
 export const OperationCallTmpl = `
 "use strict"
-const Web3 = require("@artela/web3");
+const Web3 = require("@artela-next/web3");
 const fs = require("fs");
 var argv = require('yargs')
     .string('node')

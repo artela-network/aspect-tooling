@@ -4,7 +4,7 @@ export const CreateAccountTmpl = `
 // import required libs
 const fs = require('fs');
 const path = require('path');
-const Web3 = require("@artela/web3");
+const Web3 = require("@artela-next/web3");
 var argv = require('yargs')
     .string('skfile')
     .argv;

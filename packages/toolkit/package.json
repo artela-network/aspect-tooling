@@ -1,5 +1,5 @@
 {
-  "name": "@artela/aspect-tool",
+  "name": "@artela-next/aspect-tool",
   "version": "0.0.60",
   "description": "Dev tool for aspect to generate libs from solidity storage layout.",
   "engines": {

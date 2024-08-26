@@ -52,7 +52,7 @@ export default class Generator {
             stringToUint8Array,
             arrayCopyPush,
             uint8ArrayToHex
-        } from "@artela/aspect-libs";
+        } from "@artela-next/aspect-libs";
     `;
 
   constructor(private readonly layoutPath: string, private readonly tsPath: string) {

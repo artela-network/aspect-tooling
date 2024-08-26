@@ -226,7 +226,8 @@
           "data": "$callData",
           "gas": "1300000",
           "notSign": true,
-          "nonce": "6"
+          "nonce": "6",
+          "value": "0x38D7EA4C68000"
         },
         "expect": {
           "receipt.status": {
@@ -304,4 +305,3 @@
       }
     ]
   }
-  

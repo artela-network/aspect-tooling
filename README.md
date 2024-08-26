@@ -29,12 +29,12 @@ This repo is consists of two parts:
 - `packages/testcases`: Test cases and usage demonstration for the aspect library.
 
 # Installation
-You can install the package either using [NPM](https://www.npmjs.com/package/@artela/aspect-libs)
+You can install the package either using [NPM](https://www.npmjs.com/package/@artela-next/aspect-libs)
 ```shell
 
-npm install  @artela/aspect-libs
+npm install  @artela-next/aspect-libs
 
-npm install --save-dev @artela/aspect-tool
+npm install --save-dev @artela-next/aspect-tool
 ```
 # Useful links
 

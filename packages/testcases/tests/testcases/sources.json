@@ -456,7 +456,7 @@
     "type": "aspect",
     "src": "session-key-aspect.ts",
     "compileOptions": {
-      "compress": true,
+      "compress": false,
       "args": [
         "--disable",
         "bulk-memory",

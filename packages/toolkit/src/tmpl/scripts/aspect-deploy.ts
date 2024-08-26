@@ -1,6 +1,6 @@
 export const DeployTmpl = `
 "use strict"
-const Web3 = require("@artela/web3");
+const Web3 = require("@artela-next/web3");
 const fs = require("fs");
 const argv = require('yargs')
     .string('node')
