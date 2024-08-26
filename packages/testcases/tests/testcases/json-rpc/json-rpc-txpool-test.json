@@ -1,0 +1,72 @@
+{
+  "description": "Test JsonRPC namesapece txpool(need a pressure on node)",
+  "actions": [
+    {
+      "description": "txpool_content",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "txpool_content"
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "txpool_contentFrom",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "txpool_contentFrom",
+        "params": ["0xddfD220fC481E897BDFB30d285aa58417684a251"]
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "txpool_status",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "txpool_status",
+        "params": []
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "txpool_inspect",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "txpool_inspect",
+        "params": []
+      },
+      "expect": {
+        "result.ret": {
+          "notEq": "0x0"
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}

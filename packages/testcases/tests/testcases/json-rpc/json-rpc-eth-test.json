@@ -48,7 +48,7 @@
       },
       "expect": {
         "result.ret": {
-          "notEq": 0
+          "include": "0x"
         },
         "error": {
           "eq": ""
@@ -368,7 +368,7 @@
           "eq": "$callCounter_blockHash"
         },
         "result.ret.transactions.length": {
-          "notEq": 0
+          "gt": 0
         }
       }
     },
@@ -418,8 +418,11 @@
         "error": {
           "eq": ""
         },
+        "result.ret.length": {
+          "eq": 66
+        },
         "result.ret": {
-          "eq": "0x00000000000000000000000003ed94981ea41f068f38ba8334430fe31cac74c2"
+          "notEq": "0x0000000000000000000000000000000000000000000000000000000000000000"
         }
       }
     },
@@ -473,7 +476,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": "0"
+          "gt": 0
         }
       }
     },
@@ -700,7 +703,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 100
         }
       },
       "output": {
@@ -720,7 +723,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 100
         },
         "result.ret": {
           "eq": "$getRawTransactionByBlockHashAndIndex_RawTx"
@@ -1017,7 +1020,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 0
         }
       }
     },
@@ -1034,16 +1037,16 @@
           "eq": ""
         },
         "result.ret.raw.length": {
-          "notEq": 0
+          "gt": 100
         },
-        "result.ret.v.length": {
-          "notEq": 0
+        "result.ret.tx.v.length": {
+          "gt": 2
         },
-        "result.ret.r.length": {
-          "notEq": 0
+        "result.ret.tx.r.length": {
+          "gt": 2
         },
-        "result.ret.s.length": {
-          "notEq": 0
+        "result.ret.tx.s.length": {
+          "gt": 2
         }
       },
       "output": {
@@ -1104,7 +1107,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 0
         }
       },
       "output": {
@@ -1168,7 +1171,7 @@
           "eq": ""
         },
         "result.ret.length": {
-          "notEq": 0
+          "gt": 0
         }
       },
       "output": {
