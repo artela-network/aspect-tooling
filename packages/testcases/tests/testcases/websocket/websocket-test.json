@@ -1,0 +1,48 @@
+{
+  "description": "Test websocket",
+  "actions": [
+    {
+      "description": "Deploy event contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#EventContract.bytecode",
+        "abi": "#EventContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "eventAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Call subscription tests",
+      "account": "",
+      "type": "subscribe",
+      "options": {
+        "contract": "$eventAddress",
+        "method": "sendEvent",
+        "event": "Log",
+        "abi": "#EventContract.abi",
+        "args": [],
+        "gas": "1000000",
+        "loop": 3,
+        "duration": 5000
+      },
+      "expect": {
+        "result.errors.length": {
+          "eq": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}
+  
