@@ -26,6 +26,7 @@ import { GetSessionKeyCallDataAction } from '../actions/GetSessionKeyCallDataAct
 import { DeployMultiContractsAction } from '../actions/DeployMultiContractsAction.js';
 import { BindMultiContractsAction } from '../actions/BindMultiContractsAction.js';
 import { JsonRPCAction } from '../actions/JsonRPCAction.js';
+import { SubscriptionAction } from '../actions/SubscriptionAction.js';
 
 const listeners = process.listeners('unhandledRejection');
 process.removeListener('unhandledRejection', listeners[listeners.length - 1]);
@@ -59,8 +60,11 @@ export class TestManager {
     this.privateKeyPath = path.join(this.rootDir, 'privateKey.txt');
     this.sourcesPath = path.join(this.rootDir, 'tests/testcases/sources.json');
 
-    this.nodeUrl = this.getNodeUrl();
+    const { nodeUrl, wsUrl } = this.getNodeUrl();
+    this.nodeUrl = nodeUrl;
+    this.wsUrl = wsUrl;
     this.web3 = this.connectToNode(this.nodeUrl);
+    this.ws = this.connectToWS(this.wsUrl);
     this.account = this.addAccount(this.web3, this.readPrivateKey());
     this.actionRegistry = {};
     this.context = {};
@@ -87,6 +91,7 @@ export class TestManager {
     this.registerAction('deployMultiContracts', DeployMultiContractsAction);
     this.registerAction('bindMultiContracts', BindMultiContractsAction);
     this.registerAction('jsonRPC', JsonRPCAction);
+    this.registerAction('subscribe', SubscriptionAction);
   }
 
   async compileAspect(source) {
@@ -220,19 +225,28 @@ export class TestManager {
     return new Web3(nodeUrl);
   }
 
+  connectToWS(wsUrl) {
+    return new Web3(new Web3.providers.WebsocketProvider(wsUrl));
+  }
+
+  disconnectWS() {
+    return this.ws.currentProvider.disconnect();
+  }
+
   getNodeUrl() {
-    let nodeUrl;
-    if (this.configPath.startsWith('http')) {
-      nodeUrl = this.configPath;
-    } else {
-      const config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'));
-      nodeUrl = config.node;
-    }
+    let nodeUrl, wsUrl;
+    const config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'));
+    nodeUrl = config.node;
+    wsUrl = config.nodeWS;
 
     if (!nodeUrl) {
       throw new Error('Node URL cannot be empty. Please provide a valid configuration.');
     }
-    return nodeUrl;
+
+    if (!wsUrl) {
+      throw new Error('Websocket URL cannot be empty. Please provide a configration "nodeWS": "ws://127.0.0.1:8546"')
+    }
+    return { nodeUrl, wsUrl };
   }
 
   readPrivateKey() {
@@ -450,6 +464,7 @@ export class TestManager {
     const testCases = this.loadTestCases(name);
     const expectFail = this.expectFail;
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
+    const disconnectWS = this.disconnectWS.bind(this);
 
     describe('⌚️ Start executing test cases', function () {
       this.timeout(1800000);
@@ -470,6 +485,10 @@ export class TestManager {
           }
         });
       }
+
+      after(function () {
+        disconnectWS();
+      });
     });
   }
 }
