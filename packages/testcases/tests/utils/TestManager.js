@@ -64,7 +64,7 @@ export class TestManager {
     this.nodeUrl = nodeUrl;
     this.wsUrl = wsUrl;
     this.web3 = this.connectToNode(this.nodeUrl);
-    this.ws = this.connectToNode(this.wsUrl);
+    this.ws = this.connectToWS(this.wsUrl);
     this.account = this.addAccount(this.web3, this.readPrivateKey());
     this.actionRegistry = {};
     this.context = {};
@@ -223,6 +223,14 @@ export class TestManager {
 
   connectToNode(nodeUrl) {
     return new Web3(nodeUrl);
+  }
+
+  connectToWS(wsUrl) {
+    return new Web3(new Web3.providers.WebsocketProvider(wsUrl));
+  }
+
+  disconnectWS() {
+    return this.ws.currentProvider.disconnect();
   }
 
   getNodeUrl() {
@@ -456,6 +464,7 @@ export class TestManager {
     const testCases = this.loadTestCases(name);
     const expectFail = this.expectFail;
     const execute = this.executeAction.bind(this); // Ensure executeAction is bound correctly
+    const disconnectWS = this.disconnectWS.bind(this);
 
     describe('⌚️ Start executing test cases', function () {
       this.timeout(1800000);
@@ -476,6 +485,10 @@ export class TestManager {
           }
         });
       }
+
+      after(function () {
+        disconnectWS();
+      });
     });
   }
 }
