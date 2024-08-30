@@ -159,7 +159,7 @@
       },
       "expect": {
         "error": {
-          "include": "invalid aspect version"
+          "include": "aspect version not deployed"
         }
       }
     },
