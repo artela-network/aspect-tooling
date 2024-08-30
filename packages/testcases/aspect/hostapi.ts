@@ -182,18 +182,21 @@ class HostApiAspect implements
     if (!this.checkTest("01")) {
       return;
     }
-    const testu64 = sys.aspect.property.get<u64>("test");
-    const testi64 = sys.aspect.property.get<i64>("test");
-    const testi32 = sys.aspect.property.get<i32>("test");
-    const testu32 = sys.aspect.property.get<u32>("test");
-    if (testu64 != 1 || testi64 != 1 || testi32 != 1 || testu32 != 1) {
-      sys.revert("aspect assert failed, expect test value 1, got " + testu64.toString());
+    const testu64 = sys.aspect.property.get<u64>("number");
+    const testu32 = sys.aspect.property.get<u32>("number");
+    const testu16 = sys.aspect.property.get<u16>("number");
+    const testu8 = sys.aspect.property.get<u8>("number");
+    const testbool = sys.aspect.property.get<bool>("number");
+    if (testu64 != 1 || testu32 != 1 || testu16 != 1 || testu8 != 1 || !testbool) {
+      sys.revert("aspect assert failed, expect number value 1, got " + testu64.toString());
     }
 
     const prop1 = sys.aspect.property.get<Uint8Array>("prop-key1");
     this.assert("1234567890abcdef", prop1);
     const prop2 = sys.aspect.property.get<Uint8Array>("prop-key2");
     this.assert("abcdefabcdef", prop2);
+    const prop3 = sys.aspect.property.get<string>("prop-key3");
+    this.assertStr("hello", prop3);
   }
 
   checkTest(expect: string): bool {

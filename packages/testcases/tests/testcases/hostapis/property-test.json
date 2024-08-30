@@ -52,7 +52,7 @@
                 "value": "$accounts.1"
               },
               {
-                "key": "test",
+                "key": "number",
                 "value": "0x01"
               },
               {
@@ -62,6 +62,10 @@
               {
                 "key": "prop-key2",
                 "value": "0xabcdefabcdef"
+              },
+              {
+                "key": "prop-key3",
+                "value": "0x68656c6c6f"
               }
             ],
             "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
