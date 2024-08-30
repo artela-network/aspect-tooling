@@ -247,7 +247,7 @@ export class Uint256 {
         for (let i = 0; i < 4; i++) {
             let u64value: u64 = 0;
             for (let j = 0; j < 8; j++) {
-                let byteValue = <u64>(bytes[31 - ((i << 3) + j)]);
+                let byteValue = <u64>(paddedBytes[31 - ((i << 3) + j)]);
                 u64value |= byteValue << (j << 3);
             }
             value.data[i] = u64value;
