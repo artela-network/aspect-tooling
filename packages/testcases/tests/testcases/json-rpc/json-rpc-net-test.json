@@ -44,7 +44,7 @@
       },
       "expect": {
         "result.ret": {
-          "gt": 0
+          "include": "118"
         },
         "error": {
           "eq": ""

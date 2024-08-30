@@ -1,5 +1,5 @@
 {
-  "description": "Test JsonRPC namesapece net",
+  "description": "Test JsonRPC namesapece debug 2",
   "actions": [
     {
       "description": "Deploy counter contract",

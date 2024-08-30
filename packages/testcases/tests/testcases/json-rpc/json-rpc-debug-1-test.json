@@ -1,5 +1,5 @@
 {
-  "description": "Test JsonRPC namesapece net",
+  "description": "Test JsonRPC namesapece debug 1",
   "actions": [
     {
       "description": "debug_getRawHeader 1",
