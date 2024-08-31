@@ -18,7 +18,7 @@ import { UnbindTmpl } from '../tmpl/scripts/unbind';
 
 const isWinOS = /^win/i.test(process.platform);
 
-const toolVersion = '^0.0.60';
+const toolVersion = '^0.0.61';
 const libVersion = '^0.0.36';
 const web3Version = '^1.9.23';
 

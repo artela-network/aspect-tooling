@@ -4,7 +4,10 @@ import {
     entryPoint,
     execute,
     IPostContractCallJP,
+    InitInput,
     PostContractCallInput,
+    uint8ArrayToHex,
+    sys
 } from "@artela-next/aspect-libs";
 
 /**
@@ -14,7 +17,15 @@ import {
  * How to develop an Aspect  @see [Aspect Structure](https://docs.artela.network/develop/reference/aspect-lib/aspect-structure)
  */
 class Aspect implements IPostContractCallJP {
-
+    /**
+     * init allows you the init the aspect states when the aspect is created.
+     * 
+     * @param input input data for the operation.
+     */
+    init(input: InitInput): void {
+        // Implement me...
+    }
+    
     /**
      * isOwner is the governance account implemented by the Aspect, when any of the governance operation
      * (including upgrade, config, destroy) is made, isOwner method will be invoked to check
