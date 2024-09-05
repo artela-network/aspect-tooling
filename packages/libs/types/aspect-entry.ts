@@ -2,6 +2,7 @@ import { Protobuf } from 'as-proto/assembly';
 import { IAspectOperation, IPostContractCallJP, IPostTxExecuteJP } from '.';
 import { AString, AUint8Array, MessageUtil } from '../common';
 import {
+  InitInput,
   OperationInput,
   PostContractCallInput,
   PostTxExecuteInput,
@@ -23,7 +24,7 @@ export class EntryPoint {
   private aspectBase: IAspectBase | null = null;
   private aspectOperation: IAspectOperation | null = null;
 
-  constructor() {}
+  constructor() { }
 
   public setAspect(aspectBase: IAspectBase): void {
     this.aspectBase = aspectBase;
@@ -74,6 +75,10 @@ export class EntryPoint {
       const output = this.operation(input.get());
       const outputPtr = new AUint8Array(output);
       return outputPtr.store();
+    }
+    if (method == PointCutType.INIT_METHOD) {
+      this.init(input.get());
+      return 0;
     }
 
     throw new Error('method ' + method + ' not found or not implemented');
@@ -146,5 +151,21 @@ export class EntryPoint {
     const input = Protobuf.decode<OperationInput>(rawInput, OperationInput.decode);
     const operation = this.aspectOperation as IAspectOperation;
     return operation.operation(input);
+  }
+
+  private init(rawInput: Uint8Array): void {
+    const input = Protobuf.decode<InitInput>(rawInput, InitInput.decode);
+
+    if (this.aspectBase != null) {
+      this.aspectBase!.init(input);
+      return;
+    }
+
+    if (this.aspectOperation != null) {
+      this.aspectOperation!.init(input);
+      return;
+    }
+
+    throw new Error('aspect is not initialized');
   }
 }

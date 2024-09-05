@@ -1,21 +1,27 @@
 import { ErrParseValueFail } from '../errors';
 import { ethereum } from '../abi';
 import { BigInt } from '../wraptypes/bigint';
+import { Uint256 } from '../wraptypes/uint256';
 
 export function uint8ArrayToHex(data: Uint8Array, prefix: string = ''): string {
   const hexChars = '0123456789abcdef';
-  let result = prefix;
+  const result = new Uint8Array((data.length << 1) + prefix.length);
+
+  for (let i = 0; i < prefix.length; i++) {
+    result[i] = prefix.charCodeAt(i);
+  }
 
   for (let i = 0; i < data.length; i++) {
     const byte = data[i];
-    result += hexChars.charAt(byte >> 4) + hexChars.charAt(byte & 0x0f);
+    result[(i << 1) + prefix.length] = hexChars.charCodeAt(byte >> 4);
+    result[(i << 1) + 1 + prefix.length] = hexChars.charCodeAt(byte & 0x0f);
   }
 
-  return result;
+  return String.UTF8.decode(result.buffer);
 }
 
 export function hexToUint8Array(hex: string): Uint8Array {
-  if (hex.length % 2 !== 0) {
+  if (hex.length & 1) {
     return new Uint8Array(0);
   }
   if (hex.startsWith('0x')) {
@@ -131,7 +137,7 @@ export function base64Decode(str: string): Uint8Array {
   const buffer = new Uint8Array(length);
   let j = 0;
 
-  for (let i = 0; i < str.length; ) {
+  for (let i = 0; i < str.length;) {
     const c1 = base64chars.indexOf(str.charAt(i++));
     const c2 = base64chars.indexOf(str.charAt(i++));
     const c3 = base64chars.indexOf(str.charAt(i++));
@@ -269,6 +275,39 @@ export function fromUint8Array<T>(value: Uint8Array): T {
   if (idof<T>() == idof<string>()) return changetype<T>(uint8ArrayToString(value));
 
   throw ErrParseValueFail;
+}
+
+export function fromExternalUint8Array<T>(value: Uint8Array): T {
+  if (isInteger<T>()) {
+    if (isSigned<T>()) {
+      /*const isNegative = (value[0] & 0x80) != 0;
+      // copy input to a new Uint8Array
+      let unsigned = new Uint8Array(32); */
+      // TODO
+      throw new Error("Value must be a positive integer");
+    }
+
+    const u256Value = Uint256.fromUint8Array(value);
+    if (sizeof<T>() == 1) {
+      return u256Value.toUInt8() as T;
+    } else if (sizeof<T>() == 2) {
+      return u256Value.toUInt16() as T;
+    } else if (sizeof<T>() == 4) {
+      return u256Value.toUInt32() as T;
+    } else if (sizeof<T>() == 8) {
+      return u256Value.toUInt64() as T;
+    }
+  } else if (isBoolean<T>()) {
+    return changetype<T>(value.length > 0 && value[0] > 0);
+  } else if (idof<T>() == idof<Uint256>()) {
+    return changetype<T>(Uint256.fromUint8Array(value));
+  } else if (idof<T>() == idof<string>()) {
+    return changetype<T>(uint8ArrayToString(value));
+  } else if (idof<T>() == idof<Uint8Array>()) {
+    return value as T;
+  }
+
+  throw new Error("convert failed");
 }
 
 function booleanToUint8Array(value: bool): Uint8Array {

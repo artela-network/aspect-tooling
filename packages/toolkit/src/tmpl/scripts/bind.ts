@@ -78,7 +78,7 @@ async function bind() {
         data: bind.encodeABI(),
         gasPrice,
         to: ASPECT_ADDR,
-        gas: !parseInt(argv.gas) | 9000000
+        gas: argv.gas ? parseInt(argv.gas) : await bind.estimateGas({from: sender.address})
     }
 
     let signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);

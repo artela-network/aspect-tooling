@@ -1,0 +1,307 @@
+{
+    "description": "Test SessionKey",
+    "actions": [
+      {
+        "description": "Create new accounts",
+        "account": "",
+        "type": "createAccounts",
+        "options": {
+          "fundingAmount": 2,
+          "accountNumber": 3
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          },
+          "result.accounts.length": {
+            "eq": 3
+          }
+        },
+        "output": {
+          "accounts": "result.accounts"
+        }
+      },
+      {
+        "description": "Deploy Session Key Contract",
+        "account": "$accounts.0",
+        "type": "deployContract",
+        "options": {
+          "code": "#SessionKeyContract.bytecode",
+          "abi": "#SessionKeyContract.abi",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        },
+        "output": {
+          "contractAddress": "receipt.contractAddress"
+        }
+      },
+      {
+        "description": "Deploy Session Key Aspect",
+        "account": "$accounts.0",
+        "type": "deployAspect",
+        "options": {
+          "args": {
+            "properties": [
+              {
+                "key": "owner",
+                "value": "$accounts.0"
+              }
+            ],
+            "joinPoints": ["VerifyTx"],
+            "code": "#SessionKeyAspect.bytecode",
+            "paymaster": "$accounts.0",
+            "proof": "0x0"
+          },
+          "gas": "auto"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "aspectId": "receipt.aspectAddress"
+        }
+      },
+      {
+        "description": "Bind contract with Aspect",
+        "account": "$accounts.0",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$contractAddress",
+          "version": 1,
+          "priority": 1,
+          "gas": "auto"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Bind EOA with Aspect",
+        "account": "$accounts.0",
+        "type": "bind",
+        "options": {
+          "aspect": "$aspectId",
+          "account": "$accounts.0",
+          "version": 1,
+          "priority": 1,
+          "gas": "auto",
+          "isEOA": true
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": ""
+        }
+      },
+      {
+        "description": "Get create session key call data",
+        "account": "$accounts.0",
+        "type": "getSessionKeyCallData",
+        "options": {
+          "contract": "$contractAddress",
+          "abi": "#SessionKeyContract.abi",
+          "method": "add",
+          "args": [[1]],
+          "sKeyAddress": "$accounts.1",
+          "aspectID": "$aspectId",
+          "operation": "reg"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "sessionKeyRegData": "result.sessionKeyRegData"
+        }
+      },
+      {
+        "description": "Call operation",
+        "account": "$accounts.0",
+        "type": "callOperation",
+        "options": {
+          "aspectID": "$aspectId",
+          "callData": "$sessionKeyRegData",
+          "gas": "3000000",
+          "args": []
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Call contract by main key",
+        "account": "$accounts.0",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "add",
+          "abi": "#SessionKeyContract.abi",
+          "args": [[1]],
+          "gas": "1300000"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Get Tx of call contract by seesion key",
+        "account": "$accounts.1",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "add",
+          "abi": "#SessionKeyContract.abi",
+          "args": [[1]],
+          "gas": "1300000",
+          "nonce": "6",
+          "notSend": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "signedTx": "result.signedTx"
+        }
+      },
+      {
+        "description": "Get session key call data",
+        "account": "$accounts.0",
+        "type": "getSessionKeyCallData",
+        "options": {
+          "contract": "$contractAddress",
+          "abi": "#SessionKeyContract.abi",
+          "method": "add",
+          "args": [[1]],
+          "sKeyAddress": "$accounts.1",
+          "aspectID": "$aspectId",
+          "signedTx": "$signedTx",
+          "operation": "call"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "callData": "result.callData"
+        }
+      },
+      {
+        "description": "Call contract by session key",
+        "account": "$accounts.1",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "add",
+          "abi": "#SessionKeyContract.abi",
+          "args": [[1]],
+          "data": "$callData",
+          "gas": "1300000",
+          "notSign": true,
+          "nonce": "6"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Get Tx of call contract by seesion key 2",
+        "account": "$accounts.2",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "add",
+          "abi": "#SessionKeyContract.abi",
+          "args": [[1]],
+          "gas": "1300000",
+          "nonce": "1",
+          "notSend": true
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "signedTx": "result.signedTx"
+        }
+      },
+      {
+        "description": "Get session key 2 call data",
+        "account": "$accounts.0",
+        "type": "getSessionKeyCallData",
+        "options": {
+          "contract": "$contractAddress",
+          "abi": "#SessionKeyContract.abi",
+          "method": "add",
+          "args": [[1]],
+          "sKeyAddress": "$accounts.2",
+          "aspectID": "$aspectId",
+          "signedTx": "$signedTx",
+          "operation": "call"
+        },
+        "expect": {
+          "error": {
+            "eq": ""
+          }
+        },
+        "output": {
+          "callData": "result.callData"
+        }
+      },
+      {
+        "description": "Call contract by session key 2",
+        "account": "$accounts.1",
+        "type": "callContract",
+        "options": {
+          "contract": "$contractAddress",
+          "method": "add",
+          "abi": "#SessionKeyContract.abi",
+          "args": [[1]],
+          "data": "$callData",
+          "gas": "1300000",
+          "notSign": true,
+          "nonce": "1"
+        },
+        "expect": {
+          "error": {
+            "notEq": ""
+          }
+        }
+      }
+    ]
+  }
+  

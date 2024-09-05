@@ -1,0 +1,339 @@
+{
+  "description": "Test binding multi aspects and unbinding one of them",
+  "actions": [
+    {
+      "description": "Create new accounts",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect 1",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId1": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect 2",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId2": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect 3",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId3": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Contract 1",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "contractAddress1": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Deploy Contract 2",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "contractAddress2": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Bind contract1 with Aspect 1",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId1",
+        "account": "$contractAddress1",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Bind contract1 with Aspect 2",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId2",
+        "account": "$contractAddress1",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Bind contract1 with Aspect 3",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId3",
+        "account": "$contractAddress1",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Bind contract2 with Aspect 2",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId2",
+        "account": "$contractAddress2",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Check contract1 bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress1"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId1",
+              "version": "1",
+              "priority": "-1"
+            },
+            {
+              "aspectId": "$aspectId2",
+              "version": "1",
+              "priority": "-1"
+            },
+            {
+              "aspectId": "$aspectId3",
+              "version": "1",
+              "priority": "-1"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 3
+        }
+      }
+    },
+    {
+      "description": "Check Aspect 2 bindings",
+      "account": "",
+      "type": "queryAspectBindings",
+      "options": {
+        "aspect": "$aspectId2"
+      },
+      "expect": {
+        "result.contracts": {
+          "include": ["$contractAddress1", "$contractAddress2"]
+        },
+        "result.contracts.length": {
+          "eq": 2
+        }
+      }
+    },
+    {
+      "description": "Call contract 1",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress1",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Unbind Contract 1 Aspect 2",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "$aspectId2",
+        "account": "$contractAddress1"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Check contract 1 bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress1"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId1",
+              "version": "1",
+              "priority": "-1"
+            },
+            {
+              "aspectId": "$aspectId3",
+              "version": "1",
+              "priority": "-1"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 2
+        }
+      }
+    },
+    {
+      "description": "Check Aspect 2 bindings",
+      "account": "",
+      "type": "queryAspectBindings",
+      "options": {
+        "aspect": "$aspectId2"
+      },
+      "expect": {
+        "result.contracts": {
+          "include": ["$contractAddress2"]
+        },
+        "result.contracts.length": {
+          "eq": 1
+        }
+      }
+    }
+  ]
+}

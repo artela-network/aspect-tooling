@@ -1,4 +1,4 @@
-import { allocate, entryPoint, execute, sys, TxVerifyInput } from '@artela/aspect-libs';
+import { allocate, entryPoint, execute, InitInput, sys, TxVerifyInput, uint8ArrayToHex } from '@artela/aspect-libs';
 import { ITransactionVerifier } from '@artela/aspect-libs/types/aspect-interface';
 
 /**
@@ -10,9 +10,13 @@ import { ITransactionVerifier } from '@artela/aspect-libs/types/aspect-interface
  * You can implement corresponding interfaces: IAspectTransaction, IAspectBlock,IAspectOperation or both to tell Artela which
  * type of Aspect you are implementing.
  */
-class Aspect implements ITransactionVerifier {
+class VerifierAspect implements ITransactionVerifier {
+  init(input: InitInput): void {
+    sys.aspect.mutableState.get<Uint8Array>('owner').set(input.tx!.from);
+  }
+
   verifyTx(input: TxVerifyInput): Uint8Array {
-    return sys.aspect.property.get<Uint8Array>('verifyAccount');
+    return sys.aspect.mutableState.get<Uint8Array>('owner').unwrap();
   }
 
   /**
@@ -25,13 +29,12 @@ class Aspect implements ITransactionVerifier {
    * @return true if check success, false if check fail
    */
   isOwner(sender: Uint8Array): bool {
-    // always return false on isOwner can make the Aspect immutable
-    return true;
+    return uint8ArrayToHex(sys.aspect.mutableState.get<Uint8Array>('owner').unwrap()) == uint8ArrayToHex(sender);
   }
 }
 
 // 2.register aspect Instance
-const aspect = new Aspect();
+const aspect = new VerifierAspect();
 entryPoint.setAspect(aspect);
 
 // 3.must export it

@@ -4,6 +4,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostContractCallJP,
   IPreContractCallJP,
   PostContractCallInput,
@@ -13,7 +14,9 @@ import {
   uint8ArrayToString,
 } from '@artela/aspect-libs';
 
-class GuardByCountAspect implements IPostContractCallJP, IPreContractCallJP {
+class GuardByLockAspect implements IPostContractCallJP, IPreContractCallJP {
+  init(input: InitInput): void { }
+
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');
     return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));
@@ -46,7 +49,7 @@ class GuardByCountAspect implements IPostContractCallJP, IPreContractCallJP {
 }
 
 // 2.register aspect Instance
-const aspect = new GuardByCountAspect();
+const aspect = new GuardByLockAspect();
 entryPoint.setAspect(aspect);
 
 // 3.must export it

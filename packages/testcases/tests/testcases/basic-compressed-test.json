@@ -1,0 +1,315 @@
+{
+  "description": "Test compressed Aspect basic functionalities",
+  "actions": [
+    {
+      "description": "Create new accounts",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Check aspect version",
+      "account": "",
+      "type": "aspectVersion",
+      "options": {
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "result.version": {
+          "eq": "1"
+        }
+      }
+    },
+    {
+      "description": "Deploy Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Bind with Aspect",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Check contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId",
+              "version": "1",
+              "priority": "-1"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "description": "Check Aspect bindings",
+      "account": "",
+      "type": "queryAspectBindings",
+      "options": {
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "result.contracts": {
+          "include": ["$contractAddress"]
+        },
+        "result.contracts.length": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "description": "Call contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Unbind Aspect",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Check contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress"
+      },
+      "expect": {
+        "result.aspects": {
+          "notInclude": [
+            {
+              "aspectId": "$aspectId",
+              "version": "1",
+              "priority": "-1"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "description": "Check Aspect bindings",
+      "account": "",
+      "type": "queryAspectBindings",
+      "options": {
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "result.contracts": {
+          "notInclude": ["$contractAddress"]
+        },
+        "result.contracts.length": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "description": "Upgrade Basic Aspect",
+      "account": "$accounts.1",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectCompressed.bytecode",
+          "properties": [],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"]
+        },
+        "aspect": "$aspectId",
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Check upgraded aspect version",
+      "account": "",
+      "type": "aspectVersion",
+      "options": {
+        "aspect": "$aspectId"
+      },
+      "expect": {
+        "result.version": {
+          "eq": "2"
+        }
+      },
+      "output": {
+        "version": "result.version"
+      }
+    },
+    {
+      "description": "Bind with Aspect again",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": 2
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Check contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId",
+              "version": "1",
+              "priority": "2"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "description": "Change Aspect bind version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 2
+      }
+    },
+    {
+      "description": "Check contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "$contractAddress"
+      },
+      "expect": {
+        "result.aspects": {
+          "include": [
+            {
+              "aspectId": "$aspectId",
+              "version": "2",
+              "priority": "2"
+            }
+          ]
+        },
+        "result.aspects.length": {
+          "eq": 1
+        }
+      }
+    }
+  ]
+}

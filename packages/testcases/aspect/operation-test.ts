@@ -8,9 +8,12 @@ import {
     OperationInput,
     uint8ArrayToHex,
     sys,
+    InitInput,
 } from '@artela/aspect-libs';
 
 class AspectTest implements IAspectOperation {
+    init(input: InitInput): void { }
+
     parseOP(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(2, 6);
@@ -43,9 +46,13 @@ class AspectTest implements IAspectOperation {
         const op = this.parseOP(calldata);
         const params = this.parsePrams(calldata);
 
-        sys.log("||| num = " + calldata + "  params=" + params+" op="+op);
+        sys.log("||| num = " + calldata + "  params=" + params + " op=" + op);
         if (op == "0001") {
-            sys.log('||| adamayu in 0001');
+            if (params == "100001") {
+                sys.log('||| adamayu in 0001');
+                return new Uint8Array(0);
+            }
+            sys.revert("unknown params");
             return new Uint8Array(0);
         }
         if (op == "0002") {
@@ -65,7 +72,11 @@ class AspectTest implements IAspectOperation {
             return new Uint8Array(0);
         }
         if (op == "1003") {
-            sys.log('|||adamayu in 1003');
+            if (params == "101003") {
+                sys.log('||| adamayu in 1003');
+                return new Uint8Array(0);
+            }
+            sys.revert("unknown params");
             return new Uint8Array(0);
         }
         if (op == "1004") {
@@ -87,4 +98,4 @@ const aspect = new AspectTest();
 entryPoint.setOperationAspect(aspect);
 
 // 3.must export it
-export {execute, allocate};
+export { execute, allocate };

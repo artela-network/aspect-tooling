@@ -1,0 +1,337 @@
+{
+  "description": "Test JsonRPC namesapece debug 2",
+  "actions": [
+    {
+      "description": "Deploy counter contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress",
+        "deploy_blockNumber": "receipt.blockNumber",
+        "deploy_blockHash": "receipt.blockHash",
+        "deploy_txHash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "debug_traceTransaction, deploy contract + structLogger",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$deploy_txHash", "{\"tracer\": \"\"}"]
+      },
+      "expect": {
+        "result.ret.failed": {
+          "eq": false
+        },
+        "result.ret.structLogs.length": {
+          "gt": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceTransaction, deploy contract + callTracer",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$deploy_txHash", "{\"tracer\": \"callTracer\"}"]
+      },
+      "expect": {
+        "result.ret.type": {
+          "eq": "CREATE"
+        },
+        "result.ret.input.length": {
+          "gt": 10
+        },
+        "result.ret.output.length": {
+          "gt": 10
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceBlockByNumber, deploy contract + structLogger",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceBlockByNumber",
+        "params": ["numberToHex($deploy_blockNumber)", "{\"tracer\": \"\"}"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceBlockByNumber, deploy contract + callTracer",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceBlockByNumber",
+        "params": ["numberToHex($deploy_blockNumber)", "{\"tracer\": \"callTracer\"}"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceBlockByHash, deploy contract + structLogger",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceBlockByHash",
+        "params": ["$deploy_blockHash", "{\"tracer\": \"\"}"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceBlockByHash, deploy contract + callTracer",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceBlockByHash",
+        "params": ["$deploy_blockHash", "{\"tracer\": \"callTracer\"}"]
+      },
+      "expect": {
+        "result.ret.length": {
+          "eq": 1
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Call counter contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": [],
+        "gas": "1000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "call_blockNumber": "receipt.blockNumber",
+        "call_blockHash": "receipt.blockHash",
+        "call_txHash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "debug_traceTransaction, call contract + structLogger",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$call_txHash", "{\"tracer\": \"\"}"]
+      },
+      "expect": {
+        "result.ret.failed": {
+          "eq": false
+        },
+        "result.ret.structLogs.length": {
+          "gt": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceTransaction, call contract + callTracer",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$call_txHash", "{\"tracer\": \"callTracer\"}"]
+      },
+      "expect": {
+        "result.ret.type": {
+          "eq": "CALL"
+        },
+        "result.ret.input.length": {
+          "eq": 10
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "Create new account",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            },
+            {
+              "key": "test",
+              "value": "0x03"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute", "VerifyTx"],
+          "code": "#HostApiCrypto.bytecode"
+        },
+        "gas": "5000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind contract with Aspect",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1,
+        "gas": "300000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Call contract with aspect",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$contractAddress",
+        "method": "increase",
+        "abi": "#CounterContract.abi",
+        "args": [],
+        "gas": "3000000"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "callWithAspect_txHash": "receipt.transactionHash"
+      }
+    },
+    {
+      "description": "debug_traceTransaction, call contract-aspect + structLogger",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$callWithAspect_txHash", "{\"tracer\": \"\"}"]
+      },
+      "expect": {
+        "result.ret.failed": {
+          "eq": false
+        },
+        "result.ret.structLogs.length": {
+          "gt": 0
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    },
+    {
+      "description": "debug_traceTransaction, call contract-aspect + callTracer",
+      "account": "",
+      "type": "jsonRPC",
+      "options": {
+        "method": "debug_traceTransaction",
+        "params": ["$callWithAspect_txHash", "{\"tracer\": \"callTracer\"}"]
+      },
+      "expect": {
+        "result.ret.type": {
+          "eq": "CALL"
+        },
+        "result.ret.input.length": {
+          "eq": 10
+        },
+        "error": {
+          "eq": ""
+        }
+      }
+    }
+  ]
+}

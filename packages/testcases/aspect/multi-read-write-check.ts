@@ -2,6 +2,7 @@ import {
   allocate,
   entryPoint,
   execute,
+  InitInput,
   IPostTxExecuteJP,
   IPreTxExecuteJP,
   PostTxExecuteInput,
@@ -14,6 +15,8 @@ import {
 class MultiReadWriteCheck implements IPostTxExecuteJP, IPreTxExecuteJP {
   ctxKey: string = 'key_for_context';
   stateKey: string = 'key_for_state';
+
+  init(input: InitInput): void {}
 
   isOwner(sender: Uint8Array): bool {
     const value = sys.aspect.property.get<Uint8Array>('owner');

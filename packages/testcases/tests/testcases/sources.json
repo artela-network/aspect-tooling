@@ -1,0 +1,487 @@
+[
+  {
+    "name": "BasicAspectCompressed",
+    "description": "Compressed dummy Aspect for testing basic functionalities",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectNoCompression",
+    "description": "Uncompressed dummy Aspect for testing basic functionalities",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": false,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "VerifierAspect",
+    "description": "Verifier Aspect for testing customized tx verification",
+    "type": "aspect",
+    "src": "verifier.ts",
+    "compileOptions": {
+      "compress": true
+    }
+  },
+  {
+    "name": "BasicAspectBulkMemoryEnabled",
+    "description": "Dummy Aspect with bulk memory enabled",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectWithGC",
+    "description": "Dummy Aspect with gc enabled",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "incremental",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "BasicAspectNoExportStart",
+    "description": "Dummy Aspect without exporting start function",
+    "type": "aspect",
+    "src": "basic.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "FloatAspect",
+    "description": "Float Aspect for testing code validations",
+    "type": "aspect",
+    "src": "float.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O0",
+        "--debug"
+      ]
+    }
+  },
+  {
+    "name": "InitFailAspect",
+    "description": "Aspect with init failure",
+    "type": "aspect",
+    "src": "init-fail.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O0",
+        "--debug"
+      ]
+    }
+  },
+  {
+    "name": "RevertAspect",
+    "description": "Aspect with call revert",
+    "type": "aspect",
+    "src": "revert-aspect.ts",
+    "compileOptions": {
+      "compress": true
+    }
+  },
+  {
+    "name": "CallTree",
+    "description": "Aspect with call tree query",
+    "type": "aspect",
+    "src": "call-tree-aspect.ts",
+    "compileOptions": {
+      "compress": true
+    }
+  },
+  {
+    "name": "CounterContract",
+    "description": "Simple contract that counts numbers",
+    "type": "contract",
+    "src": "Counter.sol",
+    "contractName": "Counter"
+  },
+  {
+    "name": "CallerContract",
+    "description": "Simple contract that do contract calls",
+    "type": "contract",
+    "src": "Caller.sol",
+    "contractName": "CallerContract"
+  },{
+    "name": "LargeSizeAspect300K",
+    "description": "Aspect with a size of 300Kb",
+    "type": "aspect",
+    "src": "abnormal-large-size-aspect-300k.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "LargeSizeAspect1M",
+    "description": "Aspect with a size of 1Mb",
+    "type": "aspect",
+    "src": "abnormal-large-size-aspect-1m.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "DeadLoopAspect",
+    "description": "Aspect with a dead loop",
+    "type": "aspect",
+    "src": "abnormal-dead-loop-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "OperationBasic",
+    "description": "Basic Operation Aspect",
+    "type": "aspect",
+    "src": "operation-test.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "HostApi",
+    "description": "HostApi Aspect",
+    "type": "aspect",
+    "src": "hostapi.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "JoinPoints",
+    "description": "Joinpoints Test",
+    "type": "aspect",
+    "src": "joinpoints.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "HostApiCrypto",
+    "description": "Crypto Test",
+    "type": "aspect",
+    "src": "hostapi-crypto.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "StaticCallAspect",
+    "description": "Crypto Test",
+    "type": "aspect",
+    "src": "static-call-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "StorageContract",
+    "description": "Simple storage contract",
+    "type": "contract",
+    "src": "storage.sol",
+    "contractName": "Storage"
+  },
+  {
+    "name": "ScheduleTargeContract",
+    "description": "A schedule target contract",
+    "type": "contract",
+    "src": "schedule_target.sol",
+    "contractName": "ScheduleTarget"
+  },
+  {
+    "name": "SimpleAccountFactoryContract",
+    "description": "account-abstraction factory",
+    "type": "contract",
+    "src": "SimpleAccountFactory.sol",
+    "contractName": "AspectEnabledSimpleAccountFactory"
+  },
+  {
+    "name": "SimpleAccountContract",
+    "description": "account-abstraction",
+    "type": "contract",
+    "src": "SimpleAccountFactory.sol",
+    "contractName": "AspectEnabledSimpleAccount"
+  },
+  {
+    "name": "RoyaleContract",
+    "description": "Royale contract for jit gaming",
+    "type": "contract",
+    "src": "Royale.sol",
+    "contractName": "Royale"
+  },
+  {
+    "name": "JITGamingAspect",
+    "description": "jit gaming aspect Test",
+    "type": "aspect",
+    "src": "jit-gaming-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "StorageContract",
+    "description": "Storage contract store a Person struct",
+    "type": "contract",
+    "src": "storage.sol",
+    "contractName": "Storage"
+  },
+  {
+    "name": "HoneyPotContract",
+    "description": "HoneyPot contract for the attack and defense drills",
+    "type": "contract",
+    "src": "HoneyPotAttack.sol",
+    "contractName": "HoneyPot"
+  },
+  {
+    "name": "AttackContract",
+    "description": "Attack contract for the attack and defense drills",
+    "type": "contract",
+    "src": "HoneyPotAttack.sol",
+    "contractName": "Attack"
+  },
+  {
+    "name": "GuardByCountAspect",
+    "description": "guard by count aspect Test",
+    "type": "aspect",
+    "src": "guard-by-count.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "GuardByLockAspect",
+    "description": "guard by lock aspect Test",
+    "type": "aspect",
+    "src": "guard-by-lock.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "SessionKeyAspect",
+    "description": "session key aspect",
+    "type": "aspect",
+    "src": "session-key-aspect.ts",
+    "compileOptions": {
+      "compress": true,
+      "args": [
+        "--disable",
+        "bulk-memory",
+        "--runtime",
+        "stub",
+        "--exportRuntime",
+        "--exportStart",
+        "__aspect_start__",
+        "-O3",
+        "--noAssert"
+      ]
+    }
+  },
+  {
+    "name": "SessionKeyContract",
+    "description": "SessionKey contract that record the points of users",
+    "type": "contract",
+    "src": "SessionKey.sol",
+    "contractName": "SessionKey"
+  },
+  {
+    "name": "EventContract",
+    "description": "EventContract publish hello event ",
+    "type": "contract",
+    "src": "event.sol",
+    "contractName": "Event"
+  }
+]

@@ -2,6 +2,7 @@ import {
     allocate,
     entryPoint,
     execute,
+    InitInput,
     IPostTxExecuteJP,
     IPreTxExecuteJP,
     PostTxExecuteInput,
@@ -12,6 +13,8 @@ import {
 
 
 class UpgradeTestAspect implements IPostTxExecuteJP, IPreTxExecuteJP {
+    init(input: InitInput): void {}
+
     isOwner(sender: Uint8Array): bool {
         const value = sys.aspect.property.get<Uint8Array>("owner");
         return uint8ArrayToHex(value).includes(uint8ArrayToHex(sender));

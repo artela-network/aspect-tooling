@@ -4,6 +4,7 @@ import {
     allocate, BigInt,
     entryPoint,
     execute, fromUint8Array,
+    InitInput,
     IPreContractCallJP,
     PreContractCallInput,
     sys,
@@ -26,6 +27,7 @@ class GuardPoolAspect implements IPreContractCallJP {
             sys.revert('revert');
         }
     }
+    init(input: InitInput): void {}
 
 }
 

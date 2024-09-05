@@ -8,6 +8,7 @@ import {
   ethereum,
   execute,
   hexToUint8Array,
+  InitInput,
   JitCallBuilder,
   MessageUtil,
   PostContractCallInput,
@@ -24,6 +25,8 @@ import {
 } from '@artela/aspect-libs/types/aspect-interface';
 
 class StressTestAspect implements IPreContractCallJP, IPostContractCallJP {
+  init(input: InitInput): void {}
+
   preContractCall(ctx: PreContractCallInput): void {
     ///
     /// utils hostapi
@@ -120,12 +123,11 @@ class StressTestAspect implements IPreContractCallJP, IPostContractCallJP {
       const callTreeQuery = new CallTreeQuery(-1);
       const queryCallTree = sys.hostApi.trace.queryCallTree(callTreeQuery);
       const ethCallTree = Protobuf.decode<EthCallTree>(queryCallTree, EthCallTree.decode);
-      var size = ethCallTree.calls.size;
-      var arrayKeys = ethCallTree.calls.keys();
+      sys.aspect.mutableState.get<Uint8Array>('dummy').set(queryCallTree);
+      var size = ethCallTree.calls.length;
 
       for (let i = 0; i < size; i++) {
-        var key = arrayKeys[i];
-        var oneCall = ethCallTree.calls.get(key);
+        var oneCall = ethCallTree.calls[i];
         const parentCallMethod = ethereum.parseMethodSig(oneCall.data);
         if (noReentrantMethods.includes(parentCallMethod)) {
           // If yes, revert the transaction.

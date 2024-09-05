@@ -1,0 +1,272 @@
+{
+  "description": "Test aspect intercept cross contract call",
+  "actions": [
+    {
+      "description": "Create new account",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 1
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 1
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Caller Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CallerContract.bytecode",
+        "abi": "#CallerContract.abi",
+        "args": []
+      },
+      "output": {
+        "callerContract": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Deploy Counter Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "output": {
+        "counterContract": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [
+            "PreContractCall",
+            "PostContractCall",
+            "PreTxExecute",
+            "PostTxExecute"
+          ],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "basicAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind basic aspect with counter contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$basicAspect",
+        "account": "$counterContract",
+        "version": 1,
+        "priority": -1
+      }
+    },
+    {
+      "description": "Call counter contract through caller contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$callerContract",
+        "method": "call",
+        "abi": "#CallerContract.abi",
+        "args": ["$counterContract", "0xe8927fbc"]
+      }
+    },
+    {
+      "description": "Deploy Pre-Contract Call revert Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [
+            "PreContractCall"
+          ],
+          "code": "#RevertAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "preContractCallRevertAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind pre contract call revert aspect with counter contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$preContractCallRevertAspect",
+        "account": "$counterContract",
+        "version": 1,
+        "priority": -2
+      }
+    },
+    {
+      "description": "Call counter contract through caller contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$callerContract",
+        "method": "call",
+        "abi": "#CallerContract.abi",
+        "args": ["$counterContract", "0xe8927fbc"]
+      },
+      "expect": {
+        "error": {
+          "include": "preContractCall revert"
+        }
+      }
+    },
+    {
+      "description": "Unbind pre contract call revert aspect",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "$preContractCallRevertAspect",
+        "account": "$counterContract"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Deploy Post-Contract Call revert Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [
+            "PostContractCall"
+          ],
+          "code": "#RevertAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "postContractCallRevertAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind post contract call revert aspect with counter contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$postContractCallRevertAspect",
+        "account": "$counterContract",
+        "version": 1,
+        "priority": -2
+      }
+    },
+    {
+      "description": "Call counter contract through caller contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$callerContract",
+        "method": "call",
+        "abi": "#CallerContract.abi",
+        "args": ["$counterContract", "0xe8927fbc"]
+      },
+      "expect": {
+        "error": {
+          "include": "postContractCall revert"
+        }
+      }
+    },
+    {
+      "description": "Unbind post contract call revert aspect",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "$postContractCallRevertAspect",
+        "account": "$counterContract"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      }
+    },
+    {
+      "description": "Deploy Call Tree Aspect",
+      "account": "$accounts.0",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.0"
+            }
+          ],
+          "joinPoints": [
+            "PostContractCall"
+          ],
+          "code": "#CallTree.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "callTreeAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Bind call tree aspect with counter contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$callTreeAspect",
+        "account": "$counterContract",
+        "version": 1,
+        "priority": -2
+      }
+    },
+    {
+      "description": "Call counter contract through caller contract",
+      "account": "",
+      "type": "callContract",
+      "options": {
+        "contract": "$callerContract",
+        "method": "call",
+        "abi": "#CallerContract.abi",
+        "args": ["$counterContract", "0xe8927fbc"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,337 @@
+{
+  "description": "Test aspect-core fail cases",
+  "actions": [
+    {
+      "description": "Create new accounts",
+      "account": "",
+      "type": "createAccounts",
+      "options": {
+        "fundingAmount": 1,
+        "accountNumber": 2
+      },
+      "expect": {
+        "error": {
+          "eq": ""
+        },
+        "result.accounts.length": {
+          "eq": 2
+        }
+      },
+      "output": {
+        "accounts": "result.accounts"
+      }
+    },
+    {
+      "description": "Deploy Init fail Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": [],
+          "code": "#InitFailAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "error": {
+          "include": "execution reverted: init fail"
+        }
+      }
+    },
+    {
+      "description": "Deploy Basic Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"],
+          "code": "#BasicAspectCompressed.bytecode"
+        },
+        "gas": "auto"
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": {
+          "eq": ""
+        }
+      },
+      "output": {
+        "aspectId": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Deploy Verifier Aspect",
+      "account": "$accounts.1",
+      "type": "deployAspect",
+      "options": {
+        "args": {
+          "properties": [
+            {
+              "key": "owner",
+              "value": "$accounts.1"
+            }
+          ],
+          "joinPoints": ["VerifyTx"],
+          "code": "#VerifierAspect.bytecode"
+        },
+        "gas": "auto"
+      },
+      "output": {
+        "verifierAspect": "receipt.aspectAddress"
+      }
+    },
+    {
+      "description": "Un-authorized upgrade",
+      "account": "$accounts.0",
+      "type": "upgradeAspect",
+      "options": {
+        "args": {
+          "code": "#BasicAspectCompressed.bytecode",
+          "properties": [],
+          "joinPoints": ["PreContractCall", "PostContractCall", "PreTxExecute", "PostTxExecute"]
+        },
+        "aspect": "$aspectId",
+        "gas": "auto"
+      },
+      "expect": {
+        "error": {
+          "include": "aspect ownership validation failed"
+        }
+      }
+    },
+    {
+      "description": "Deploy Contract",
+      "account": "",
+      "type": "deployContract",
+      "options": {
+        "code": "#CounterContract.bytecode",
+        "abi": "#CounterContract.abi",
+        "args": []
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        }
+      },
+      "output": {
+        "contractAddress": "receipt.contractAddress"
+      }
+    },
+    {
+      "description": "Un-authorized binding",
+      "account": "$accounts.1",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "contract ownership validation failed"
+        }
+      }
+    },
+    {
+      "description": "Bind with non-exist aspect version",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 999,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect version not deployed"
+        }
+      }
+    },
+    {
+      "description": "Bind with non-exist aspect address",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "0x1234567812345678123456781234567812345678",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect not deployed"
+        }
+      }
+    },
+    {
+      "description": "Bind with non-exist contract",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "0x1234567812345678123456781234567812345678",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "unauthorized EoA account aspect binding"
+        }
+      }
+    },
+    {
+      "description": "Bind with un-authorized EoA account",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$accounts.0",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "unauthorized EoA account aspect binding"
+        }
+      }
+    },
+    {
+      "description": "Check non-exist aspect version",
+      "account": "",
+      "type": "aspectVersion",
+      "options": {
+        "aspect": "0x1234567812345678123456781234567812345678"
+      },
+      "expect": {
+        "result.version": {
+          "eq": "0"
+        }
+      }
+    },
+    {
+      "description": "Check non-exist contract bindings",
+      "account": "",
+      "type": "queryContractBindings",
+      "options": {
+        "contract": "0x1234567812345678123456781234567812345678"
+      },
+      "expect": {
+        "result.aspects.length": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "description": "Check non-exist Aspect bindings",
+      "account": "",
+      "type": "queryAspectBindings",
+      "options": {
+        "aspect": "0x1234567812345678123456781234567812345678"
+      },
+      "expect": {
+        "error": {
+          "include": "aspect not deployed"
+        }
+      }
+    },
+    {
+      "description": "Bind with Aspect",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "receipt.status": {
+          "eq": true
+        },
+        "error": ""
+      }
+    },
+    {
+      "description": "Unbind non-exist aspect",
+      "comment": "Unbind with aspect not bound should just pass, method is idempotent",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "0x1234567812345678123456781234567812345678",
+        "account": "$contractAddress"
+      }
+    },
+    {
+      "description": "Unbind with not bound aspect",
+      "comment": "Unbind with aspect not bound should just pass, method is idempotent",
+      "account": "",
+      "type": "unbind",
+      "options": {
+        "aspect": "$verifierAspect",
+        "account": "$contractAddress"
+      }
+    },
+    {
+      "description": "Change Aspect bind version to a non-exist one",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 999
+      },
+      "expect": {
+        "error": {
+          "include": "given version of aspect does not exist"
+        }
+      }
+    },
+    {
+      "description": "Duplicate binding",
+      "account": "",
+      "type": "bind",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 1,
+        "priority": -1
+      },
+      "expect": {
+        "error": {
+          "include": "aspect already bound"
+        }
+      }
+    },
+    {
+      "description": "Change Aspect bind version to a non-exist version",
+      "account": "",
+      "type": "changeVersion",
+      "options": {
+        "aspect": "$aspectId",
+        "account": "$contractAddress",
+        "version": 999
+      },
+      "expect": {
+        "error": {
+          "include": "given version of aspect does not exist"
+        }
+      }
+    }
+  ]
+}

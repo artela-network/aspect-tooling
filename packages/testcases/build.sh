@@ -1,5 +1,4 @@
-#bash
-
+#!/bin/bash
 
 asc_build() {
   # obtain parameter 1
@@ -9,7 +8,7 @@ asc_build() {
   # check if the file exists
   if [ -e "$file_path" ]; then
      fileName=$(basename $file_path .ts)
-     ./node_modules/assemblyscript/bin/asc.js $file_path  --outFile ./build/${fileName}.wasm  --target release --disable bulk-memory --optimize --debug --runtime stub --exportRuntime --exportStart __aspect_start__
+     ./node_modules/assemblyscript/bin/asc.js $file_path  --outFile ./build/${fileName}.wasm  --target release --disable bulk-memory -O3 --debug --runtime stub --exportRuntime --exportStart __aspect_start__
      echo "ok $file_path ./build/${fileName}.wasm "
   fi
 }

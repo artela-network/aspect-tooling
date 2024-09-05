@@ -57,7 +57,7 @@ contract Storage {
 
     function setAspectContext(string calldata key, string calldata value) public returns (bool) {
         bytes memory contextKey = abi.encode(key, value);
-        (bool success, bytes memory returnData) = address(0x66).call(contextKey);
+        (bool success, ) = address(0x66).call(contextKey);
         return success;
     }
 }
