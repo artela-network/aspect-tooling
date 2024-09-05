@@ -109,7 +109,7 @@ async function deploy() {
             from: account.address,
             data: deploy.encodeABI(),
             nonce: nonceVal,
-            gas: argv.gas ? parseInt(argv.gas) : await deploy.estimateGas({from: sender.address})
+            gas: argv.gas ? parseInt(argv.gas) : await deploy.estimateGas({from: account.address})
         }
 
         let signedTx = await web3.eth.accounts.signTransaction(tx, account.privateKey);
