@@ -15,7 +15,7 @@ import {
     sys,
     uint8ArrayToHex,
     uint8ArrayToString,
-    InitInput,
+    InitInput, IPreContractCallJP, PreContractCallInput, JitInherentRequest,
 } from "@artela/aspect-libs";
 import { Protobuf } from "as-proto/assembly/Protobuf";
 
@@ -32,38 +32,44 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
 
     static readonly PAYER_KEY: string = 'PAYER_KEY';
     static readonly ENTRYPOINT_ADDRESS: string = '0x000000000000000000000000000000000000AAEC';
-    static readonly TRANSFER_AMOUNT: u64 = 1;
+    static readonly TRANSFER_AMOUNT: u64 =100_000_000_000_000_000;
 
     init(input: InitInput): void { }
 
     postContractCall(input: PostContractCallInput): void {
         sys.log("_____postContractCall");
-        let calldata = uint8ArrayToHex(input.call!.data);
-        let method = this.parseCallMethod(calldata);
+        const callData = uint8ArrayToHex(input.call!.data);
+        const method = this.parseCallMethod(callData);
 
-        const payer = this.getPayer();
-        const to = this.getTransferAddress(calldata);
-        const transferCalldata = ethereum.abiEncode('execute', [
-            ethereum.Address.fromHexString(to),
-            ethereum.Number.fromU64(JITTransferAspect.TRANSFER_AMOUNT, 64),
-            ethereum.Bytes.fromHexString('0x')
-        ]);
 
-        sys.log(`_____Joinpoint postContractCall, method: ${method}, payer: ${payer}, receiver: ${to}`);
         // if method is 'transfer(address,uint256)'
         if (method == "0xa9059cbb") {
             sys.log(`_____submit jit call`);
-            let request = JitCallBuilder.simple(
+
+            const payer = this.getPayer();  // 这里的  payer 应该是 Aspect id吗？
+            const to = this.getTransferAddress(callData);
+            sys.log(`_____submit jit call to  ${to} from ${payer}`);
+
+            // 构造AA调用的 user operation，感觉这里好像有问题？
+            const transferCalldata = ethereum.abiEncode('execute', [
+                ethereum.Address.fromUint8Array(hexToUint8Array(to)),
+                ethereum.Number.fromU64(JITTransferAspect.TRANSFER_AMOUNT, 64),
+                ethereum.Bytes.fromUint8Array(hexToUint8Array("")),
+            ]);
+
+            sys.log(`_____Joinpoint postContractCall, method: ${method}, payer: ${payer}, receiver: ${to}`);
+
+            const request = JitCallBuilder.simple(
                 hexToUint8Array(payer),
                 hexToUint8Array(JITTransferAspect.ENTRYPOINT_ADDRESS),
                 hexToUint8Array(transferCalldata)
             ).build();
 
-            let response = sys.hostApi.evmCall.jitCall(request);
-            if (!response.success) {
-                sys.log(`_____Failed to submit the JIT call, err: ${response.errorMsg}, ret: ${uint8ArrayToString(response.ret)}`);
-            } else {
+            const response = sys.hostApi.evmCall.jitCall(request);
+            if (response.success) {
                 sys.log(`_____Successfully submitted the JIT call, ret: ${uint8ArrayToString(response.ret)}`);
+            } else {
+                sys.log(`_____Failed to submit the JIT call, err: ${response.errorMsg}, ret: ${uint8ArrayToString(response.ret)}`);
             }
         }
     }
@@ -78,7 +84,7 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
             return new Uint8Array(0);
         }
         if (op == "1001") {
-            let ret = this.getPayer();
+            const ret = this.getPayer();
             return stringToUint8Array(ret);
         }
 
@@ -103,25 +109,25 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
     parseOP(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(2, 6);
-        } else {
+        } 
             return calldata.substring(0, 4);
-        }
+        
     }
 
     parseOPPrams(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(6, calldata.length);
-        } else {
+        } 
             return calldata.substring(4, calldata.length);
-        }
+        
     }
 
     rmPrefix(data: string): string {
         if (data.startsWith('0x')) {
             return data.substring(2, data.length);
-        } else {
+        } 
             return data;
-        }
+        
     }
 
     registerPayer(params: string): void {
@@ -132,13 +138,13 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
         sys.require(params.length == 40, "illegal params");
         const payer = params.slice(0, 40);
 
-        let payerStore = sys.aspect.mutableState.get<Uint8Array>(storagePrefix);
+        const payerStore = sys.aspect.mutableState.get<Uint8Array>(storagePrefix);
         payerStore.set(hexToUint8Array(payer));
     }
 
     getPayer(): string {
-        let payerStore = sys.aspect.mutableState.get<Uint8Array>(JITTransferAspect.PAYER_KEY);
-        return uint8ArrayToHex(payerStore.unwrap());
+        const payerStore = sys.aspect.mutableState.get<Uint8Array>(JITTransferAspect.PAYER_KEY);
+        return '0x' + uint8ArrayToHex(payerStore.unwrap());
     }
 
     //****************************
@@ -146,7 +152,7 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
     //****************************
 
     isOwner(sender: Uint8Array): bool {
-        return false;
+        return true;
     }
 }
 

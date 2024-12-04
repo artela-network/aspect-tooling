@@ -22,6 +22,40 @@
         }
       },
       {
+        "description": "Tansfer Token to AA address",
+        "account": "",
+        "type": "transfer",
+        "options": {
+          "to": "$accounts.0",
+          "amount": "10"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
+        "description": "Tansfer Token to AA address",
+        "account": "",
+        "type": "transfer",
+        "options": {
+          "to": "$accounts.1",
+          "amount": "10"
+        },
+        "expect": {
+          "receipt.status": {
+            "eq": true
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
         "description": "Deploy Factory Contract",
         "account": "",
         "type": "deployContract",
@@ -167,6 +201,7 @@
           "walletAddr": "result.ret"
         }
       },
+
       {
         "description": "Tansfer Token to AA address",
         "account": "",
@@ -225,6 +260,23 @@
         }
       },
       {
+        "description": "eth_getBalance by account without balance",
+        "account": "",
+        "type": "jsonRPC",
+        "options": {
+          "method": "eth_getBalance",
+          "params": ["$walletAddr", "latest"]
+        },
+        "expect": {
+          "result.ret": {
+            "eq": "0xde0b6b3a7640000"
+          },
+          "error": {
+            "eq": ""
+          }
+        }
+      },
+      {
         "description": "Call transfer",
         "account": "",
         "type": "callContract",
@@ -233,7 +285,7 @@
           "method": "transfer",
           "abi": "#MyERC20Contract.abi",
           "args": ["0xC26F043B070F6622f7E825a751d4d7E1dAB70394", 100],
-          "gas": "300000"
+          "gas": "2000000"
         },
         "expect": {
           "receipt.status": {
