@@ -3,6 +3,7 @@ import {
     allocate,
     entryPoint,
     execute,
+    InitInput,
     IPostContractCallJP,
     PostContractCallInput,
 } from "@artela/aspect-libs";
@@ -14,6 +15,8 @@ import {
  * How to develop an Aspect  @see [Aspect Structure](https://docs.artela.network/develop/reference/aspect-lib/aspect-structure)
  */
 class Aspect implements IPostContractCallJP {
+
+    init(input: InitInput): void { }
 
     /**
      * isOwner is the governance account implemented by the Aspect, when any of the governance operation
