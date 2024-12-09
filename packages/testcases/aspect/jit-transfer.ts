@@ -31,8 +31,6 @@ import { Protobuf } from "as-proto/assembly/Protobuf";
 export class JITTransferAspect implements IPostContractCallJP, IAspectOperation {
 
     static readonly PAYER_KEY: string = 'PAYER_KEY';
-    static readonly ENTRYPOINT_ADDRESS: string = '0x000000000000000000000000000000000000AAEC';
-    static readonly TRANSFER_AMOUNT: u64 =100_000_000_000_000_000;
 
     init(input: InitInput): void { }
 
@@ -50,20 +48,27 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
             const to = this.getTransferAddress(callData);
             sys.log(`_____submit jit call to  ${to} from ${payer}`);
 
+
             // 构造AA调用的 user operation，感觉这里好像有问题？
-            const transferCalldata = ethereum.abiEncode('execute', [
+
+            const calldata = ethereum.abiEncode('execute', [
                 ethereum.Address.fromUint8Array(hexToUint8Array(to)),
-                ethereum.Number.fromU64(JITTransferAspect.TRANSFER_AMOUNT, 64),
+                ethereum.Number.fromU64(1_000_000_000_000_000),
                 ethereum.Bytes.fromUint8Array(hexToUint8Array("")),
             ]);
 
             sys.log(`_____Joinpoint postContractCall, method: ${method}, payer: ${payer}, receiver: ${to}`);
 
-            const request = JitCallBuilder.simple(
+            const request = new JitInherentRequest(
                 hexToUint8Array(payer),
-                hexToUint8Array(JITTransferAspect.ENTRYPOINT_ADDRESS),
-                hexToUint8Array(transferCalldata)
-            ).build();
+                0,
+                hexToUint8Array(''),
+                new Uint8Array(0),
+                hexToUint8Array(calldata),
+                0,
+                0,
+                new Uint8Array(0)
+            );
 
             const response = sys.hostApi.evmCall.jitCall(request);
             if (response.success) {
