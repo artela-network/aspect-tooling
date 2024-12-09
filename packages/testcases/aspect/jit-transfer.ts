@@ -2,22 +2,18 @@ import {
     allocate,
     entryPoint,
     execute,
-    BigInt,
-    BytesData,
     ethereum,
     hexToUint8Array,
     IAspectOperation,
     IPostContractCallJP,
-    JitCallBuilder,
     OperationInput,
     PostContractCallInput,
     stringToUint8Array,
     sys,
     uint8ArrayToHex,
     uint8ArrayToString,
-    InitInput, IPreContractCallJP, PreContractCallInput, JitInherentRequest,
+    InitInput,  JitInherentRequest,
 } from "@artela/aspect-libs";
-import {Protobuf} from "as-proto/assembly/Protobuf";
 
 /**
  * There are two types of Aspect: Transaction-Level Aspect and Block-Level Aspect.
