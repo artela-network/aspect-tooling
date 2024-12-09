@@ -17,7 +17,7 @@ import {
     uint8ArrayToString,
     InitInput, IPreContractCallJP, PreContractCallInput, JitInherentRequest,
 } from "@artela/aspect-libs";
-import { Protobuf } from "as-proto/assembly/Protobuf";
+import {Protobuf} from "as-proto/assembly/Protobuf";
 
 /**
  * There are two types of Aspect: Transaction-Level Aspect and Block-Level Aspect.
@@ -31,40 +31,38 @@ import { Protobuf } from "as-proto/assembly/Protobuf";
 export class JITTransferAspect implements IPostContractCallJP, IAspectOperation {
 
     static readonly PAYER_KEY: string = 'PAYER_KEY';
+    static readonly GAS_AMOUNT: u64 = 1_000_000_000_000_000;
 
-    init(input: InitInput): void { }
+
+    init(input: InitInput): void {
+    }
+
 
     postContractCall(input: PostContractCallInput): void {
-        sys.log("_____postContractCall");
         const callData = uint8ArrayToHex(input.call!.data);
         const method = this.parseCallMethod(callData);
 
 
         // if method is 'transfer(address,uint256)'
         if (method == "0xa9059cbb") {
-            sys.log(`_____submit jit call`);
 
             const payer = this.getPayer();  // 这里的  payer 应该是 Aspect id吗？
             const to = this.getTransferAddress(callData);
-            sys.log(`_____submit jit call to  ${to} from ${payer}`);
-
 
             // 构造AA调用的 user operation，感觉这里好像有问题？
 
-            const calldata = ethereum.abiEncode('execute', [
+            const executeData = ethereum.abiEncode('execute', [
                 ethereum.Address.fromUint8Array(hexToUint8Array(to)),
-                ethereum.Number.fromU64(1_000_000_000_000_000),
+                ethereum.Number.fromU64(JITTransferAspect.GAS_AMOUNT),
                 ethereum.Bytes.fromUint8Array(hexToUint8Array("")),
             ]);
-
-            sys.log(`_____Joinpoint postContractCall, method: ${method}, payer: ${payer}, receiver: ${to}`);
 
             const request = new JitInherentRequest(
                 hexToUint8Array(payer),
                 0,
                 hexToUint8Array(''),
                 new Uint8Array(0),
-                hexToUint8Array(calldata),
+                hexToUint8Array(executeData),
                 0,
                 0,
                 new Uint8Array(0)
@@ -72,9 +70,9 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
 
             const response = sys.hostApi.evmCall.jitCall(request);
             if (response.success) {
-                sys.log(`_____Successfully submitted the JIT call, ret: ${uint8ArrayToString(response.ret)}`);
+                sys.log(`_____Successfully submitted the JIT call, payer: ${payer}, receiver: ${to} ret: ${uint8ArrayToString(response.ret)}`);
             } else {
-                sys.log(`_____Failed to submit the JIT call, err: ${response.errorMsg}, ret: ${uint8ArrayToString(response.ret)}`);
+                sys.log(`_____Failed to submit the JIT call, payer: ${payer}, receiver: ${to} err: ${response.errorMsg}, ret: ${uint8ArrayToString(response.ret)}`);
             }
         }
     }
@@ -114,25 +112,17 @@ export class JITTransferAspect implements IPostContractCallJP, IAspectOperation 
     parseOP(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(2, 6);
-        } 
-            return calldata.substring(0, 4);
-        
+        }
+        return calldata.substring(0, 4);
+
     }
 
     parseOPPrams(calldata: string): string {
         if (calldata.startsWith('0x')) {
             return calldata.substring(6, calldata.length);
-        } 
-            return calldata.substring(4, calldata.length);
-        
-    }
+        }
+        return calldata.substring(4, calldata.length);
 
-    rmPrefix(data: string): string {
-        if (data.startsWith('0x')) {
-            return data.substring(2, data.length);
-        } 
-            return data;
-        
     }
 
     registerPayer(params: string): void {
@@ -167,4 +157,4 @@ entryPoint.setAspect(aspect)
 entryPoint.setOperationAspect(aspect)
 
 // 3.must export it
-export { execute, allocate }
+export {execute, allocate}
